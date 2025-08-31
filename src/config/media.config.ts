@@ -1,0 +1,1 @@
+export const MEDIA_URL = `https://cloude.calquick.app/v2/api/files` as string

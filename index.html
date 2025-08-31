@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- Version Control -->
+    <meta name="version" content="<%= version %>" />
+    <meta http-equiv="ETag" content='W/"<%= version %>"' />
+    <link rel="manifest" href="/site.webmanifest?version=<%= version %>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>CalQuick | #1 FCommerce & ECommerce Solution for Sellers</title>
+
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="CalQuick: Boost sales on Facebook & online stores with AI-powered inventory sync, automated orders, and real-time analytics. Perfect for FCommerce & ECommerce sellers!"
+    />
+    <meta
+      name="keywords"
+      content="CalQuick, FCommerce, ECommerce, Facebook Shop, POS, Inventory Management, Sales Analytics, Dropshipping, Social Commerce, Online Selling"
+    />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://calquick.app/" />
+    <meta property="og:title" content="CalQuick | #1 FCommerce & ECommerce Solution for Sellers" />
+    <meta
+      property="og:description"
+      content="CalQuick: Boost sales on Facebook & online stores with AI-powered inventory sync, automated orders, and real-time analytics."
+    />
+    <meta property="og:image" content="https://calquick.app/images/logo/logo.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="CalQuick" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://calquick.app/" />
+    <meta property="twitter:title" content="CalQuick | #1 FCommerce & ECommerce Solution for Sellers" />
+    <meta
+      property="twitter:description"
+      content="CalQuick: Boost sales on Facebook & online stores with AI-powered inventory sync, automated orders, and real-time analytics."
+    />
+    <meta property="twitter:image" content="https://calquick.app/images/logo/logo.png" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://calquick.app/" />
+
+    <!-- Favicon Package with Dark/Light Theme Support -->
+    <link rel="icon" href="/favicon/favicon.ico" />
+
+    <!-- Icon from Tabler Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet" />
+
+    <!-- Light Theme Favicons -->
+    <link rel="icon" href="/favicon/light/favicon.ico" media="(prefers-color-scheme: light)" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/favicon/light/apple-touch-icon.png"
+      media="(prefers-color-scheme: light)"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon/light/favicon-32x32.png"
+      media="(prefers-color-scheme: light)"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/favicon/light/favicon-16x16.png"
+      media="(prefers-color-scheme: light)"
+    />
+    <link
+      rel="mask-icon"
+      href="/favicon/light/safari-pinned-tab.svg"
+      color="#5bbad5"
+      media="(prefers-color-scheme: light)"
+    />
+
+    <!-- Dark Theme Favicons -->
+    <link rel="icon" href="/favicon/dark/favicon.ico" media="(prefers-color-scheme: dark)" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/favicon/dark/apple-touch-icon.png"
+      media="(prefers-color-scheme: dark)"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon/dark/favicon-32x32.png"
+      media="(prefers-color-scheme: dark)"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/favicon/dark/favicon-16x16.png"
+      media="(prefers-color-scheme: dark)"
+    />
+    <link
+      rel="mask-icon"
+      href="/favicon/dark/safari-pinned-tab.svg"
+      color="#5bbad5"
+      media="(prefers-color-scheme: dark)"
+    />
+
+    <!-- ⚡️ Connection optimizations for backend -->
+    <link rel="dns-prefetch" href="//backend.calquick.app" />
+    <link rel="preconnect" href="https://backend.calquick.app" crossorigin />
+
+    <!-- Preconnect and DNS-Prefetch -->
+    <link rel="dns-prefetch" href="//cloude.calquick.app" />
+    <link rel="preconnect" href="https://cloude.calquick.app" crossorigin />
+
+    <!-- Web App Capable -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Robots -->
+    <meta name="robots" content="index, follow" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <!-- Cache Busting Script -->
+    <script>
+      // Version check and cache clear
+      const currentVersion = "<%= version %>";
+      const storedVersion = localStorage.getItem("appVersion");
+
+      if (storedVersion !== currentVersion) {
+        // Clear all caches
+        if ("caches" in window) {
+          caches.keys().then(function (names) {
+            names.forEach(function (name) {
+              caches.delete(name);
+            });
+          });
+        }
+
+        // Clear storage
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // Update version
+        localStorage.setItem("appVersion", currentVersion);
+
+        // Force reload if this is an update
+        if (storedVersion && storedVersion !== currentVersion) {
+          window.location.reload(true);
+        }
+      }
+    </script>
+    <script>
+      // Function to update favicon based on theme
+      function updateFavicon() {
+        const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const favicon = document.querySelector('link[rel="icon"]');
+
+        if (isDark) {
+          favicon.href = "/favicon/dark/favicon.ico";
+        } else {
+          favicon.href = "/favicon/light/favicon.ico";
+        }
+      }
+
+      // Initial check
+      updateFavicon();
+
+      // Listen for theme changes
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", updateFavicon);
+    </script>
+
+    <!-- Main Script -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
