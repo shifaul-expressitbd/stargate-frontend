@@ -1,20 +1,20 @@
+import OTPInput from '@/components/shared/forms/otp-input'
+import {
+  useRegisterMutation,
+  useVerifyNewUserMutation
+} from '@/lib/features/auth/authApi'
+import {
+  logout,
+  setSidebar,
+  setUser
+} from '@/lib/features/auth/authSlice'
+import { useAppDispatch } from '@/lib/hooks'
+import TError from '@/types/TError.type'
 import { motion } from 'motion/react'
 import { useEffect, useState } from 'react'
 import { ImSpinner10 } from 'react-icons/im'
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom'
 import { toast } from 'sonner'
-import OTPInput from '../../../components/ui/form/otp-input'
-import {
-  useRegisterMutation,
-  useVerifyNewUserMutation
-} from '../../../lib/features/auth/authApi'
-import {
-  logout,
-  setSidebar,
-  setUser
-} from '../../../lib/features/auth/authSlice'
-import { useAppDispatch } from '../../../lib/hooks'
-import TError from '../../../types/TError.type'
 
 const VerifyNewUser = () => {
   const navigate = useNavigate()

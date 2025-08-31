@@ -1,4 +1,4 @@
-import { InputField } from '@/components/ui/form/input-field'
+import { InputField } from '@/components/shared/forms/input-field'
 import { useRegisterMutation } from '@/lib/features/auth/authApi'
 import TError from '@/types/TError.type'
 import { Validators } from '@/utils/validationUtils'

@@ -1,4 +1,4 @@
-import { InputField } from '@/components/ui/form/input-field'
+import { InputField } from '@/components/shared/forms/input-field'
 import { useLoginMutation } from '@/lib/features/auth/authApi'
 import { setSidebar, setUser, type TUser } from '@/lib/features/auth/authSlice'
 import { useAppDispatch } from '@/lib/hooks'

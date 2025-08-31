@@ -1,13 +1,13 @@
+import { InputField } from '@/components/shared/forms/input-field'
+import { useForgotPasswordMutation } from '@/lib/features/auth/authApi'
+import TError from '@/types/TError.type'
+import { Validators } from '@/utils/validationUtils'
 import { motion } from 'motion/react'
 import { useRef, useState } from 'react'
 import { FaUser } from 'react-icons/fa'
 import { ImSpinner10 } from 'react-icons/im'
 import { Link, useNavigate, useOutletContext } from 'react-router-dom'
 import { toast } from 'sonner'
-import { InputField } from '../../../components/ui/form/input-field'
-import { useForgotPasswordMutation } from '../../../lib/features/auth/authApi'
-import TError from '../../../types/TError.type'
-import { Validators } from '../../../utils/validationUtils'
 
 interface FormData {
   credential: string

@@ -1,5 +1,4 @@
-import { Button } from '@/components/ui/button'
-import Modal from '@/components/ui/modal'
+
 import { useAuth } from '@/hooks/useAuth'
 import { navbarRef, sidebarRef } from '@/lib/refs'
 import {
@@ -9,12 +8,14 @@ import {
 } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Navbar } from '../components/navbar'
-import { Sidebar } from '../components/sidebar'
-import { useSidebar } from '../hooks/useSidebar'
-import { logout } from '../lib/features/auth/authSlice'
-import { useAppDispatch } from '../lib/hooks'
-// Animation configuration for consistent transitions
+
+import { Navbar } from '@/components/layout/navbar'
+import { Sidebar } from '@/components/layout/sidebar'
+import { Button } from '@/components/shared/buttons/button'
+import Modal from '@/components/shared/modals/modal'
+import { useSidebar } from '@/hooks/useSidebar'
+import { logout } from '@/lib/features/auth/authSlice'
+import { useAppDispatch } from '@/lib/hooks'
 const transitionConfig = {
   type: 'tween' as AnimationGeneratorType,
   ease: 'easeInOut' as Easing,

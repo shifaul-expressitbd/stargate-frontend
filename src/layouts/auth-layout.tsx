@@ -1,4 +1,4 @@
-import CalQuickLogo from '@/components/AppLogo'
+import AppLogo from '@/components/app/AppLogo'
 import { AnimatePresence, type Easing, motion } from 'motion/react'
 import { useState } from 'react'
 import { Outlet } from 'react-router'
@@ -90,7 +90,7 @@ export const AuthLayout = () => {
         {/* Main Content */}
         <div className='container mx-auto md:mx-0 flex flex-col items-center justify-center p-5 my-20 sm:px-6 sm:py-8 lg:py-0 gap-5 sm:gap-10 z-10'>
           {/* <AuthNavbar /> */}
-          <CalQuickLogo />
+          <AppLogo />
           <motion.div
             className='bg-transparent w-full'
             variants={fadeIn}

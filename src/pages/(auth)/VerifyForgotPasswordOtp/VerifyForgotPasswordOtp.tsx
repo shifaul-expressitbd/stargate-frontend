@@ -1,4 +1,4 @@
-import OTPInput from '@/components/ui/form/otp-input'
+import OTPInput from '@/components/shared/forms/otp-input'
 import {
   useForgotPasswordMutation,
   useVerifyForgotPasswordOtpMutation
