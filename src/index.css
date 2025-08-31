@@ -165,6 +165,28 @@ body {
     --color-accent: #ff311f;
     --color-muted: #adb5bd;
   }
+
+  .cosmic {
+    --color-primary: #3B82F6;
+    --color-main: #F8FAFC;
+    --color-foreground: #F8FAFC;
+    --color-secondary: #6366F1;
+    --color-base: #0F172A;
+    --color-tertiary: #06B6D4;
+    --color-accent: #F59E0B;
+    --color-muted: #94A3B8;
+  }
+
+  .dark.cosmic {
+    --color-primary: #60a5fa;
+    --color-main: #f8fafc;
+    --color-foreground: #ffffff;
+    --color-secondary: #8b5cf6;
+    --color-base: #000000;
+    --color-tertiary: #34d399;
+    --color-accent: #fbbf24;
+    --color-muted: #64748b;
+  }
 }
 
 @layer components {

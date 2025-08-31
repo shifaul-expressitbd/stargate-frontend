@@ -2,9 +2,9 @@ import { Button } from "@/components/shared/buttons/button";
 import { Icon } from "@/components/shared/icons/icon";
 import useTheme from "@/hooks/useTheme";
 import React from 'react';
-import { FaFire, FaLeaf, FaPaintBrush, FaTint } from "react-icons/fa";
+import { FaFire, FaLeaf, FaPaintBrush, FaRocket, FaTint } from "react-icons/fa";
 
-type ThemeColor = "red" | "green" | "blue" | "sage";
+type ThemeColor = "red" | "green" | "blue" | "sage" | "cosmic";
 
 const ThemeColorPicker: React.FC = () => {
   const { color, changeColor } = useTheme();
@@ -17,6 +17,7 @@ const ThemeColorPicker: React.FC = () => {
       name: "sage",
       icon: <Icon icon={FaPaintBrush} className="text-gray-500" />,
     },
+    { name: "cosmic", icon: <Icon icon={FaRocket} className="text-indigo-500" /> },
   ];
 
   return (

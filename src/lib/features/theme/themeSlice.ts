@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 type ThemeMode = "light" | "dark";
-type ThemeColor = "toolbox" | "red" | "green" | "blue" | "sage" | "orange";
+type ThemeColor = "toolbox" | "red" | "green" | "blue" | "sage" | "orange" | "cosmic";
 
 type ThemeState = {
   mode: ThemeMode;
@@ -10,7 +10,7 @@ type ThemeState = {
 
 const initialState: ThemeState = {
   mode: "light",
-  color: "toolbox",
+  color: "cosmic",
 };
 
 const themeSlice = createSlice({
