@@ -5,9 +5,6 @@ import { ButtonGroup } from './button-group';
 const meta: Meta<typeof ButtonGroup> = {
     title: 'Shared/Buttons/ButtonGroup',
     component: ButtonGroup,
-    parameters: {
-        layout: 'centered',
-    },
     tags: ['autodocs'],
 };
 

@@ -5,10 +5,10 @@ const AuthNavbar = () => {
     <Link to="/">
       <h1 className="text-5xl font-pollinator font-extrabold flex">
         <span className="bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text">
-          Cal
+          Star
         </span>
         <span className="ml-1 bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text">
-          Quick
+          Gate
         </span>
       </h1>
     </Link>

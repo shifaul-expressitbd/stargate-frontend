@@ -4,9 +4,6 @@ import { Badge, PriceBadge, StatusBadge } from './badge';
 const meta: Meta<typeof Badge> = {
     title: 'Shared/DataDisplay/Badge',
     component: Badge,
-    parameters: {
-        layout: 'centered',
-    },
     tags: ['autodocs'],
     args: {
         children: 'Badge Text',

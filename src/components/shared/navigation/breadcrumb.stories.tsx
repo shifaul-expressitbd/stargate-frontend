@@ -5,7 +5,6 @@ const meta: Meta<typeof Breadcrumb> = {
     title: 'Shared/Navigation/Breadcrumb',
     component: Breadcrumb,
     parameters: {
-        layout: 'centered',
         initialEntries: ['/'],
     },
     tags: ['autodocs'],

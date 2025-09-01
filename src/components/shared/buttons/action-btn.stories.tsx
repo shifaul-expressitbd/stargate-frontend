@@ -5,9 +5,6 @@ import { ActionBtn } from './action-btn';
 const meta: Meta<typeof ActionBtn> = {
     title: 'Shared/Buttons/ActionBtn',
     component: ActionBtn,
-    parameters: {
-        layout: 'centered',
-    },
     tags: ['autodocs'],
     args: {
         items: [

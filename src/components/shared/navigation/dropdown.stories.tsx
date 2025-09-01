@@ -4,9 +4,6 @@ import { Dropdown, DropdownContent, DropdownTrigger } from './dropdown';
 const meta: Meta<typeof Dropdown> = {
     title: 'Shared/Navigation/Dropdown',
     component: Dropdown,
-    parameters: {
-        layout: 'centered',
-    },
     tags: ['autodocs'],
 };
 

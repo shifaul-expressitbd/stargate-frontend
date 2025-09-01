@@ -5,9 +5,6 @@ import { StatCard } from './stat-card';
 const meta: Meta<typeof StatCard> = {
     title: 'Shared/Cards/StatCard',
     component: StatCard,
-    parameters: {
-        layout: 'centered',
-    },
     tags: ['autodocs'],
     args: {
         value: 1250,

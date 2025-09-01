@@ -23,19 +23,17 @@ const AppLogo = () => {
       <div className="flex items-center gap-2">
         <img
           src={logo}
-          alt="CalQuick"
+          alt="StarGate"
           onError={() => setHasImageError(true)}
-          className={`${
-            hasImageError ? 'dark:hidden' : 'block'
-          } w-28 h-full object-contain dark:hidden`}
+          className={`${hasImageError ? 'dark:hidden' : 'block'
+            } w-28 h-full object-contain dark:hidden`}
         />
         <img
           src={logoWhite}
-          alt="CalQuick"
+          alt="StarGate"
           onError={() => setHasImageError(true)}
-          className={`${
-            hasImageError ? 'hidden' : 'dark:block'
-          } w-28 h-full object-contain hidden`}
+          className={`${hasImageError ? 'hidden' : 'dark:block'
+            } w-28 h-full object-contain hidden`}
         />
         <span className=" text-black dark:text-white font-bold text-sm">
           Beta
@@ -43,7 +41,7 @@ const AppLogo = () => {
 
         {hasImageError && (
           <h1 className="text-lg sm:text-xl md:text-2xl text-gray-700 dark:text-white font-pollinator whitespace-nowrap">
-            CalQuick
+            StarGate
           </h1>
         )}
       </div>

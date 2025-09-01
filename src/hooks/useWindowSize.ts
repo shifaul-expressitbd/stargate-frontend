@@ -1,22 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useMediaQuery } from "react-responsive";
+
+export type DeviceType = "mobile" | "tablet" | "laptop" | "desktop";
 
 export const useWindowSize = () => {
-  const [windowSize, setWindowSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  });
+  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
+  const isTablet = useMediaQuery({ query: "(min-width: 768px) and (max-width: 1279px)" });
+  const isLaptop = useMediaQuery({ query: "(min-width: 1280px) and (max-width: 1919px)" });
+  const isDesktop = useMediaQuery({ query: "(min-width: 1920px)" });
 
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
+  const deviceType: DeviceType = isMobile ? "mobile" : isTablet ? "tablet" : isLaptop ? "laptop" : "desktop";
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // For compatibility, provide window width/height (direct access is efficient enough)
+  const width = typeof window !== "undefined" ? window.innerWidth : 1024;
+  const height = typeof window !== "undefined" ? window.innerHeight : 768;
 
-  return windowSize;
+  return {
+    width,
+    height,
+    deviceType,
+    isMobile,
+    isTablet,
+    isLaptop,
+    isDesktop,
+  };
 };

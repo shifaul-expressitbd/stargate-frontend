@@ -1,281 +1,452 @@
-import { useAuth } from '@/hooks/useAuth'
-import { useSubscription } from '@/hooks/useSubscription'
-import { sidebarRef } from '@/lib/refs'
-import { motion } from 'motion/react'
-import { useEffect, useState } from 'react'
-import { FaCaretDown, FaCaretUp } from 'react-icons/fa'
-import { MdLogout } from 'react-icons/md'
-import { Link, NavLink, useLocation } from 'react-router-dom'
-import { twMerge } from 'tailwind-merge'
 import {
   adminMenuItems,
   useUserMenuItems,
   type MenuItem
 } from '@/config/routes.config'
+import { useAuth } from '@/hooks/useAuth'
 import { useSidebar } from '@/hooks/useSidebar'
+import { useSubscription } from '@/hooks/useSubscription'
+import type { TUser } from '@/lib/features/auth/authSlice'
+import { setOpenMenus } from '@/lib/features/sidebar/sidebarSlice'
+import { sidebarRef } from '@/lib/refs'
+import { motion } from 'motion/react'
+import { useEffect } from 'react'
+import { FaCaretDown, FaCaretUp, FaTimes } from 'react-icons/fa'
+import { MdLogout } from 'react-icons/md'
+import { Link, NavLink, useLocation } from 'react-router-dom'
+import { twMerge } from 'tailwind-merge'
 
 import Image from '@/components/shared/data-display/image'
+import { Tooltip } from '@/components/shared/data-display/tooltip'
+import {
+  isLinkDisabled as checkLinkDisabled,
+  shouldShowLabels
+} from '@/utils/sidebarUtils'
+import { useDispatch } from 'react-redux'
 import avatar from '/images/avatar/avatar1.png'
 
 interface SidebarProps {
   handleLogout: () => void
 }
 
+const ALWAYS_ACTIVE_PATHS = [
+  '/dashboard',
+  '/profile',
+  '/payment',
+  '/subscription',
+  '/siteStore'
+];
+
 export const Sidebar = ({ handleLogout }: SidebarProps) => {
-  const { pathname } = useLocation()
-  const { isSidebarOpen, isDesktop, close } = useSidebar()
-  const [openMenus, setOpenMenus] = useState<string[]>([])
+  const dispatch = useDispatch();
+  const { pathname } = useLocation();
+  const {
+    isSidebarOpen,
+    isCollapsed,
+    currentMode,
+    isMobile,
+    openMenus,
+    close: closeSidebar
+  } = useSidebar();
 
-  const { user } = useAuth()
-  // console.log('user', user)
-  // console.log('sidebar', sidebar)
-  const userMenuItems = useUserMenuItems()
-  const { isExpired, remainingTime } = useSubscription(user?.warning_date)
+  const { user } = useAuth();
+  const userMenuItems = useUserMenuItems();
+  const subscription = useSubscription(user?.warning_date);
+  const { isExpired, remainingTime } = subscription;
   const menuItems: MenuItem[] =
-    user?.role === 'developer' ? adminMenuItems : userMenuItems
+    user?.role === 'developer' ? adminMenuItems : userMenuItems;
 
-  // const toggleMenu = (title: string) => {
-  //   setOpenMenus([])
-  //   setOpenMenus(prev =>
-  //     prev.includes(title) ? prev.filter(t => t !== title) : [...prev, title]
-  //   )
-  // }
-  const toggleMenu = (title: string) => {
-    setOpenMenus(prev => {
-      if (prev.includes(title)) {
-        return prev.filter(t => t !== title)
-      }
-      return [title]
-    })
-  }
+  // Determine if labels should be visible
+  const showLabels = shouldShowLabels({
+    currentMode,
+    isCollapsed
+  });
 
+  // Check if link should be disabled
+  const isDisabled = (path: string | undefined) =>
+    checkLinkDisabled({ path, isExpired, alwaysActivePaths: ALWAYS_ACTIVE_PATHS });
+
+  // Auto-expand relevant menu on route change
   useEffect(() => {
-    if (openMenus.length) return
-    const match = menuItems.find(
-      item =>
-        item.path === pathname ||
-        item.submenu?.some(sub => sub.path === pathname)
-    )
-    if (!match) return
-    const title = match.title as string
-    setOpenMenus([title])
-  }, [openMenus, menuItems, pathname])
+    if (menuItems.length === 0) return;
 
-  const isAlwaysActivePath = (path: string | undefined) => {
-    if (!path) return false
-    const allowedPaths = [
-      '/dashboard',
-      '/profile',
-      '/payment',
-      '/subscription',
-      '/siteStore'
-    ]
-    return allowedPaths.some(allowedPath => path.startsWith(allowedPath))
-  }
+    const match = menuItems.find(item =>
+      item.path === pathname ||
+      item.submenu?.some(sub => sub.path === pathname)
+    );
 
-  const isLinkDisabled = (path: string | undefined) => {
-    return isExpired && path && !isAlwaysActivePath(path)
-  }
+    if (match) {
+      dispatch(setOpenMenus([match.title as string]));
+    }
+  }, [menuItems, pathname, dispatch]);
 
-  const SidebarContent = () => (
-    <div className='flex flex-col h-full font-plusjakarta text-sm '>
-      {/* Admin Info */}
-      <div className='w-full text-gray-500 dark:text-white py-2 flex gap-2 items-center px-5'>
-        <Link to='/profile' className='max-w-full min-w-fit'>
-          {/* <img
-            // src="https://avatar.iran.liara.run/public"
-            src={user.picture?.optimizeUrl || avatar}
-            alt='Avatar'
-            className='w-12 h-12 rounded-full aspect-square object-cover'
-          /> */}
-          {user.picture && user.picture?.secure_url !== '' ? (
-            <Image
-              src={user.picture?.secure_url || avatar}
-              // src={'sdfs'}
-              alt='Avatar'
-              rounded='full'
-              objectFit='cover'
-              className='w-12 h-12 rounded-full aspect-square object-cover'
-            />
-          ) : (
-            <img
-              src={avatar}
-              alt='Avatar'
-              className='w-12 h-12 rounded-full aspect-square object-cover'
-            />
-          )}
-        </Link>
-        <div className='max-w-[75%]'>
-          <p className='text-lg font-semibold capitalize truncate'>
-            {user?.name}
-          </p>
+  // Header Section
+  const SidebarHeader = () => (
+    <div className={twMerge(
+      'border-b border-gray-200 dark:border-gray-700',
+      isCollapsed ? 'p-4' : 'px-5 py-4'
+    )}>
+      {/* Mobile Close Button */}
+      {isMobile && isSidebarOpen && (
+        <button
+          onClick={closeSidebar}
+          className="absolute top-4 right-4 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Close sidebar"
+        >
+          <FaTimes className="w-4 h-4" />
+        </button>
+      )}
 
-          {!isExpired && remainingTime.text && (
-            <p
-              className={twMerge(
-                'font-medium',
-                (() => {
-                  // Critical (red) - less than 1 day remaining
-                  if (remainingTime.unit === 'days' && remainingTime.value <= 1)
-                    return 'text-red-500'
-                  if (remainingTime.unit === 'hours') return 'text-red-500'
-                  if (remainingTime.unit === 'minutes') return 'text-red-500'
+      {/* User Info */}
+      {showLabels ? (
+        <UserHeaderExpanded user={user} isExpired={isExpired} remainingTime={remainingTime} />
+      ) : (
+        <UserHeaderCompact user={user} />
+      )}
+    </div>
+  );
 
-                  // Warning (yellow) - less than 3 days or 12 hours remaining
-                  if (remainingTime.unit === 'days' && remainingTime.value <= 3)
-                    return 'text-yellow-500'
-                  // Normal (green) - more than 3 days remaining
-                  return 'text-green-500'
-                })()
-              )}
-            >
-              {remainingTime.text}
-            </p>
-          )}
-          {isExpired && <p className='text-red-500'>Expired</p>}
-        </div>
-      </div>
+  // Menu Section
+  const SidebarMenu = () => (
+    <nav
+      className={twMerge(
+        'flex-1 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-track-gray-700 py-4 space-y-2',
+        showLabels ? 'px-5' : 'px-2'
+      )}
+      role="navigation"
+      aria-label="Main navigation"
+    >
+      {menuItems.map(item => (
+        <MenuItem
+          key={item.title}
+          item={item}
+          isDisabled={isDisabled}
+          showLabels={showLabels}
+          isOpen={openMenus.includes(item.title as string)}
+        />
+      ))}
+    </nav>
+  );
 
-      {/* Scrollable Menu */}
-      <div className='flex-1 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-track-gray-700 py-4 px-5 space-y-1'>
-        {menuItems.map(item => (
-          <div key={item.title}>
-            {item.submenu ? (
-              <>
-                <button
-                  onClick={() =>
-                    !isLinkDisabled(item.path) &&
-                    toggleMenu(item.title as string)
-                  }
-                  className={twMerge(
-                    'flex justify-between items-center w-full p-2 rounded hover:bg-orange-100 hover:text-primary dark:hover:text-primary',
-                    isLinkDisabled(item.path)
-                      ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                      : 'text-gray-600 dark:text-white '
-                  )}
-                  disabled={isLinkDisabled(item.path) || undefined}
-                >
-                  <div className='flex items-center gap-2'>
-                    {item.icon && <item.icon className='size-4' />}
-                    <span>{item.title}</span>
-                  </div>
-                  {!isLinkDisabled(item.path) &&
-                    openMenus.includes(item.title as string) ? (
-                    <FaCaretUp />
-                  ) : (
-                    <FaCaretDown />
-                  )}
-                </button>
-                <motion.div
-                  initial={false}
-                  animate={{
-                    height: openMenus.includes(item.title as string)
-                      ? 'auto'
-                      : 0,
-                    opacity: openMenus.includes(item.title as string) ? 1 : 0
-                  }}
-                  className='overflow-hidden'
-                >
-                  <ul className='pl-6 space-y-1 mt-1'>
-                    {item.submenu.map((sub, i) => (
-                      <li key={i}>
-                        <NavLink
-                          to={isLinkDisabled(sub.path) ? '#' : sub.path}
-                          onClick={e => {
-                            if (isLinkDisabled(sub.path)) {
-                              e.preventDefault()
-                            } else if (!isDesktop) {
-                              close()
-                            }
-                          }}
-                          className={({ isActive }) =>
-                            twMerge(
-                              'block p-2 rounded',
-                              isLinkDisabled(sub.path)
-                                ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                                : isActive
-                                  ? 'bg-orange-100 text-primary font-semibold'
-                                  : 'text-gray-600 dark:text-white hover:bg-orange-100 hover:text-primary  dark:hover:text-primary'
-                            )
-                          }
-                          aria-disabled={
-                            isLinkDisabled(sub.path) ? true : undefined
-                          }
-                          tabIndex={isLinkDisabled(sub.path) ? -1 : undefined}
-                        >
-                          {sub.title}
-                        </NavLink>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              </>
-            ) : (
-              <NavLink
-                to={isLinkDisabled(item.path) ? '#' : item.path!}
-                onClick={e => {
-                  if (isLinkDisabled(item.path)) {
-                    e.preventDefault()
-                  } else if (!isDesktop) {
-                    close()
-                  }
-                }}
-                className={({ isActive }) =>
-                  twMerge(
-                    'flex items-center gap-2 p-2 rounded',
-                    isLinkDisabled(item.path)
-                      ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                      : isActive
-                        ? 'bg-orange-100 text-primary font-semibold '
-                        : 'text-gray-600 dark:text-white hover:bg-orange-100 hover:text-primary  dark:hover:text-primary'
-                  )
-                }
-                aria-disabled={isLinkDisabled(item.path) ? true : undefined}
-                tabIndex={isLinkDisabled(item.path) ? -1 : undefined}
-              >
-                {item.icon && <item.icon className='size-4' />}
-                {item.title}
-              </NavLink>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Logout Button */}
-      <div className='p-3  '>
+  // Footer Section
+  const SidebarFooter = () => (
+    <div className={twMerge(
+      'border-t border-gray-200 dark:border-gray-700',
+      showLabels ? 'p-3' : 'p-2'
+    )}>
+      <Tooltip content={!showLabels ? 'Sign Out' : ''}>
         <button
           onClick={handleLogout}
-          className='w-full flex items-center gap-2 p-2 rounded  font-medium text-gray-600 dark:text-white hover:bg-orange-100 hover:text-primary  dark:hover:text-primary'
+          className={twMerge(
+            'flex items-center p-3 rounded-lg font-medium transition-all duration-200 group w-full',
+            showLabels
+              ? 'gap-3 text-gray-600 dark:text-white hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900'
+              : 'flex-col gap-2 justify-center text-gray-600 dark:text-white hover:bg-red-50 hover:text-red-600',
+            'focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50'
+          )}
+          aria-label="Sign Out"
         >
-          <MdLogout className='size-4' />
-          Sign Out
+          <MdLogout className={twMerge(
+            'transition-colors duration-200',
+            showLabels ? 'w-5 h-5' : 'w-6 h-6',
+            'text-gray-500 dark:text-gray-400 group-hover:text-red-500'
+          )} />
+          {showLabels && <span>Sign Out</span>}
         </button>
-      </div>
+      </Tooltip>
     </div>
-  )
+  );
 
-  const sidebarClasses = 'h-full  w-64 bg-white dark:bg-primary-dark'
-
-  return isDesktop ? (
-    <aside ref={sidebarRef} className={sidebarClasses}>
-      {SidebarContent()}
+  return (
+    <aside
+      ref={sidebarRef}
+      className={twMerge(
+        "h-full bg-white dark:bg-primary-dark",
+        isMobile ? "fixed inset-y-0 left-0 top-0 w-3/4 z-50" : "relative"
+      )}
+    >
+      <div className="flex flex-col h-full font-plusjakarta text-sm">
+        <SidebarHeader />
+        <SidebarMenu />
+        <SidebarFooter />
+      </div>
     </aside>
-  ) : (
-    isSidebarOpen && (
-      <motion.aside
-        ref={sidebarRef}
-        className={`${sidebarClasses}`}
-        initial={{ x: '-100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '-100%' }}
-        transition={{
-          type: 'tween',
-          ease: [0.25, 0.1, 0.25, 1],
-          duration: 0.5
-        }}
-      >
-        {SidebarContent()}
-      </motion.aside>
-    )
-  )
+  );
+};
+
+// Helper Components
+type UserType = (Partial<TUser> & {
+  picture?: {
+    public_id: string | null;
+    optimizeUrl: string | null;
+    secure_url: string | null;
+  } | undefined;
+}) | null;
+
+interface UserHeaderExpandedProps {
+  user: UserType;
+  isExpired: boolean;
+  remainingTime: { text: string; unit: string; value: number };
 }
+
+const UserHeaderExpanded = ({
+  user,
+  isExpired,
+  remainingTime
+}: UserHeaderExpandedProps) => (
+  <div className='w-full text-gray-500 dark:text-white flex gap-3 items-center'>
+    <Link to='/profile' className='min-w-fit'>
+      {user?.picture?.secure_url ? (
+        <Image
+          src={user.picture.secure_url}
+          alt='Avatar'
+          rounded='full'
+          objectFit='cover'
+          className='w-10 h-10 rounded-full aspect-square object-cover'
+        />
+      ) : (
+        <img
+          src={avatar}
+          alt='Avatar'
+          className='w-10 h-10 rounded-full aspect-square object-cover'
+        />
+      )}
+    </Link>
+    <div className='max-w-[75%] min-w-0'>
+      <p className='text-base font-semibold capitalize truncate'>
+        {user?.name}
+      </p>
+      {!isExpired && remainingTime.text && (
+        <p className={getStatusColor(remainingTime)}>
+          {remainingTime.text}
+        </p>
+      )}
+      {isExpired && <p className='text-red-500 text-xs'>Expired</p>}
+    </div>
+  </div>
+);
+
+interface UserHeaderCompactProps {
+  user: UserType;
+}
+
+const UserHeaderCompact = ({ user }: UserHeaderCompactProps) => (
+  <div className='w-full flex justify-center'>
+    <Tooltip
+      content={user?.name || 'Profile'}
+      position="right"
+      delay={600}
+      showArrow={true}
+    >
+      <Link to='/profile' className='block'>
+        {user?.picture?.secure_url ? (
+          <Image
+            src={user.picture.secure_url}
+            alt='Avatar'
+            rounded='full'
+            objectFit='cover'
+            className='w-8 h-8 rounded-full aspect-square object-cover transition-transform duration-200 hover:scale-110'
+          />
+        ) : (
+          <img
+            src={avatar}
+            alt='Avatar'
+            className='w-8 h-8 rounded-full aspect-square object-cover transition-transform duration-200 hover:scale-110'
+          />
+        )}
+      </Link>
+    </Tooltip>
+  </div>
+);
+
+interface MenuItemProps {
+  item: MenuItem;
+  isDisabled: (path: string | undefined) => boolean;
+  showLabels: boolean;
+  isOpen: boolean;
+}
+
+const MenuItem = ({
+  item,
+  isDisabled,
+  showLabels,
+  isOpen
+}: MenuItemProps) => {
+  const { toggle, isDesktop } = useSidebar();
+
+  if (item.submenu) {
+    return (
+      <div>
+        <MenuButton
+          item={item}
+          isDisabled={isDisabled}
+          showLabels={showLabels}
+          isOpen={isOpen}
+        />
+        <SubMenu
+          item={item}
+          isDisabled={isDisabled}
+          showLabels={showLabels}
+          isOpen={isOpen}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <NavLink
+      to={isDisabled(item.path) ? '#' : item.path!}
+      onClick={() => !isDisabled(item.path) && !isDesktop && toggle()}
+      className={({ isActive }) => getMenuLinkClasses(isActive, isDisabled(item.path), showLabels)}
+      aria-disabled={isDisabled(item.path)}
+      tabIndex={isDisabled(item.path) ? -1 : undefined}
+      aria-label={item.title || 'Navigation Item'}
+    >
+      {item.icon && (
+        <Tooltip content={!showLabels ? (item.title || 'Menu Item') : ''}>
+          <item.icon className={getIconClasses(isDisabled(item.path), showLabels)} />
+        </Tooltip>
+      )}
+      {showLabels && <span className="font-medium">{item.title}</span>}
+    </NavLink>
+  );
+};
+
+interface MenuButtonProps {
+  item: MenuItem;
+  isDisabled: (path: string | undefined) => boolean;
+  showLabels: boolean;
+  isOpen: boolean;
+}
+
+const MenuButton = ({
+  item,
+  isDisabled,
+  showLabels,
+  isOpen
+}: MenuButtonProps) => {
+  const { toggleMenu } = useSidebar();
+
+  return (
+    <button
+      onClick={() => !isDisabled(item.path) && toggleMenu(item.title as string)}
+      className={twMerge(
+        'flex items-center justify-between w-full p-3 rounded-lg transition-all duration-200 hover:bg-orange-50 dark:hover:bg-gray-800 group',
+        showLabels ? 'gap-3' : 'flex-col gap-2 justify-center',
+        isDisabled(item.path)
+          ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-60'
+          : 'text-gray-600 dark:text-white hover:text-orange-600'
+      )}
+      disabled={isDisabled(item.path)}
+      aria-expanded={isOpen}
+      aria-label={`${item.title || 'Menu'} menu`}
+    >
+      <div className={twMerge('flex items-center', showLabels ? 'gap-3' : 'flex-col gap-1')}>
+        {item.icon && (
+          <Tooltip
+            content={item.title || 'Menu Item'}
+            position={showLabels ? 'top' : 'right'}
+            delay={400}
+            showArrow={true}
+          >
+            <item.icon className={getIconClasses(isDisabled(item.path), showLabels)} />
+          </Tooltip>
+        )}
+        {showLabels && <span className="font-medium">{item.title}</span>}
+      </div>
+      {!isDisabled(item.path) && showLabels && (
+        isOpen ? <FaCaretUp className="w-4 h-4 text-gray-400" />
+          : <FaCaretDown className="w-4 h-4 text-gray-400" />
+      )}
+    </button>
+  );
+};
+
+interface SubMenuProps {
+  item: MenuItem;
+  isDisabled: (path: string | undefined) => boolean;
+  showLabels: boolean;
+  isOpen: boolean;
+}
+
+const SubMenu = ({
+  item,
+  isDisabled,
+  showLabels,
+  isOpen
+}: SubMenuProps) => {
+  const { isDesktop, close } = useSidebar();
+
+  return (
+    <motion.div
+      initial={false}
+      animate={{
+        height: isOpen ? 'auto' : 0,
+        opacity: isOpen ? 1 : 0,
+        marginTop: isOpen ? '0.5rem' : 0
+      }}
+      className='overflow-hidden'
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+    >
+      <ul className={twMerge('space-y-1', showLabels ? 'pl-8' : 'pl-4')} role="group">
+        {item.submenu?.map((sub: MenuItem, i: number) => (
+          <li key={i}>
+            <NavLink
+              to={isDisabled(sub.path) ? '#' : sub.path!}
+              onClick={() => !isDisabled(sub.path) && !isDesktop && close()}
+              className={({ isActive }) => getSubMenuLinkClasses(isActive, isDisabled(sub.path), showLabels)}
+              aria-disabled={isDisabled(sub.path)}
+              tabIndex={isDisabled(sub.path) ? -1 : undefined}
+            >
+              {showLabels && sub.title}
+            </NavLink>
+          </li>
+        ))}
+      </ul>
+    </motion.div>
+  );
+};
+
+// Helper Functions
+const getStatusColor = (remainingTime: { unit: string; value: number }) => {
+  const { unit, value } = remainingTime;
+
+  if ((unit === 'days' && value <= 1) || unit === 'hours' || unit === 'minutes') {
+    return 'text-red-500';
+  }
+  if (unit === 'days' && value <= 3) {
+    return 'text-yellow-500';
+  }
+  return 'text-green-500';
+};
+
+const getIconClasses = (isDisabled: boolean, showLabels: boolean) =>
+  twMerge(
+    'transition-colors duration-200',
+    showLabels ? 'w-5 h-5' : 'w-6 h-6',
+    isDisabled
+      ? 'text-gray-400 dark:text-gray-500'
+      : 'text-gray-500 dark:text-gray-400 group-hover:text-orange-500'
+  );
+
+const getMenuLinkClasses = (isActive: boolean, isDisabled: boolean, showLabels: boolean) =>
+  twMerge(
+    'flex items-center p-3 rounded-lg transition-all duration-200 group relative',
+    showLabels ? 'gap-3' : 'flex-col gap-2 justify-center',
+    isDisabled
+      ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-60'
+      : isActive
+        ? 'bg-orange-100 text-orange-600 font-semibold dark:bg-orange-900 dark:text-orange-300'
+        : 'text-gray-600 dark:text-white hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-gray-800'
+  );
+
+const getSubMenuLinkClasses = (isActive: boolean, isDisabled: boolean, showLabels: boolean) =>
+  twMerge(
+    'block p-2 rounded-md transition-all duration-200 text-sm',
+    showLabels ? 'pl-6' : 'text-center',
+    isDisabled
+      ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-60'
+      : isActive
+        ? 'bg-orange-100 text-orange-600 font-semibold dark:bg-orange-900 dark:text-orange-300'
+        : 'text-gray-600 dark:text-gray-300 hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-gray-800'
+  );

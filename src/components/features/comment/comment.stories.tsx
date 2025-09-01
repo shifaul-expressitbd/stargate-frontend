@@ -4,9 +4,6 @@ import Comment from './comment';
 const meta: Meta<typeof Comment> = {
     title: 'Features/Comment',
     component: Comment,
-    parameters: {
-        layout: 'centered',
-    },
     tags: ['autodocs'],
 };
 

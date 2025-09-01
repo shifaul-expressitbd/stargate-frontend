@@ -4,9 +4,6 @@ import BackButton from './back-btn';
 const meta: Meta<typeof BackButton> = {
     title: 'Shared/Buttons/BackButton',
     component: BackButton,
-    parameters: {
-        layout: 'centered',
-    },
     tags: ['autodocs'],
 };
 

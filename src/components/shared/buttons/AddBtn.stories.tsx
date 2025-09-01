@@ -5,9 +5,6 @@ import AddBtn from './AddBtn';
 const meta: Meta<typeof AddBtn> = {
     title: 'Shared/Buttons/AddBtn',
     component: AddBtn,
-    parameters: {
-        layout: 'centered',
-    },
     tags: ['autodocs'],
     args: {
         to: '/add',

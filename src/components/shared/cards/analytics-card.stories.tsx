@@ -5,9 +5,6 @@ import { AnalyticsCard } from './analytics-card';
 const meta: Meta<typeof AnalyticsCard> = {
     title: 'Shared/Cards/AnalyticsCard',
     component: AnalyticsCard,
-    parameters: {
-        layout: 'centered',
-    },
     tags: ['autodocs'],
     args: {
         value: 1250,

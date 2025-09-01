@@ -4,9 +4,6 @@ import { Accordion } from './accordion';
 const meta: Meta<typeof Accordion> = {
     title: 'Shared/DataDisplay/Accordion',
     component: Accordion,
-    parameters: {
-        layout: 'centered',
-    },
     tags: ['autodocs'],
 };
 

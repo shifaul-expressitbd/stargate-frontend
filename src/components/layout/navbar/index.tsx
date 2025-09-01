@@ -2,13 +2,14 @@ import { navbarRef } from '@/lib/refs'
 import { useState } from 'react'
 import { FiMaximize, FiMinimize } from 'react-icons/fi'
 import { MdLogout } from 'react-icons/md'
-import { TbCashRegister } from 'react-icons/tb'
-import { Link } from 'react-router'
+
 import { SidebarToggler } from '../sidebar/sidebarToggler'
 
 import AppLogo from '@/components/app/AppLogo'
 import ThemeToggler from '@/components/layout/navbar/themeToggler'
 import { Icon } from '@/components/shared/icons/icon'
+import { notificationsData } from '@/config/notification.config'
+import NotificationsDropdown from './notification-btn'
 
 
 interface NavbarProps {
@@ -32,7 +33,7 @@ export const Navbar = ({ className, handleLogout }: NavbarProps) => {
   return (
     <header
       ref={navbarRef}
-      className={`${className} p-3 sm:p-4 md:p-5 flex bg-white dark:bg-[#1C1C1D]  z-50 justify-between items-center transition-all duration-200`}
+      className={`p-3 sm:p-4 md:p-5 w-full flex bg-white dark:bg-[#1C1C1D]  z-50 justify-between items-center transition-all duration-200 ${className}`}
     >
       <div className="flex gap-2 sm:gap-3 items-center dark:text-white">
         <SidebarToggler />
@@ -40,16 +41,6 @@ export const Navbar = ({ className, handleLogout }: NavbarProps) => {
       </div>
 
       <div className="flex items-center gap-1 sm:gap-2 md:gap-3 lg:gap-4">
-        <Link to="/POS">
-          <button
-            title="POS"
-            className="p-2 rounded-full bg-gray-200 hover:bg-gray-100 dark:bg-black dark:hover:bg-gray-500 cursor-pointer transition-colors text-primary dark:text-white"
-            aria-label="Point of Sale"
-          >
-            <Icon icon={TbCashRegister} size={18} className="sm:size-5" />
-          </button>
-        </Link>
-
         <button
           onClick={toggleFullScreen}
           title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
@@ -63,7 +54,7 @@ export const Navbar = ({ className, handleLogout }: NavbarProps) => {
           />
         </button>
 
-        {/* <NotificationsDropdown notifications={notificationsData} /> */}
+        <NotificationsDropdown notifications={notificationsData} />
 
         <ThemeToggler />
 

@@ -4,9 +4,6 @@ import { HighlightText } from './HighlightText';
 const meta: Meta<typeof HighlightText> = {
     title: 'Shared/DataDisplay/HighlightText',
     component: HighlightText,
-    parameters: {
-        layout: 'centered',
-    },
     tags: ['autodocs'],
     args: {
         text: 'Sample text for highlighting example',

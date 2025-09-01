@@ -66,9 +66,9 @@ const AppRouter: React.FC = () => {
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute roles={['user']}>
-                <ClientDashboard />
-              </ProtectedRoute>
+              // <ProtectedRoute roles={['user']}>
+              <ClientDashboard />
+              // </ProtectedRoute>
             }
           />
         </Route>

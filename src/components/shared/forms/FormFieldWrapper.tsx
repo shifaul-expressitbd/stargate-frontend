@@ -7,6 +7,7 @@ interface FormFieldWrapperProps {
   label?: string | React.ReactNode
   error?: string
   warning?: string
+  helperText?: string
   required?: boolean
   showError?: boolean
   labelRightElement?: React.ReactNode
@@ -20,6 +21,7 @@ export const FormFieldWrapper = ({
   label,
   error,
   warning,
+  helperText,
   required = false,
   labelRightElement,
   showError = true,
@@ -27,7 +29,7 @@ export const FormFieldWrapper = ({
   children,
   className
 }: FormFieldWrapperProps) => (
-  <div className={twMerge('space-y-1.5 w-full', className)}>
+  <div className={twMerge('space-y-1.5 w-full', className)} data-required={required}>
     {(label || labelRightElement) && (
       <div className='flex items-center justify-between'>
         {label && (
@@ -52,6 +54,7 @@ export const FormFieldWrapper = ({
       </div>
     )}
     {children}
+    {helperText && <p className='text-gray-500 text-xs mt-1'>{helperText}</p>}
     {showError &&
       (preserveErrorSpace ? (
         <div className='sm:min-h-5'>
