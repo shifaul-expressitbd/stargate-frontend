@@ -43,31 +43,25 @@ const Hero = () => {
 
                     <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8 animate-fade-in-up delay-300">
                         <Button
-                            variant="default"
+                            variant="alien-primary"
                             size="lg"
                             title="Get Started Free"
-                            className="text-lg px-10 py-5 font-semibold font-poppins shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                            className="text-lg px-10 py-5 font-bold shadow-xl"
                         >
                             Activate Portal
                         </Button>
 
                         <Button
-                            variant="outline"
+                            variant="alien-outline"
                             size="lg"
                             title="Watch Demo"
-                            className="text-lg px-10 py-5 font-semibold font-poppins border-2 hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105"
+                            className="text-lg px-10 py-5 font-bold border-2 shadow-xl"
                         >
                             Explore Portal
                         </Button>
                     </div>
                 </div>
 
-                {/* Scroll indicator */}
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-                    <div className="w-6 h-10 border-2 border-primary rounded-full flex justify-center">
-                        <div className="w-1 h-3 bg-primary rounded-full mt-2 animate-pulse"></div>
-                    </div>
-                </div>
             </section>
         </>
     );

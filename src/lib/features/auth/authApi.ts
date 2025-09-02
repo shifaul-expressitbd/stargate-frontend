@@ -55,12 +55,12 @@ const authApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
-    // Backward compatibility hooks
+    // Verify user with token (from email link or OTP)
     verifyNewUser: builder.mutation({
-      query: (data) => ({
+      query: (token: string) => ({
         url: "/auth/verify-email",
         method: "GET",
-        params: { token: data.otp }, // Assuming OTP is the token
+        params: { token },
       }),
     }),
     verifyForgotPasswordOtp: builder.mutation({

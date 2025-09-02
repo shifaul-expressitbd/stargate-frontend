@@ -59,12 +59,12 @@ const FAQ = () => {
                         <Accordion
                             key={index}
                             trigger={
-                                <Text size="lg" className="font-medium font-asimovian">
+                                <Text size="lg" className="font-medium font-asimovian text-purple-200">
                                     {faq.question}
                                 </Text>
                             }
                         >
-                            <Text variant="muted" className="leading-relaxed font-orbitron">
+                            <Text className="leading-relaxed font-orbitron text-white">
                                 {faq.answer}
                             </Text>
                         </Accordion>

@@ -1,221 +1,211 @@
-import OTPInput from '@/components/shared/forms/otp-input'
+import { useVerifyNewUserMutation } from '@/lib/features/auth/authApi'
 import {
-  useRegisterMutation,
-  useVerifyNewUserMutation
-} from '@/lib/features/auth/authApi'
-import {
-  logout,
   setSidebar,
   setUser
 } from '@/lib/features/auth/authSlice'
 import { useAppDispatch } from '@/lib/hooks'
-import TError from '@/types/TError.type'
 import { motion } from 'motion/react'
 import { useEffect, useState } from 'react'
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'
 import { ImSpinner10 } from 'react-icons/im'
-import { useLocation, useNavigate, useOutletContext } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
 const VerifyNewUser = () => {
   const navigate = useNavigate()
-  const location = useLocation()
+  const [searchParams] = useSearchParams()
   const dispatch = useAppDispatch()
-  const [loading, setLoading] = useState(false)
-  const { setIsHovered } = useOutletContext<{
-    setIsHovered: (value: boolean) => void
-  }>()
-  const [otp, setOtp] = useState('')
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [resendDisabled, setResendDisabled] = useState(false)
-  const [countdown, setCountdown] = useState(120)
-  const [attemptLeft, setAttemptLeft] = useState(5)
+  const [verifyNewUser, { isLoading, isSuccess, data, error, isError }] = useVerifyNewUserMutation() as any
+  const [verificationTriggered, setVerificationTriggered] = useState(false)
 
-  // Get the email from the location state
-  const { user } = location.state
+  // Get token and message from URL
+  const token = searchParams.get('token')
+  const message = searchParams.get('message')
 
-  // useEffect(() => {
-  //   user && console.log(user)
-  // }, [user])
-
-  const [register] = useRegisterMutation()
-  const [verifyNewUser] = useVerifyNewUserMutation()
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-
-    if (otp.length !== 6) {
-      newErrors.otp = 'Please enter a valid 6-digit OTP.'
-    }
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
-    if (!validateForm()) return
-
-    if (attemptLeft == 0) return
-
-    setLoading(true)
-    setAttemptLeft(Number(attemptLeft) - 1)
-    const toastId = toast.loading('Verifying...', {
-      id: 'verify-register',
-      duration: 2000
-    })
-
-    try {
-      const res = await verifyNewUser({ ...user, otp }).unwrap()
-      const { token } = res.data
-      dispatch(setUser({ user, token }))
-
-      //sound enabled
-      localStorage.setItem('playSound', '3')
-
-      const sidebar = res?.data?.sideBar
-      if (!sidebar || (Array.isArray(sidebar) && sidebar?.length === 0)) {
-        // optionally show a toast here
-        toast.error('Login Failed! Try Again', { id: toastId, duration: 2000 })
-        dispatch(logout())
-        return
-      }
-
-      dispatch(setSidebar({ sidebar: res.data?.sideBar }))
-
-      toast.success(
-        'Email verified successfully! Redirecting to Dashboard...',
-        {
-          id: toastId,
-          duration: 2000
-        }
-      )
-      setTimeout(() => navigate('/onboarding'), 2000)
-    } catch (error) {
-      toast.dismiss(toastId)
-      if (error instanceof TError) {
-        const errorMessage =
-          error.message ||
-          error?.data?.message ||
-          error.data.errors ||
-          error?.data?.error?.[0]?.message
-        toast.error(errorMessage, { duration: 2000 })
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Handle resend code functionality
-  const handleResendCode = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setResendDisabled(true)
-    const toastId = toast.loading('Sending code...')
-    try {
-      await register(user).unwrap()
-      setCountdown(120)
-      toast.success('Verification code resent successfully!', {
-        id: toastId,
-        duration: 2000
-      })
-    } catch (error) {
-      toast.dismiss(toastId)
-      if (error instanceof TError) {
-        const errorMessage =
-          error.message ||
-          error?.data?.message ||
-          error.data.errors ||
-          error?.data?.error?.[0]?.message
-        toast.error(errorMessage, { duration: 2000 })
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Countdown timer effect
+  // Handle token-based verification from URL
   useEffect(() => {
-    if (resendDisabled && countdown > 0 && attemptLeft > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000)
-      return () => clearTimeout(timer)
-    } else if (countdown === 0) {
-      setResendDisabled(false)
+    if (token && !verificationTriggered && !isLoading && !isSuccess && !isError) {
+      setVerificationTriggered(true)
+      verifyNewUser(token)
     }
-  }, [resendDisabled, countdown, attemptLeft])
+  }, [token, verificationTriggered, isLoading, isSuccess, isError, verifyNewUser])
 
+  // Redirect to register if no token and no message
   useEffect(() => {
-    if (!user) {
+    if (!token && !message) {
       navigate('/register')
     }
-  }, [user, navigate])
+  }, [token, message, navigate])
 
-  if (!user) {
-    return <div>Redirecting...</div>
-  }
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className='flex items-center justify-center'
-    >
-      <div className='max-w-full w-96 bg-white dark:bg-black shadow-md rounded-2xl overflow-hidden space-y-2'>
-        <div className='px-4 pt-4 text-center'>
-          <h1 className='text-xl font-bold text-gray-800 dark:text-gray-100'>
-            Verify Your Email
-          </h1>
-          <p className='text-sm text-gray-600 dark:text-gray-400'>
-            Verification code sent to : <b>{user?.email}</b>
-          </p>
-        </div>
+  // Handle successful verification
+  useEffect(() => {
+    if (isSuccess && data) {
+      // Handle success
+      if (data.data?.user) {
+        // If token and sidebar are provided, set them (login after verification)
+        if (data.data.token && data.data.sideBar) {
+          dispatch(setUser({ user: data.data.user, token: data.data.token }))
+          dispatch(setSidebar({ sidebar: data.data.sideBar }))
+        } else if (data.data.token) {
+          dispatch(setUser({ user: data.data.user, token: data.data.token }))
+        }
+      }
 
-        <div className='px-4 space-y-2'>
-          {/* Verification Code Form */}
-          <form onSubmit={handleSubmit} className='space-y-2' noValidate>
-            {/* OTP Input */}
-            <OTPInput length={6} onChange={setOtp} error={errors.otp} />
+      // Play sound for success
+      if (data.data?.token || data.data?.sideBar) {
+        localStorage.setItem('playSound', '3')
+      }
 
-            {/* Submit Button */}
-            <div className='pb-2'>
-              <motion.button
-                onHoverStart={() => setIsHovered(true)}
-                onHoverEnd={() => setIsHovered(false)}
-                initial={{ scale: 1 }}
-                whileHover={{ scale: [0.95, 1] }}
-                type='submit'
-                disabled={loading || attemptLeft == 0}
-                className='auth-button'
-              >
-                {loading ? (
-                  <>
-                    <ImSpinner10 className='animate-spin h-6 w-6' />
-                  </>
-                ) : (
-                  `Verify Email (${attemptLeft})`
-                )}
-              </motion.button>
-            </div>
-          </form>
-        </div>
+      toast.success('Email verified successfully!', {
+        duration: 2000
+      })
 
-        <div className='flex flex-col items-center justify-center w-full border-t border-gray-300 dark:border-gray-600 p-4'>
-          <div className='text-sm text-gray-600 dark:text-gray-400'>
-            {"Didn't receive the code?"}
+      // Redirect based on what was returned
+      let redirectTo = '/login' // Default fallback
+      if (data.data?.redirectUrl) {
+        redirectTo = data.data.redirectUrl
+      } else if (data.data?.token && data.data?.sideBar) {
+        redirectTo = '/onboarding'
+      }
+
+      setTimeout(() => navigate(redirectTo), 2000)
+    }
+  }, [isSuccess, data, dispatch, navigate])
+
+  // Handle error
+  useEffect(() => {
+    if (isError && error) {
+      const errorMessage = error.data?.message || 'Invalid or expired verification token'
+      toast.error(errorMessage, { duration: 2000 })
+    }
+  }, [isError, error])
+
+
+  // If message param exists and no token, show message to check email
+  if (message && !token) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className='flex items-center justify-center'
+      >
+        <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-cyan-400/30 relative overflow-hidden">
+          <div className="text-center space-y-4">
+            <h1 className="text-3xl font-bold text-white animate-hologram font-asimovian text-shadow-white-strong tracking-[0.1em] uppercase">
+              Check Your Email
+            </h1>
+            <p className="mt-2 text-lg text-blue-100 font-orbitron text-shadow-blue-glow">
+              We've sent a verification link to your email address.
+            </p>
+            <p className="text-blue-100 text-sm">
+              Click the link to verify your account and continue.
+            </p>
           </div>
-          <button
-            onClick={handleResendCode}
-            disabled={resendDisabled || attemptLeft == 0}
-            className='font-semibold text-lg disabled:text-gray-400 text-secondary hover:text-primary transition-colors cursor-pointer disabled:cursor-not-allowed'
-          >
-            {attemptLeft
-              ? resendDisabled
-                ? `Resend in ${countdown}s`
-                : 'Resend Code'
-              : 'Try again after 1 hour'}
-          </button>
+          {/* Cosmic Background Decorations */}
+          <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/5 to-purple-500/5 rounded-2xl" />
+            <div className="absolute inset-4 border border-cyan-400/20 rounded-xl animate-pulse" style={{ animationDuration: '3s' }} />
+            <div className="absolute inset-2 border border-purple-400/15 rounded-xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
+            <div className="absolute top-4 right-6 w-1 h-1 bg-cyan-400 rounded-full animate-ping opacity-60" style={{ animationDuration: '2s' }} />
+            <div className="absolute bottom-6 left-8 w-1 h-1 bg-purple-400 rounded-full animate-ping opacity-40" style={{ animationDuration: '3s', animationDelay: '1.5s' }} />
+          </div>
         </div>
-      </div>
-    </motion.div>
-  )
+      </motion.div>
+    )
+  }
+
+  // If token is being verified, show loading
+  if (isLoading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className='flex items-center justify-center'
+      >
+        <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-cyan-400/30 relative overflow-hidden">
+          <div className="text-center space-y-4">
+            <ImSpinner10 className="animate-spin h-12 w-12 mx-auto text-cyan-400" />
+            <h1 className="text-2xl font-bold text-white font-orbitron">
+              Verifying Email...
+            </h1>
+            <p className="text-blue-100">Please wait while we confirm your identity</p>
+            <Link
+              to='/register?resend=true'
+              className='text-cyan-300 hover:text-blue-300 font-orbitron text-shadow-cyan-glow hover:underline font-bold transition-all duration-200'
+            >
+              Didn't receive the email? Click here to resend
+            </Link>
+          </div>
+          <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/5 to-purple-500/5 rounded-2xl" />
+            <div className="absolute inset-4 border border-cyan-400/20 rounded-xl animate-pulse" style={{ animationDuration: '3s' }} />
+            <div className="absolute inset-2 border border-purple-400/15 rounded-xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
+          </div>
+        </div>
+      </motion.div>
+    )
+  }
+
+  // If verification successful, show success message
+  if (isSuccess) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className='flex items-center justify-center'
+      >
+        <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-green-400/30 relative overflow-hidden">
+          <div className="text-center space-y-4">
+            <FaCheckCircle className="h-12 w-12 mx-auto text-green-400" />
+            <h1 className="text-2xl font-bold text-white font-orbitron">
+              Email Verified Successfully!
+            </h1>
+            <p className="text-blue-100">Redirecting to login page...</p>
+          </div>
+          <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-green-500/5 to-purple-500/5 rounded-2xl" />
+            <div className="absolute inset-4 border border-green-400/20 rounded-xl animate-pulse" style={{ animationDuration: '3s' }} />
+            <div className="absolute inset-2 border border-purple-400/15 rounded-xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
+          </div>
+        </div>
+      </motion.div>
+    )
+  }
+
+  // If error, show error message
+  if (isError) {
+    const errorMessage = error?.data?.message || 'Invalid or expired verification token'
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className='flex items-center justify-center'
+      >
+        <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-red-400/30 relative overflow-hidden">
+          <div className="text-center space-y-4">
+            <FaTimesCircle className="h-12 w-12 mx-auto text-red-400" />
+            <h1 className="text-2xl font-bold text-white font-orbitron">
+              Verification Failed
+            </h1>
+            <p className="text-blue-100">{errorMessage}</p>
+            <p className="text-blue-100 text-sm">Please try again or contact support.</p>
+          </div>
+          <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-red-500/5 to-purple-500/5 rounded-2xl" />
+            <div className="absolute inset-4 border border-red-400/20 rounded-xl animate-pulse" style={{ animationDuration: '3s' }} />
+            <div className="absolute inset-2 border border-purple-400/15 rounded-xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
+          </div>
+        </div>
+      </motion.div>
+    )
+  }
+
+  return null
 }
 
 export default VerifyNewUser
+

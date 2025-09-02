@@ -1,3 +1,4 @@
+import useTheme from '../../hooks/useTheme';
 import BackgroundAnimation from './_components/BackgroundAnimation';
 import FAQ from './_components/FAQ';
 import Features from './_components/Features';
@@ -7,8 +8,19 @@ import LandingNavbar from './_components/LandingNavbar';
 import Testimonials from './_components/Testimonials';
 
 const LandingPage = () => {
+    const { color } = useTheme();
+
+    // Define cursor styles based on theme
+    const getCursorStyles = () => {
+        if (color === 'cosmic') {
+            return 'alien-cursor';
+        }
+        // Default cursor for other themes
+        return 'default';
+    };
+
     return (
-        <div className="min-h-screen w-full relative bg-black">
+        <div className={`min-h-screen w-full relative bg-black ${getCursorStyles()}`}>
             <BackgroundAnimation />
             <LandingNavbar />
             <Hero />

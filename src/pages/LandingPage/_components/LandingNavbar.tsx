@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import AppLogo from '../../../components/app/AppLogo';
-import ThemeToggler from '../../../components/layout/navbar/themeToggler';
 import { Button } from '../../../components/shared/buttons/button';
 import { Icon } from '../../../components/shared/icons/icon';
 
@@ -57,26 +56,23 @@ const LandingNavbar = () => {
 
                     {/* Desktop Right Section */}
                     <div className="hidden md:flex items-center space-x-4">
-                        <ThemeToggler />
                         <Button
-                            variant="outline"
+                            variant="alien-outline"
                             size="sm"
                             title="Login"
-                            className="text-primary border-primary hover:bg-primary hover:text-white"
                             onClick={closeMenu}
                         >
-                            <Link to="/login" className="block w-full h-full text-center no-underline font-poppins">
+                            <Link to="/login" className="block w-full h-full text-center no-underline">
                                 Login
                             </Link>
                         </Button>
                         <Button
-                            variant="default"
+                            variant="alien-primary"
                             size="sm"
                             title="Get Started"
-                            className="bg-primary hover:bg-primary/90 text-white"
                             onClick={closeMenu}
                         >
-                            <Link to="/register" className="block w-full h-full text-center no-underline font-poppins">
+                            <Link to="/register" className="block w-full h-full text-center no-underline">
                                 Get Started
                             </Link>
                         </Button>
@@ -84,7 +80,6 @@ const LandingNavbar = () => {
 
                     {/* Mobile menu button */}
                     <div className="md:hidden flex items-center space-x-2">
-                        <ThemeToggler />
                         <button
                             onClick={toggleMenu}
                             className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
@@ -115,24 +110,24 @@ const LandingNavbar = () => {
 
                         <div className="pt-4 space-y-2">
                             <Button
-                                variant="outline"
+                                variant="alien-outline"
                                 size="sm"
                                 title="Login"
-                                className="w-full text-primary border-primary hover:bg-primary hover:text-white"
+                                className="w-full"
                                 onClick={closeMenu}
                             >
-                                <Link to="/login" className="block w-full h-full text-center no-underline font-poppins">
+                                <Link to="/login" className="block w-full h-full text-center no-underline">
                                     Login
                                 </Link>
                             </Button>
                             <Button
-                                variant="default"
+                                variant="alien-primary"
                                 size="sm"
                                 title="Get Started"
-                                className="w-full bg-primary hover:bg-primary/90 text-white"
+                                className="w-full"
                                 onClick={closeMenu}
                             >
-                                <Link to="/register" className="block w-full h-full text-center no-underline font-poppins">
+                                <Link to="/register" className="block w-full h-full text-center no-underline">
                                     Get Started
                                 </Link>
                             </Button>

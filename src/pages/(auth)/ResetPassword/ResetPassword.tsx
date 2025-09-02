@@ -1,3 +1,4 @@
+import { Button } from '@/components/shared/buttons/button'
 import { InputField } from '@/components/shared/forms/input-field'
 import { useResetPasswordMutation } from '@/lib/features/auth/authApi'
 import TError from '@/types/TError.type'
@@ -8,8 +9,7 @@ import { ImSpinner10 } from 'react-icons/im'
 import {
   Link,
   useLocation,
-  useNavigate,
-  useOutletContext
+  useNavigate
 } from 'react-router-dom'
 import { toast } from 'sonner'
 
@@ -18,9 +18,6 @@ const ResetPassword = () => {
   const location = useLocation()
   const { credential } = location.state || {}
   const [loading, setLoading] = useState(false)
-  const { setIsHovered } = useOutletContext<{
-    setIsHovered: (value: boolean) => void
-  }>()
   const [formData, setFormData] = useState({
     credential: credential || '',
     newPassword: '',
@@ -129,33 +126,33 @@ const ResetPassword = () => {
       transition={{ duration: 0.5 }}
       className='flex items-center justify-center'
     >
-      <div className='w-full md:w-96 bg-white dark:bg-black shadow-md rounded-2xl overflow-hidden space-y-2'>
-        <div className='px-4 pt-4'>
-          <h1 className='text-xl font-bold text-gray-800 dark:text-gray-100'>
-            Reset Password
-          </h1>
-          <p className='text-sm text-gray-600 dark:text-gray-400'>
-            Create a new password for your account
-          </p>
-        </div>
+      <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-cyan-400/30 relative overflow-hidden">
+        <div className="space-y-6">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-white animate-hologram font-asimovian text-shadow-white-strong tracking-[0.1em] uppercase">
+              Quantum Reset
+            </h1>
+            <p className="mt-2 text-lg text-blue-100 font-orbitron text-shadow-blue-glow">
+              Reinitialize your access codes
+            </p>
+          </div>
 
-        <div className='px-4 space-y-2 text-md py-2'>
-          <form onSubmit={handleSubmit} className='space-y-2' noValidate>
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <InputField
               type={showPassword ? 'text' : 'password'}
-              id='newPassword'
-              label='New Password'
-              placeholder='••••••••'
+              id="newPassword"
+              label="New Quantum Code"
+              placeholder="••••••••"
               value={formData.newPassword}
               onChange={handleChange}
               error={errors.newPassword}
               icon={FaLock}
-              autoComplete='new-password'
+              autoComplete="new-password"
               rightElement={
                 <button
-                  type='button'
+                  type="button"
                   onClick={handlePasswordToggle}
-                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors cursor-pointer'
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-cyan-400 transition-colors cursor-pointer"
                 >
                   {showPassword ? (
                     <FaEyeSlash size={16} />
@@ -168,19 +165,19 @@ const ResetPassword = () => {
 
             <InputField
               type={showConfirmPassword ? 'text' : 'password'}
-              id='confirmPassword'
-              label='Confirm Password'
-              placeholder='••••••••'
+              id="confirmPassword"
+              label="Confirm Quantum Code"
+              placeholder="••••••••"
               value={formData.confirmPassword}
               onChange={handleChange}
               error={errors.confirmPassword}
               icon={FaLock}
-              autoComplete='new-password'
+              autoComplete="new-password"
               rightElement={
                 <button
-                  type='button'
+                  type="button"
                   onClick={handleConfirmPasswordToggle}
-                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors cursor-pointer'
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-cyan-400 transition-colors cursor-pointer"
                 >
                   {showConfirmPassword ? (
                     <FaEyeSlash size={16} />
@@ -191,34 +188,48 @@ const ResetPassword = () => {
               }
             />
 
-            <motion.button
-              onHoverStart={() => setIsHovered(true)}
-              onHoverEnd={() => setIsHovered(false)}
-              initial={{ scale: 1 }}
-              whileHover={{ scale: [0.95, 1] }}
-              type='submit'
+            <Button
+              variant="alien-primary"
+              size="lg"
+              type="submit"
               disabled={loading}
-              className='w-full flex items-center justify-center bg-primary hover:bg-secondary text-gray-900 hover:text-white font-semibold py-2 rounded-lg transition-all cursor-pointer disabled:text-gray-900 disabled:cursor-not-allowed'
+              title="Reset Access Codes"
+              className="w-full"
             >
               {loading ? (
-                <ImSpinner10 className='animate-spin h-6 w-6' />
+                <>
+                  <ImSpinner10 className="animate-spin h-5 w-5 mr-2" />
+                  Reinitializing...
+                </>
               ) : (
-                'Reset Password'
+                'Reinitialize Access'
               )}
-            </motion.button>
+            </Button>
           </form>
-        </div>
 
-        <div className='flex flex-col items-center justify-center w-full border-t border-gray-300 p-4'>
-          <div className='text-sm text-gray-600 dark:text-gray-400'>
-            Remember your password?
+          <div className="text-center space-y-2">
+            <p className="text-purple-200 font-orbitron text-shadow-purple-glow">
+              Recall your original codes?
+            </p>
+            <Link
+              to="/login"
+              className="text-cyan-300 hover:text-blue-300 font-orbitron text-shadow-cyan-glow hover:underline font-bold transition-all duration-200"
+              style={{
+                textShadow: '0 0 5px rgba(34, 211, 238, 0.5)'
+              }}
+            >
+              Re-enter Stargate
+            </Link>
           </div>
-          <Link
-            to='/login'
-            className='text-lg font-semibold text-secondary hover:text-primary transition-colors'
-          >
-            Login
-          </Link>
+
+          {/* Cosmic Background Decorations */}
+          <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/5 to-purple-500/5 rounded-2xl" />
+            <div className="absolute inset-4 border border-cyan-400/20 rounded-xl animate-pulse" style={{ animationDuration: '3s' }} />
+            <div className="absolute inset-2 border border-purple-400/15 rounded-xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
+            <div className="absolute top-4 right-6 w-1 h-1 bg-cyan-400 rounded-full animate-ping opacity-60" style={{ animationDuration: '2s' }} />
+            <div className="absolute bottom-6 left-8 w-1 h-1 bg-purple-400 rounded-full animate-ping opacity-40" style={{ animationDuration: '3s', animationDelay: '1.5s' }} />
+          </div>
         </div>
       </div>
     </motion.div>

@@ -1,3 +1,4 @@
+import { Button } from '@/components/shared/buttons/button'
 import { InputField } from '@/components/shared/forms/input-field'
 import { useLoginMutation } from '@/lib/features/auth/authApi'
 import { setSidebar, setUser, type TUser } from '@/lib/features/auth/authSlice'
@@ -189,13 +190,13 @@ const Login = () => {
       transition={{ duration: 0.5 }}
       className="w-full max-w-md mx-auto"
     >
-      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl rounded-2xl p-8 border border-gray-200/50 dark:border-gray-700/50">
+      <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-cyan-400/30 relative overflow-hidden">
         <div className="space-y-6">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-3xl font-bold text-white animate-hologram font-asimovian text-shadow-white-strong tracking-[0.1em] uppercase">
               Sign In
             </h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">
+            <p className="mt-2 text-lg text-blue-100 font-orbitron text-shadow-blue-glow">
               Access your account to continue
             </p>
           </div>
@@ -226,9 +227,12 @@ const Login = () => {
               labelRightElement={
                 <Link
                   to="/forgot-password"
-                  className="text-orange-600 hover:text-orange-700 dark:text-primary transition-colors hover:underline text-sm"
+                  className="text-cyan-300 hover:text-blue-300 font-orbitron text-shadow-cyan-glow hover:underline text-sm transition-all duration-200"
+                  style={{
+                    textShadow: '0 0 5px rgba(34, 211, 238, 0.5)'
+                  }}
                 >
-                  Forgot?
+                  Reset Access?
                 </Link>
               }
               autoComplete="current-password"
@@ -268,35 +272,52 @@ const Login = () => {
               </label>
             </div>
 
-            <motion.button
-              initial={{ scale: 1 }}
-              whileHover={{ scale: [0.98, 1] }}
-              transition={{ duration: 0.2 }}
+            <Button
+              variant="alien-primary"
+              size="lg"
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3 rounded-lg transition-all cursor-pointer hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+              title="Sign In"
+              className="w-full"
             >
               {loading ? (
                 <ImSpinner10 className="animate-spin h-5 w-5" />
               ) : (
-                'Sign In'
+                'Activate Portal'
               )}
-            </motion.button>
+            </Button>
           </form>
 
           <SocialLogin />
 
           <div className="text-center space-y-2">
-            <p className="text-gray-600 dark:text-gray-400">
-              {"Don't have an account?"}
+            <p className="text-purple-200 font-orbitron text-shadow-purple-glow">
+              Portal Access Required?
             </p>
             <Link
               to="/register"
-              className="text-primary hover:text-secondary transition-colors font-medium"
+              className="text-cyan-300 hover:text-blue-300 font-orbitron text-shadow-cyan-glow hover:underline font-bold transition-all duration-200"
+              style={{
+                textShadow: '0 0 5px rgba(34, 211, 238, 0.5)'
+              }}
             >
-              Create one now
+              Initialize New Portal
             </Link>
           </div>
+        </div>
+
+        {/* Cosmic Background Decorations */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+          {/* Subtle Gradient Overlays */}
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/5 to-purple-500/5 rounded-2xl" />
+
+          {/* Glowing Borders */}
+          <div className="absolute inset-4 border border-cyan-400/20 rounded-xl animate-pulse" style={{ animationDuration: '3s' }} />
+          <div className="absolute inset-2 border border-purple-400/15 rounded-xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
+
+          {/* Floating Particles */}
+          <div className="absolute top-4 right-6 w-1 h-1 bg-cyan-400 rounded-full animate-ping opacity-60" style={{ animationDuration: '2s' }} />
+          <div className="absolute bottom-6 left-8 w-1 h-1 bg-purple-400 rounded-full animate-ping opacity-40" style={{ animationDuration: '3s', animationDelay: '1.5s' }} />
         </div>
       </div>
     </motion.div>

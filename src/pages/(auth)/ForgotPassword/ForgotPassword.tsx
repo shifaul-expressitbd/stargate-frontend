@@ -1,3 +1,4 @@
+import { Button } from '@/components/shared/buttons/button'
 import { InputField } from '@/components/shared/forms/input-field'
 import { useForgotPasswordMutation } from '@/lib/features/auth/authApi'
 import TError from '@/types/TError.type'
@@ -6,7 +7,7 @@ import { motion } from 'motion/react'
 import { useRef, useState } from 'react'
 import { FaUser } from 'react-icons/fa'
 import { ImSpinner10 } from 'react-icons/im'
-import { Link, useNavigate, useOutletContext } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
 interface FormData {
@@ -16,9 +17,6 @@ interface FormData {
 const ForgotPassword = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const { setIsHovered } = useOutletContext<{
-    setIsHovered: (value: boolean) => void
-  }>()
   const [credential, setCredential] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [warnings, setWarnings] = useState<Record<string, string>>({})
@@ -114,61 +112,73 @@ const ForgotPassword = () => {
       transition={{ duration: 0.5 }}
       className='flex items-center justify-center'
     >
-      <div className='w-full md:w-96 bg-white dark:bg-black shadow-md rounded-2xl overflow-hidden space-y-2'>
-        <div className='px-4 pt-4'>
-          <h1 className='text-xl font-bold text-gray-800 dark:text-gray-100'>
-            Forgot Password?
-          </h1>
-          <p className='text-sm text-gray-600 dark:text-gray-400'>
-            Enter your email or phone to reset your password
-          </p>
-        </div>
+      <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-cyan-400/30 relative overflow-hidden">
+        <div className="space-y-6">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-white animate-hologram font-asimovian text-shadow-white-strong tracking-[0.1em] uppercase">
+              Portal Lockout
+            </h1>
+            <p className="mt-2 text-lg text-blue-100 font-orbitron text-shadow-blue-glow">
+              Initiate access recovery protocol
+            </p>
+          </div>
 
-        <div className='px-4 space-y-2 text-md py-2'>
-          <form onSubmit={onSubmit} className='space-y-2' noValidate>
+          <form onSubmit={onSubmit} className="space-y-4" noValidate>
             <InputField
-              id='credential'
-              label='Email or Phone'
-              type='text'
-              name='credential'
-              placeholder='Enter your email or phone'
+              label="Quantum Identifier"
+              type="text"
+              id="credential"
+              name="credential"
+              placeholder="Enter quantum signature"
               value={credential?.toLowerCase()}
               onChange={handleChange}
               error={errors.credential}
               warning={warnings.credential}
               icon={FaUser}
-              autoComplete='credential'
+              autoComplete="credential"
               required
             />
 
-            <motion.button
-              onHoverStart={() => setIsHovered(true)}
-              onHoverEnd={() => setIsHovered(false)}
-              initial={{ scale: 1 }}
-              whileHover={{ scale: [0.95, 1] }}
-              type='submit'
+            <Button
+              variant="alien-primary"
+              size="lg"
+              type="submit"
               disabled={loading}
-              className='w-full flex items-center justify-center bg-primary hover:bg-secondary text-gray-900 hover:text-white font-semibold py-2 rounded-lg transition-all cursor-pointer disabled:text-gray-900 disabled:cursor-not-allowed'
+              title="Send Reset Signal"
+              className="w-full"
             >
               {loading ? (
-                <ImSpinner10 className='animate-spin h-6 w-6' />
+                <>
+                  <ImSpinner10 className="animate-spin h-5 w-5 mr-2" />
+                  Transmitting...
+                </>
               ) : (
-                'Send Reset Link'
+                'Send Reset Signal'
               )}
-            </motion.button>
+            </Button>
           </form>
-        </div>
 
-        <div className='flex flex-col items-center justify-center w-full border-t border-gray-300 dark:border-gray-600 p-4'>
-          <div className='text-sm text-gray-600 dark:text-gray-400'>
-            Remember your password?
+          <div className="text-center space-y-2">
+            <p className="text-purple-200 font-orbitron text-shadow-purple-glow">
+              Recall your access codes?
+            </p>
+            <Link
+              to="/login"
+              className="text-cyan-300 hover:text-blue-300 font-orbitron text-shadow-cyan-glow hover:underline font-bold transition-all duration-200"
+              style={{
+                textShadow: '0 0 5px rgba(34, 211, 238, 0.5)'
+              }}
+            >
+              Re-enter Stargate
+            </Link>
           </div>
-          <Link
-            to='/login'
-            className='text-lg font-semibold text-secondary hover:text-primary transition-colors'
-          >
-            Login
-          </Link>
+
+          {/* Cosmic Background Decorations */}
+          <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/5 to-purple-500/5 rounded-2xl" />
+            <div className="absolute inset-4 border border-cyan-400/20 rounded-xl animate-pulse" style={{ animationDuration: '3s' }} />
+            <div className="absolute bottom-6 right-8 w-1 h-1 bg-purple-400 rounded-full animate-ping opacity-40" style={{ animationDuration: '3s', animationDelay: '1.5s' }} />
+          </div>
         </div>
       </div>
     </motion.div>
