@@ -4,14 +4,14 @@ import { twMerge } from 'tailwind-merge'
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?:
-    | 'default'
-    | 'ghost'
-    | 'flat'
-    | 'edge'
-    | 'outline'
-    | 'outline-flat'
-    | 'outline-edge'
-    | 'link'
+  | 'default'
+  | 'ghost'
+  | 'flat'
+  | 'edge'
+  | 'outline'
+  | 'outline-flat'
+  | 'outline-edge'
+  | 'link'
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'none'
   /**
    * Required for accessibility. Provides a tooltip and accessible name for the button.
@@ -35,8 +35,8 @@ export const Button = ({
 
   // Variant-specific styles
   const variantStyles = {
-    default: 'rounded bg-primary text-white ',
-    flat: 'rounded-none bg-primary text-text',
+    default: 'rounded bg-primary text-gray-900 hover:text-white',
+    flat: 'rounded-none bg-primary text-gray-900 hover:text-white',
     edge: 'rounded-full border border-primary',
     outline: 'border border-primary rounded',
     'outline-flat': 'border border-primary rounded-none',

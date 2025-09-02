@@ -111,11 +111,11 @@ export const transformSidebarData = (sidebarData: Sidebar): MenuItem[] => {
     element: item.element,
     submenu: item.submenu
       ? item.submenu.map((sub: SubMenuItem) => ({
-          title: sub.title,
-          path: sub.path,
-          icon: typeof sub.icon === "string" ? getIconComponent(sub.icon) : sub.icon,
-          element: sub.element,
-        }))
+        title: sub.title,
+        path: sub.path,
+        icon: typeof sub.icon === "string" ? getIconComponent(sub.icon) : sub.icon,
+        element: sub.element,
+      }))
       : undefined,
   }));
 };

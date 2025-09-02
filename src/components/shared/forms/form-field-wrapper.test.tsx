@@ -48,6 +48,12 @@ describe('FormFieldWrapper Component - Form Validation & Interaction Tests', () 
             const wrapper = screen.getByRole('group');
             expect(wrapper).toBeInTheDocument();
             // Error state should remain accessible
+
+            // Check that input has aria-describedby pointing to error message
+            const input = screen.getByDisplayValue('Throw error');
+            expect(input).toHaveAttribute('aria-describedby', 'example-error');
+            const errorMessage = screen.getByText('Error message goes here');
+            expect(errorMessage).toHaveAttribute('id', 'example-error');
         });
     });
 

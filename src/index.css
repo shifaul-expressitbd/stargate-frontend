@@ -157,9 +157,9 @@ body {
   }
 
   .sage {
-    --color-primary: #ea580c;
+    --color-primary: #9a3412;
     --color-foreground: #f8f8f8;
-    --color-secondary: #f97316;
+    --color-secondary: #c2410c;
     --color-base: #f0f9ff;
     --color-tertiary: #fb923c;
     --color-accent: #ff311f;
@@ -167,14 +167,14 @@ body {
   }
 
   .cosmic {
-    --color-primary: #3B82F6;
-    --color-main: #F8FAFC;
-    --color-foreground: #F8FAFC;
-    --color-secondary: #6366F1;
-    --color-base: #0F172A;
-    --color-tertiary: #06B6D4;
-    --color-accent: #F59E0B;
-    --color-muted: #94A3B8;
+    --color-primary: #3b82f6;
+    --color-main: #f8fafc;
+    --color-foreground: #f8fafc;
+    --color-secondary: #6366f1;
+    --color-base: #0f172a;
+    --color-tertiary: #06b6d4;
+    --color-accent: #92400e;
+    --color-muted: #94a3b8;
   }
 
   .dark.cosmic {

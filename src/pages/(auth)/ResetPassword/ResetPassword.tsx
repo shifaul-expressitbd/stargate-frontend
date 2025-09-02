@@ -198,7 +198,7 @@ const ResetPassword = () => {
               whileHover={{ scale: [0.95, 1] }}
               type='submit'
               disabled={loading}
-              className='w-full flex items-center justify-center bg-primary hover:bg-secondary text-white font-semibold py-2 rounded-lg transition-all cursor-pointer disabled:cursor-not-allowed'
+              className='w-full flex items-center justify-center bg-primary hover:bg-secondary text-gray-900 hover:text-white font-semibold py-2 rounded-lg transition-all cursor-pointer disabled:text-gray-900 disabled:cursor-not-allowed'
             >
               {loading ? (
                 <ImSpinner10 className='animate-spin h-6 w-6' />

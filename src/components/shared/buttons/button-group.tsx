@@ -8,6 +8,7 @@ interface ButtonGroupProps {
   orientation?: "horizontal" | "vertical";
   className?: string;
   activeClassName?: string;
+  "aria-label"?: string;
 }
 
 export const ButtonGroup = ({
@@ -17,6 +18,7 @@ export const ButtonGroup = ({
   orientation = "horizontal",
   className,
   activeClassName = "bg-primary",
+  "aria-label": ariaLabel = "Button group",
 }: ButtonGroupProps) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
@@ -50,6 +52,8 @@ export const ButtonGroup = ({
         orientationClasses[orientation],
         className
       )}
+      role="group"
+      aria-label={ariaLabel}
     >
       {React.Children.map(children, (child, index) => {
         if (React.isValidElement(child)) {

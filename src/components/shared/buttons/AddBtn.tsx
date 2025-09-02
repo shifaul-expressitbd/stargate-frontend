@@ -23,7 +23,9 @@ const AddBtn = ({
   return (
     <Link
       to={to}
-      className={`flex items-center rounded bg-primary px-3 py-2 text-sm text-white hover:bg-orange-600 focus:outline-none focus:ring-2 whitespace-nowrap h-10 ${className}`}
+      className={`flex items-center rounded bg-primary px-3 py-2 text-sm text-gray-900 hover:bg-orange-600 hover:text-white focus:outline-none focus:ring-2 whitespace-nowrap h-10 ${className}`}
+      aria-label={shouldShowText ? undefined : text}
+      title={shouldShowText ? undefined : text}
     >
       {icon}
       {shouldShowText && <span className="m-0 md:ml-2">{text}</span>}

@@ -42,8 +42,18 @@ export const RangeSlider = ({
           error ? "bg-red-200 accent-red-600" : "bg-gray-200 accent-orange-600",
           disabled && "cursor-not-allowed opacity-50"
         )}
+        aria-valuenow={value}
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-describedby={error ? `${id}-error` : undefined}
       />
-      <span className='text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[3ch] text-right'>{value}</span>
+      <span
+        className='text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[3ch] text-right'
+        id={`${id}-value`}
+        aria-live="polite"
+      >
+        {value}
+      </span>
     </div>
   </FormFieldWrapper>
 );

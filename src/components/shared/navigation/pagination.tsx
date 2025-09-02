@@ -75,7 +75,7 @@ export const Pagination = ({
     <div
       className={twMerge(
         'flex flex-col md:flex-row items-center justify-between px-4 py-3',
-        'bg-white dark:bg-[#1C1C1D] rounded-lg shadow-sm border border-gray-100 dark:border-gray-800',
+        'bg-white dark:bg-primary-dark rounded-lg shadow-sm border border-gray-100 dark:border-gray-800',
         className
       )}
     >

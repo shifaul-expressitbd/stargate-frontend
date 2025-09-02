@@ -33,7 +33,7 @@ export const Navbar = ({ className, handleLogout }: NavbarProps) => {
   return (
     <header
       ref={navbarRef}
-      className={`p-3 sm:p-4 md:p-5 w-full flex bg-white dark:bg-[#1C1C1D]  z-50 justify-between items-center transition-all duration-200 ${className}`}
+      className={`p-3 sm:p-4 md:p-5 w-full flex bg-white dark:bg-primary-dark  z-50 justify-between items-center transition-all duration-200 ${className}`}
     >
       <div className="flex gap-2 sm:gap-3 items-center dark:text-white">
         <SidebarToggler />

@@ -82,6 +82,7 @@ export const SidebarToggler = ({
   return (
     <button
       id='sidebar-toggler'
+      data-testid="sidebar-toggle"
       title={tooltip}
       aria-label={tooltip}
       onClick={handleClick}

@@ -70,7 +70,7 @@ export const InputField = ({
               <div
                 className={twMerge(
                   error
-                    ? 'text-red-500'
+                    ? 'text-accent'
                     : typeof value === 'string' && value.length
                       ? 'text-green-500'
                       : 'text-gray-400 dark:text-gray-500'

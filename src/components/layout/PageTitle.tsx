@@ -17,7 +17,7 @@ const PageTitle = ({
   return (
     <div
       className={twMerge(
-        'z-50 w-full flex items-center justify-between p-2 sm:px-4 sm:py-3 rounded-md  bg-white dark:bg-[#1C1C1D] border border-gray-200  dark:border-gray-700',
+        'z-50 w-full flex items-center justify-between p-2 sm:px-4 sm:py-3 rounded-md  bg-white dark:bg-primary-dark border border-gray-200  dark:border-gray-700',
         className
       )}
     >

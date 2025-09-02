@@ -47,13 +47,13 @@ export const CalendarTrigger = React.forwardRef<HTMLDivElement, CalendarTriggerP
         )}
       >
         <div className='flex-1 truncate'>
-          {selectedDates.length > 0 ? formatSelectedDates() : <span className='text-gray-400 '>{placeholder}</span>}
+          {selectedDates.length > 0 ? formatSelectedDates() : <span className='text-gray-800 '>{placeholder}</span>}
         </div>
 
         {selectedDates.length > 0 && !disabled && (
-          <FiX className='ml-2 w-4 h-4 text-gray-400 dark:text-white hover:text-red-500 cursor-pointer' onClick={onClearAll} />
+          <FiX className='ml-2 w-4 h-4 text-gray-600 hover:text-red-500 cursor-pointer' onClick={onClearAll} />
         )}
-        <FiCalendar className='ml-2 w-4 h-4 text-gray-400 dark:text-white' />
+        <FiCalendar className='ml-2 w-4 h-4 text-gray-600' />
       </div>
     );
   }

@@ -74,6 +74,7 @@ export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
           onChange={onChange}
           className='sr-only'
           disabled={disabled || loading}
+          aria-describedby={error ? `${id}-error` : undefined}
           {...props}
         />
 
@@ -82,8 +83,10 @@ export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
           <button
             type='button'
             role='switch'
+            aria-label={label ? `${label} toggle switch` : `Toggle switch ${checked ? 'on' : 'off'}`}
             aria-checked={checked}
             aria-disabled={disabled || loading}
+            aria-describedby={error ? `${id}-error` : undefined}
             disabled={disabled || loading}
             onClick={handleToggleClick}
             className={twMerge(
@@ -136,7 +139,7 @@ export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
             htmlFor={id}
             className={twMerge(
               "block text-sm font-medium select-none",
-              error ? "text-red-600 dark:text-red-500" : "text-gray-700 dark:text-gray-300",
+              error ? "text-red-600 dark:text-accent" : "text-gray-700 dark:text-gray-300",
               (disabled || loading) && "opacity-70 cursor-not-allowed",
               labelClassName
             )}

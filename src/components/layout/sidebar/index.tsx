@@ -160,6 +160,7 @@ export const Sidebar = ({ handleLogout }: SidebarProps) => {
   return (
     <aside
       ref={sidebarRef}
+      data-testid="sidebar"
       className={twMerge(
         "h-full bg-white dark:bg-primary-dark",
         isMobile ? "fixed inset-y-0 left-0 top-0 w-3/4 z-50" : "relative"
@@ -199,7 +200,7 @@ const UserHeaderExpanded = ({
       {user?.picture?.secure_url ? (
         <Image
           src={user.picture.secure_url}
-          alt='Avatar'
+          alt={`${user?.name || 'User'} profile picture`}
           rounded='full'
           objectFit='cover'
           className='w-10 h-10 rounded-full aspect-square object-cover'
@@ -207,7 +208,7 @@ const UserHeaderExpanded = ({
       ) : (
         <img
           src={avatar}
-          alt='Avatar'
+          alt={`${user?.name || 'User'} profile picture`}
           className='w-10 h-10 rounded-full aspect-square object-cover'
         />
       )}
@@ -242,7 +243,7 @@ const UserHeaderCompact = ({ user }: UserHeaderCompactProps) => (
         {user?.picture?.secure_url ? (
           <Image
             src={user.picture.secure_url}
-            alt='Avatar'
+            alt={`${user?.name || 'User'} profile picture`}
             rounded='full'
             objectFit='cover'
             className='w-8 h-8 rounded-full aspect-square object-cover transition-transform duration-200 hover:scale-110'
@@ -250,7 +251,7 @@ const UserHeaderCompact = ({ user }: UserHeaderCompactProps) => (
         ) : (
           <img
             src={avatar}
-            alt='Avatar'
+            alt={`${user?.name || 'User'} profile picture`}
             className='w-8 h-8 rounded-full aspect-square object-cover transition-transform duration-200 hover:scale-110'
           />
         )}

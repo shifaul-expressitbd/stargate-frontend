@@ -13,7 +13,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     render: () => (
         <Tooltip content="This is a tooltip">
-            <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>
+            <button className="px-4 py-2 bg-blue-700 text-white rounded">Hover me</button>
         </Tooltip>
     ),
 };
@@ -26,7 +26,7 @@ export const Top: Story = {
     },
     render: (args) => (
         <Tooltip {...args}>
-            <button className="px-4 py-2 bg-blue-500 text-white rounded">Hover me</button>
+            <button className="px-4 py-2 bg-blue-700 text-white rounded">Hover me</button>
         </Tooltip>
     ),
 };

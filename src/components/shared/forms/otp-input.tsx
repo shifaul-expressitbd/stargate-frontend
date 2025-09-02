@@ -73,12 +73,13 @@ const OTPInput = ({ length = 6, onChange, success, error, className }: OTPInputP
             ref={(el) => {
               inputRefs.current[index] = el;
             }}
+            aria-label={`OTP digit ${index + 1}`}
             className={`size-1 w-12 min-w-4 h-12 min-h-4 rounded-lg border focus:outline-none focus:ring-2 focus:ring-orange-200 dark:focus:ring-primary text-center ${error ? "border-red-500" : success ? "border-green-500" : "border-gray-300 dark:border-gray-600"
-              } bg-white dark:bg-[#1C1C1D]    text-gray-900 dark:text-gray-100`}
+              } bg-white dark:bg-primary-dark    text-gray-900 dark:text-gray-100`}
           />
         ))}
       </div>
-      <div className='min-h-5'>{error && <p className='text-red-500 text-sm'>{error}</p>}</div>
+      <div className='min-h-5'>{error && <p className='text-accent text-sm'>{error}</p>}</div>
     </div>
   );
 };

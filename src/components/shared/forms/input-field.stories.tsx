@@ -51,7 +51,7 @@ export const WithRightElement: Story = {
         id: 'password',
         type: 'password',
         rightElement: (
-            <button className="text-gray-400 hover:text-gray-600">
+            <button className="text-gray-400 hover:text-gray-600" aria-label="Toggle password visibility">
                 <AiOutlineEye size={16} />
             </button>
         ),

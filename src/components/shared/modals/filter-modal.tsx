@@ -39,7 +39,7 @@ export const FilterModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-[#1C1C1D]    p-6 rounded-lg shadow-lg w-96">
+      <div className="bg-white dark:bg-primary-dark    p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-xl font-bold mb-4 dark:text-white">Filter</h2>
         {filterFields.map((field) => (
           <div key={field.key} className="mb-4">
@@ -66,9 +66,9 @@ export const FilterModal = ({
                         )
                       }
                       className={`h-4 w-4 ${field.type === "checkbox"
-                          ? "rounded text-primary focus:ring-primary"
-                          : "text-primary focus:ring-primary"
-                        } border-gray-300 dark:border-gray-600 dark:bg-[#1C1C1D]   `}
+                        ? "rounded text-primary focus:ring-primary"
+                        : "text-primary focus:ring-primary"
+                        } border-gray-300 dark:border-gray-600 dark:bg-primary-dark   `}
                     />
                     <label
                       htmlFor={`${field.key}-${option.value}`}
@@ -85,7 +85,7 @@ export const FilterModal = ({
                 onChange={(e) =>
                   handleFilterChange(field.key, e.target.value, true)
                 }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm text-gray-700 dark:text-gray-300 dark:bg-[#1C1C1D]   "
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm text-gray-700 dark:text-gray-300 dark:bg-primary-dark   "
               >
                 <option value="">All</option>
                 {field.options.map((option) => (

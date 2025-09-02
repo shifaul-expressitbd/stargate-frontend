@@ -41,24 +41,29 @@ export const CustomSeparator: Story = {
     },
 };
 
-export const DifferentRoutes: React.ComponentType = () => (
-    <div className="space-y-8 p-6">
-        <div>
-            <h4 className="font-medium mb-4">Dashboard → Users → Profile</h4>
-            <Breadcrumb />
-        </div>
+export const DifferentRoutes: Story = {
+    render: () => (
+        <div className="space-y-8 p-6">
+            <div>
+                <h4 className="font-medium mb-4">Dashboard → Users → Profile</h4>
+                <Breadcrumb />
+            </div>
 
-        <div>
-            <h4 className="font-medium mb-4">Products → Electronics → Smartphones</h4>
-            <Breadcrumb />
-        </div>
+            <div>
+                <h4 className="font-medium mb-4">Products → Electronics → Smartphones</h4>
+                <Breadcrumb />
+            </div>
 
-        <div>
-            <h4 className="font-medium mb-4">Settings → Account → Security</h4>
-            <Breadcrumb />
+            <div>
+                <h4 className="font-medium mb-4">Settings → Account → Security</h4>
+                <Breadcrumb />
+            </div>
         </div>
-    </div>
-);
+    ),
+    parameters: {
+        initialEntries: [],
+    },
+};
 
 export const WithStyling: Story = {
     args: {

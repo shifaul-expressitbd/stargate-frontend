@@ -20,6 +20,7 @@ export const Checkbox = ({ id, label, checked, onChange, disabled, error, classN
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
         disabled={disabled}
+        aria-label={label ? undefined : `Checkbox for ${id.replace('-', ' ')}`}
         className={twMerge(
           "h-4 w-4 rounded border focus:ring-2 focus:ring-offset-0",
           error

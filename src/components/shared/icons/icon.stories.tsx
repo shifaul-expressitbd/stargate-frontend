@@ -49,7 +49,7 @@ export const Colors: React.ComponentType = () => (
     <div className="flex items-center gap-6">
         <div className="text-center">
             <p className="text-sm text-gray-600 mb-2">Primary</p>
-            <Icon icon={FiHeart} size={32} color="#ea580c" />
+            <Icon icon={FiHeart} size={32} color="var(--color-primary)" />
         </div>
         <div className="text-center">
             <p className="text-sm text-gray-600 mb-2">Blue</p>
@@ -98,7 +98,7 @@ export const WithCustomClass: Story = {
 
 export const IconGrid: React.ComponentType = () => {
     const icons = [FiHeart, FiStar, FiUser, FiSettings, FaBeer];
-    const colors = ["#ea580c", "#fbbf24", "#06b6d4", "#6366f1", "#8b5cf6"];
+    const colors = ["var(--color-primary)", "#fbbf24", "#06b6d4", "#6366f1", "#8b5cf6"];
 
     return (
         <div className="grid grid-cols-5 gap-4 p-6 max-w-md">

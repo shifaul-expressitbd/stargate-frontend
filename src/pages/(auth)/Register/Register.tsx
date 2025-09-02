@@ -300,7 +300,7 @@ const Register = () => {
               whileHover={{ scale: [0.98, 1] }}
               type='submit'
               disabled={loading}
-              className='w-full flex items-center justify-center bg-primary hover:bg-secondary text-white font-semibold py-2 rounded-lg transition-all cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed'
+              className='w-full flex items-center justify-center bg-primary hover:bg-secondary text-gray-900 hover:text-white font-semibold py-2 rounded-lg transition-all cursor-pointer disabled:text-gray-900 disabled:opacity-70 disabled:cursor-not-allowed'
             >
               {loading ? (
                 <>

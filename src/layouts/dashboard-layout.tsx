@@ -69,7 +69,7 @@ export const DashboardLayout = () => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-30 transition-all duration-300 ease-in-out
+          inset-y-0 left-0 z-30 transition-all duration-300 ease-in-out
           ${isSidebarOpen ? (isMobile ? '' : (isTablet ? 'fixed top-0 bottom-0 w-3/4 translate-x-0 z-50' : isCollapsed ? 'w-20' : 'w-64')) : 'hidden'}
         `}
       >

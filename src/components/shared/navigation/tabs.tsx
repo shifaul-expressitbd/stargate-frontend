@@ -76,7 +76,7 @@ const TabsList = React.memo(({ children, className }: TabsListProps) => {
     <div
       role="tablist"
       className={twMerge(
-        'inline-flex h-12 items-center justify-start rounded bg-white dark:bg-[#1C1C1D]',
+        'inline-flex h-12 items-center justify-start rounded bg-white dark:bg-primary-dark',
         'border border-gray-200 dark:border-gray-700 shadow-sm',
         className
       )}
@@ -130,7 +130,7 @@ const TabsTrigger = React.memo(
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2',
           'disabled:pointer-events-none disabled:opacity-50',
           isActive
-            ? 'text-primary dark:text-secondary'
+            ? 'text-gray-900 dark:text-white'
             : 'text-gray-600 dark:text-white hover:text-gray-900 dark:hover:text-gray-200',
           className
         )}

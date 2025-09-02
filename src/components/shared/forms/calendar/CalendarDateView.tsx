@@ -99,14 +99,14 @@ export const CalendarDateView: React.FC<CalendarDateViewProps> = ({
         isSelected && !isRangeStart && !isRangeEnd
           ? error
             ? 'bg-red-600 text-white'
-            : 'bg-primary text-white'
+            : 'bg-primary text-gray-900 hover:text-white'
           : isInRange
-          ? error
-            ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200'
-            : 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200'
-          : 'hover:bg-gray-100 dark:hover:bg-gray-700',
-        isRangeStart && 'bg-primary text-white',
-        isRangeEnd && 'bg-primary text-white',
+            ? error
+              ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200'
+              : 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200'
+            : 'hover:bg-gray-100 dark:hover:bg-gray-700',
+        isRangeStart && 'bg-primary text-gray-900 hover:text-white',
+        isRangeEnd && 'bg-primary text-gray-900 hover:text-white',
         isRangeStart && isRangeEnd && 'rounded',
         disabled && 'opacity-50 cursor-not-allowed'
       )

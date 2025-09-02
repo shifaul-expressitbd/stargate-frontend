@@ -49,7 +49,7 @@ export const ActionBtn: React.FC<ActionBtnProps> = ({
   const variantClasses = {
     ghost: 'hover:bg-gray-100/50 dark:hover:bg-gray-700/50',
     solid:
-      'bg-gray-100 dark:bg-[#1C1C1D]    hover:bg-gray-200 dark:hover:bg-gray-600',
+      'bg-gray-100 dark:bg-primary-dark    hover:bg-gray-200 dark:hover:bg-gray-600',
     outline:
       'border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700',
   }

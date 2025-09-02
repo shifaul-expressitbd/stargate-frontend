@@ -21,7 +21,7 @@ export const AccordionTrigger = ({
 }: AccordionTriggerProps) => {
   return (
     <div
-      className="flex justify-between items-center cursor-pointer p-4 bg-gray-100 dark:bg-[#1C1C1D]    rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+      className="flex justify-between items-center cursor-pointer p-4 bg-gray-100 dark:bg-primary-dark    rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
       onClick={onClick}
     >
       {children}
@@ -39,11 +39,10 @@ export const AccordionContent = ({
 }: AccordionContentProps) => {
   return (
     <div
-      className={`overflow-hidden transition-all duration-200 ${
-        isOpen ? "max-h-96" : "max-h-0"
-      }`}
+      className={`overflow-hidden transition-all duration-200 ${isOpen ? "max-h-96" : "max-h-0"
+        }`}
     >
-      <div className="p-4 bg-white dark:bg-[#1C1C1D]    rounded-b-lg">
+      <div className="p-4 bg-white dark:bg-primary-dark    rounded-b-lg">
         {children}
       </div>
     </div>

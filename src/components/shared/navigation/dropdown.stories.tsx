@@ -17,7 +17,7 @@ export const Default: Story = {
     render: (args) => (
         <Dropdown {...args}>
             <DropdownTrigger>
-                <button className="px-4 py-2 bg-blue-500 text-white rounded">Click Me</button>
+                <button className="px-4 py-2 bg-blue-700 text-white rounded">Click Me</button>
             </DropdownTrigger>
             <DropdownContent>
                 <div className="p-4">
@@ -38,7 +38,7 @@ export const Open: Story = {
     render: (args) => (
         <Dropdown {...args}>
             <DropdownTrigger>
-                <button className="px-4 py-2 bg-blue-500 text-white rounded">Click Me</button>
+                <button className="px-4 py-2 bg-blue-700 text-white rounded">Click Me</button>
             </DropdownTrigger>
             <DropdownContent>
                 <div className="p-4">
@@ -57,7 +57,7 @@ export const CenterAlign: Story = {
     render: (args) => (
         <Dropdown {...args}>
             <DropdownTrigger>
-                <button className="px-4 py-2 bg-green-500 text-white rounded">Center Dropdown</button>
+                <button className="px-4 py-2 bg-green-700 text-white rounded">Center Dropdown</button>
             </DropdownTrigger>
             <DropdownContent>
                 <div className="p-4">
@@ -75,7 +75,7 @@ export const RightAlign: Story = {
     render: (args) => (
         <Dropdown {...args}>
             <DropdownTrigger>
-                <button className="px-4 py-2 bg-red-500 text-white rounded">Right Dropdown</button>
+                <button className="px-4 py-2 bg-red-700 text-white rounded">Right Dropdown</button>
             </DropdownTrigger>
             <DropdownContent>
                 <div className="p-4">
