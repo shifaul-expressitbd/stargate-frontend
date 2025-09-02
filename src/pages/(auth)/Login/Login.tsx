@@ -1,11 +1,10 @@
 import { Button } from '@/components/shared/buttons/button'
 import { InputField } from '@/components/shared/forms/input-field'
 import { useLoginMutation } from '@/lib/features/auth/authApi'
-import { setSidebar, setUser, type TUser } from '@/lib/features/auth/authSlice'
+import { setSidebar, setUser, type JWTPayload } from '@/lib/features/auth/authSlice'
 import { useAppDispatch } from '@/lib/hooks'
 import TError from '@/types/TError.type'
 import { Validators } from '@/utils/validationUtils'
-import Cookies from 'js-cookie'
 import { jwtDecode } from 'jwt-decode'
 import { motion } from 'motion/react'
 import { useRef, useState } from 'react'
@@ -110,20 +109,44 @@ const Login = () => {
     try {
       const res = await login(formData).unwrap()
       console.log('Login response:', res)
-      Cookies.set('token', res.data.accessToken, {
-        expires: formData.rememberMe ? 7 : undefined,
-        secure: true,
-        sameSite: 'strict',
-      })
 
-      const user = jwtDecode<TUser>(res.data.accessToken)
+      // Validate response data
+      if (!res.data?.accessToken || !res.data?.refreshToken || !res.data?.user) {
+        toast.error('Invalid login response. Please try again.', { duration: 2000 })
+        return
+      }
+
+      // Store tokens securely based on rememberMe preference
+      const storage = formData.rememberMe ? localStorage : sessionStorage
+      try {
+        storage.setItem('accessToken', res.data.accessToken)
+        storage.setItem('refreshToken', res.data.refreshToken)
+      } catch (storageError) {
+        console.error('Error storing tokens:', storageError)
+        toast.error('Unable to save authentication data. Please check your browser settings.', {
+          duration: 3000
+        })
+        return
+      }
+
+      // Decode JWT payload for additional data (roles, expiry, etc.)
+      let jwtPayload: JWTPayload
+      try {
+        jwtPayload = jwtDecode<JWTPayload>(res.data.accessToken)
+      } catch (decodeError) {
+        console.error('Error decoding JWT:', decodeError)
+        toast.error('Authentication token is invalid. Please try again.', { duration: 2000 })
+        return
+      }
+
       // Clear password field
       setFormData((prev) => ({ ...prev, password: '' }))
 
-      // Dispatch user data
+      // Dispatch authenticated user data and JWT payload
       dispatch(
         setUser({
-          user,
+          user: res.data.user, // Use user from API response
+          jwtPayload, // Use decoded JWT payload
           token: res.data.accessToken,
           refreshToken: res.data.refreshToken,
           hasBusiness: res.data.hasBusiness,
@@ -132,14 +155,15 @@ const Login = () => {
         })
       )
 
-      //sound enabled
+      // Enable sound settings
       localStorage.setItem('playSound', '3')
 
       const sidebar = res?.data?.sideBar
       if (!sidebar || (Array.isArray(sidebar) && sidebar?.length === 0)) {
-        // optionally show a toast here
-        // dispatch(logout())
-        return
+        console.warn('Sidebar data missing or empty')
+        // Don't block login for sidebar issues
+      } else {
+        dispatch(setSidebar({ sidebar: res.data.sideBar }))
       }
 
       toast.success('Login successful! Redirecting...', {
@@ -148,34 +172,77 @@ const Login = () => {
       })
 
       // Use replace: true to prevent going back to login page
-      if (user.role === 'developer') {
+      if (jwtPayload.roles?.includes('developer') || jwtPayload.roles?.includes('admin')) {
         navigate(destination, { replace: true })
-      } else if (user.role === 'user') {
+      } else if (jwtPayload.roles?.includes('user')) {
         navigate(res.data.hasBusiness ? destination : '/onboarding', {
           replace: true,
         })
+      } else {
+        // Default to dashboard if roles are unclear
+        navigate(destination, { replace: true })
       }
 
-      dispatch(setSidebar({ sidebar: res.data.sideBar }))
     } catch (error) {
+      console.error('Login error:', error)
       toast.dismiss(toastId)
+
+      // Handle network errors
+      if (!navigator.onLine) {
+        toast.error('No internet connection. Please check your network and try again.', {
+          duration: 3000,
+        })
+        return
+      }
+
       if (error instanceof TError) {
         const errorMessage = error?.data?.message
-        toast.error(errorMessage, { duration: 2000 })
-        if (
-          error.status === 403 &&
-          errorMessage === 'First Verify your Email then login!'
-        ) {
-          navigate('/user/verify-otp')
+        const errorStatus = error.status
+
+        switch (errorStatus) {
+          case 401:
+            toast.error('Invalid credentials. Please check your email and password.', {
+              duration: 2000
+            })
+            break
+          case 403:
+            toast.error(errorMessage || 'Access forbidden. Please verify your account.', {
+              duration: 2000
+            })
+            if (errorMessage === 'First Verify your Email then login!') {
+              navigate('/verify-email')
+            }
+            break
+          case 404:
+            toast.error('Account not found. Please check your email.', { duration: 2000 })
+            break
+          case 429:
+            toast.error('Too many login attempts. Please wait and try again.', {
+              duration: 3000
+            })
+            break
+          case 500:
+          case 502:
+          case 503:
+            toast.error('Server error. Please try again in a few moments.', { duration: 2000 })
+            break
+          default:
+            toast.error(errorMessage || 'Login failed. Please try again.', { duration: 2000 })
         }
-      } else if (
-        typeof error === 'object' &&
-        error !== null &&
-        'data' in error
-      ) {
-        const errorMsg = (error as { data: { message: string } }).data?.message
-        toast.error(errorMsg, {
-          duration: 2000,
+      } else if (error && typeof error === 'object' && 'error' in error) {
+        // Handle RTK Query errors
+        const rtkError = error as { error: string }
+        if (rtkError.error.includes('NetworkError')) {
+          toast.error('Network error. Please check your connection and try again.', {
+            duration: 3000,
+          })
+        } else {
+          toast.error('An unexpected error occurred. Please try again.', { duration: 2000 })
+        }
+      } else {
+        // Generic error handling
+        toast.error('Unable to login. Please try again or contact support if the problem persists.', {
+          duration: 3000,
         })
       }
     } finally {

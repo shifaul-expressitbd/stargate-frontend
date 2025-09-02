@@ -8,6 +8,57 @@ interface Star {
     size: number;
 }
 
+interface SpiralPattern {
+    centerX: number;
+    centerY: number;
+    initialRadius: number;
+    spiralRate: number;
+    inwardsSpeed: number;
+}
+
+interface ZigzagPattern {
+    amplitude: number;
+    frequency: number;
+    startX: number;
+    endX: number;
+    startY: number;
+}
+
+interface OrbitalPattern {
+    centerX: number;
+    centerY: number;
+    radiusX: number;
+    radiusY: number;
+    orbitalSpeed: number;
+}
+
+interface LoopPattern {
+    centerX: number;
+    centerY: number;
+    radius: number;
+    loopSpeed: number;
+}
+
+interface DivePattern {
+    startHeight: number;
+    diveDepth: number;
+    width: number;
+    diveSpeed: number;
+}
+
+interface DriftPoint {
+    x: number;
+    y: number;
+}
+
+interface DriftPattern {
+    numPoints: number;
+    points: DriftPoint[];
+    driftSpeed: number;
+}
+
+type PatternParams = SpiralPattern | ZigzagPattern | OrbitalPattern | LoopPattern | DivePattern | DriftPattern;
+
 interface SpaceshipState {
     x: number;
     y: number;
@@ -16,7 +67,7 @@ interface SpaceshipState {
     acceleration: { x: number; y: number };
     isActive: boolean;
     patternType: string;
-    patternParams: any;
+    patternParams: PatternParams;
     progress: number;
     totalTime: number;
     portalX: number;
@@ -32,15 +83,23 @@ const BackgroundAnimation = () => {
     const [stars, setStars] = useState<Star[]>([]);
     const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; size: number }>>([]);
     const [largeParticles, setLargeParticles] = useState<Array<{ id: number; x: number; y: number; size: number }>>([]);
+    const [trajectory, setTrajectory] = useState<Array<{ x: number; y: number; opacity: number; id: number }>>([]);
+    const [futureTrajectory, setFutureTrajectory] = useState<Array<{ x: number; y: number }>>([]);
     const [spaceship, setSpaceship] = useState<SpaceshipState>({
         x: 50,
         y: 50,
         rotation: -15,
-        velocity: { x: 2, y: -1 },
+        velocity: { x: 0.8, y: -0.4 },
         acceleration: { x: 0, y: 0 },
         isActive: true,
         patternType: 'spiral',
-        patternParams: {},
+        patternParams: {
+            centerX: 50,
+            centerY: 50,
+            initialRadius: 30,
+            spiralRate: 1,
+            inwardsSpeed: 1
+        },
         progress: 0,
         totalTime: 8,
         portalX: 50,
@@ -50,110 +109,150 @@ const BackgroundAnimation = () => {
         exitPortalX: 50,
         exitPortalY: 50,
     });
-    const [currentPortalPos, setCurrentPortalPos] = useState({ x: 50, y: 50 });
     const animationFrameRef = useRef<number | null>(null);
     const lastTimeRef = useRef<number>(0);
 
     // Generate procedural trajectory patterns
-    const generatePattern = () => {
+    const generatePattern = (): { patternType: string; params: PatternParams; startX: number; startY: number } => {
         const patterns = ['spiral', 'zigzag', 'orbital', 'loop', 'dive', 'drift'];
         const patternType = patterns[Math.floor(Math.random() * patterns.length)];
-        const params: any = {};
 
         const startX = Math.random() * 100 - 10; // Start slightly off-screen
         const startY = Math.random() * 100 - 10;
 
+        let params: PatternParams;
+
         switch (patternType) {
-            case 'spiral':
-                params.centerX = Math.random() * 100;
-                params.centerY = Math.random() * 100;
-                params.initialRadius = Math.random() * 20 + 30;
-                params.spiralRate = Math.random() * 2 + 1;
-                params.inwardsSpeed = Math.random() * 2 + 1;
+            case 'spiral': {
+                params = {
+                    centerX: Math.random() * 100,
+                    centerY: Math.random() * 100,
+                    initialRadius: Math.random() * 20 + 30,
+                    spiralRate: Math.random() * 2 + 1,
+                    inwardsSpeed: Math.random() * 2 + 1
+                };
                 break;
-            case 'zigzag':
-                params.amplitude = Math.random() * 30 + 10;
-                params.frequency = Math.random() * 4 + 2;
-                params.startX = startX;
-                params.endX = Math.random() * 100 + 20;
+            }
+            case 'zigzag': {
+                params = {
+                    amplitude: Math.random() * 30 + 10,
+                    frequency: Math.random() * 4 + 2,
+                    startX: startX,
+                    startY: startY,
+                    endX: Math.random() * 100 + 20
+                };
                 break;
-            case 'orbital':
-                params.centerX = Math.random() * 100;
-                params.centerY = Math.random() * 100;
-                params.radiusX = Math.random() * 40 + 20;
-                params.radiusY = Math.random() * 40 + 20;
-                params.orbitalSpeed = Math.random() * 4 + 2;
+            }
+            case 'orbital': {
+                params = {
+                    centerX: Math.random() * 100,
+                    centerY: Math.random() * 100,
+                    radiusX: Math.random() * 40 + 20,
+                    radiusY: Math.random() * 40 + 20,
+                    orbitalSpeed: Math.random() * 4 + 2
+                };
                 break;
-            case 'loop':
-                params.centerX = Math.random() * 100;
-                params.centerY = Math.random() * 100;
-                params.radius = Math.random() * 25 + 15;
-                params.loopSpeed = Math.random() * 3 + 1;
+            }
+            case 'loop': {
+                params = {
+                    centerX: Math.random() * 100,
+                    centerY: Math.random() * 100,
+                    radius: Math.random() * 25 + 15,
+                    loopSpeed: Math.random() * 3 + 1
+                };
                 break;
-            case 'dive':
-                params.startHeight = startY;
-                params.diveDepth = Math.random() * 80 + 20;
-                params.width = Math.random() * 80 + 40;
-                params.diveSpeed = Math.random() * 2 + 1;
+            }
+            case 'dive': {
+                params = {
+                    startHeight: startY,
+                    diveDepth: Math.random() * 80 + 20,
+                    width: Math.random() * 80 + 40,
+                    diveSpeed: Math.random() * 2 + 1
+                };
                 break;
-            case 'drift':
-                params.numPoints = Math.floor(Math.random() * 3) + 4;
-                params.points = [];
-                for (let i = 0; i < params.numPoints; i++) {
-                    params.points.push({ x: Math.random() * 100, y: Math.random() * 100 });
+            }
+            case 'drift': {
+                params = {
+                    numPoints: Math.floor(Math.random() * 3) + 4,
+                    points: [],
+                    driftSpeed: Math.random() * 2 + 1
+                };
+                // Build points array
+                const driftParams = params as DriftPattern;
+                for (let i = 0; i < driftParams.numPoints; i++) {
+                    driftParams.points.push({ x: Math.random() * 100, y: Math.random() * 100 });
                 }
-                params.driftSpeed = Math.random() * 2 + 1;
                 break;
+            }
+            default: {
+                // Fallback - should never reach here
+                params = {
+                    centerX: 50,
+                    centerY: 50,
+                    initialRadius: 30,
+                    spiralRate: 1,
+                    inwardsSpeed: 1
+                };
+            }
         }
 
         return { patternType, params, startX, startY };
     };
 
     // Calculate position for pattern at given progress (0-1)
-    const getPatternPosition = (patternType: string, params: any, progress: number) => {
-        const gravityCenter = { x: 50, y: 50 };
-        const gravityStrength = 0.1;
-
+    const getPatternPosition = (patternType: string, params: PatternParams, progress: number) => {
         switch (patternType) {
-            case 'spiral':
-                const angle = progress * 4 * Math.PI * params.spiralRate;
-                const radius = params.initialRadius - progress * params.initialRadius;
+            case 'spiral': {
+                const spiralParams = params as SpiralPattern;
+                const angle = progress * 4 * Math.PI * spiralParams.spiralRate;
+                const radius = spiralParams.initialRadius - progress * spiralParams.initialRadius;
                 return {
-                    x: params.centerX + Math.cos(angle) * radius,
-                    y: params.centerY + Math.sin(angle) * radius,
+                    x: spiralParams.centerX + Math.cos(angle) * radius,
+                    y: spiralParams.centerY + Math.sin(angle) * radius,
                 };
-            case 'zigzag':
-                const x = params.startX + progress * (params.endX - params.startX);
-                const y = params.startY + Math.sin(progress * params.frequency * Math.PI) * params.amplitude;
+            }
+            case 'zigzag': {
+                const zigzagParams = params as ZigzagPattern;
+                const x = zigzagParams.startX + progress * (zigzagParams.endX - zigzagParams.startX);
+                const y = zigzagParams.startY + Math.sin(progress * zigzagParams.frequency * Math.PI) * zigzagParams.amplitude;
                 return { x, y };
-            case 'orbital':
-                const orbitalAngle = progress * 2 * Math.PI * params.orbitalSpeed;
+            }
+            case 'orbital': {
+                const orbitalParams = params as OrbitalPattern;
+                const orbitalAngle = progress * 2 * Math.PI * orbitalParams.orbitalSpeed;
                 return {
-                    x: params.centerX + Math.cos(orbitalAngle) * params.radiusX,
-                    y: params.centerY + Math.sin(orbitalAngle) * params.radiusY,
+                    x: orbitalParams.centerX + Math.cos(orbitalAngle) * orbitalParams.radiusX,
+                    y: orbitalParams.centerY + Math.sin(orbitalAngle) * orbitalParams.radiusY,
                 };
-            case 'loop':
-                const loopAngle = progress * 4 * Math.PI * params.loopSpeed;
+            }
+            case 'loop': {
+                const loopParams = params as LoopPattern;
+                const loopAngle = progress * 4 * Math.PI * loopParams.loopSpeed;
                 return {
-                    x: params.centerX + Math.cos(loopAngle) * params.radius,
-                    y: params.centerY + Math.sin(loopAngle) * params.radius,
+                    x: loopParams.centerX + Math.cos(loopAngle) * loopParams.radius,
+                    y: loopParams.centerY + Math.sin(loopAngle) * loopParams.radius,
                 };
-            case 'dive':
+            }
+            case 'dive': {
+                const diveParams = params as DivePattern;
                 const diveProgress = 1 - Math.pow(1 - progress, 2);
-                const widthOffset = Math.sin(progress * Math.PI * params.diveSpeed) * params.width / 2;
+                const widthOffset = Math.sin(progress * Math.PI * diveParams.diveSpeed) * diveParams.width / 2;
                 return {
                     x: 50 + widthOffset,
-                    y: params.startHeight + diveProgress * (params.startHeight - params.diveDepth),
+                    y: diveParams.startHeight + diveProgress * (diveParams.startHeight - diveParams.diveDepth),
                 };
-            case 'drift':
-                const segment = Math.floor(progress * (params.points.length - 1));
-                const segmentProgress = (progress * (params.points.length - 1)) % 1;
-                const startPoint = params.points[segment];
-                const endPoint = params.points[Math.min(segment + 1, params.points.length - 1)];
+            }
+            case 'drift': {
+                const driftParams = params as DriftPattern;
+                const segment = Math.floor(progress * (driftParams.points.length - 1));
+                const segmentProgress = (progress * (driftParams.points.length - 1)) % 1;
+                const startPoint = driftParams.points[segment];
+                const endPoint = driftParams.points[Math.min(segment + 1, driftParams.points.length - 1)];
                 return {
                     x: startPoint.x + segmentProgress * (endPoint.x - startPoint.x),
                     y: startPoint.y + segmentProgress * (endPoint.y - startPoint.y),
                 };
+            }
             default:
                 return { x: 50, y: 50 };
         }
@@ -163,15 +262,14 @@ const BackgroundAnimation = () => {
     const applyPhysics = (state: SpaceshipState, targetX: number, targetY: number, deltaTime: number) => {
         const dx = targetX - state.x;
         const dy = targetY - state.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
 
         // Attract to gravity center
         const gravityCenter = { x: 50, y: 50 };
         const gravityForce = { x: (gravityCenter.x - state.x) * 0.0001, y: (gravityCenter.y - state.y) * 0.0001 };
 
         // Update acceleration towards target with physics
-        const acceleration = 0.5;
-        const maxForce = 0.05;
+        const acceleration = 0.2;
+        const maxForce = 0.02;
         const forceX = Math.max(-maxForce, Math.min(maxForce, dx * acceleration));
         const forceY = Math.max(-maxForce, Math.min(maxForce, dy * acceleration));
 
@@ -179,11 +277,11 @@ const BackgroundAnimation = () => {
         state.acceleration.y = forceY + gravityForce.y;
 
         // Update velocity
-        state.velocity.x += state.acceleration.x * deltaTime * 60;
-        state.velocity.y += state.acceleration.y * deltaTime * 60;
+        state.velocity.x += state.acceleration.x * deltaTime * 25;
+        state.velocity.y += state.acceleration.y * deltaTime * 25;
 
         // Adaptive dampening (deceleration)
-        const maxSpeed = 4;
+        const maxSpeed = 1.5;
         const speed = Math.sqrt(state.velocity.x ** 2 + state.velocity.y ** 2);
         if (speed > maxSpeed) {
             state.velocity.x = (state.velocity.x / speed) * maxSpeed;
@@ -196,8 +294,8 @@ const BackgroundAnimation = () => {
         state.velocity.y *= dampening;
 
         // Update position
-        state.x += state.velocity.x * deltaTime * 60;
-        state.y += state.velocity.y * deltaTime * 60;
+        state.x += state.velocity.x * deltaTime * 25;
+        state.y += state.velocity.y * deltaTime * 25;
 
         // Calculate rotation based on velocity
         state.rotation = Math.atan2(state.velocity.y, state.velocity.x) * (180 / Math.PI);
@@ -258,6 +356,22 @@ const BackgroundAnimation = () => {
         setLargeParticles(newLargeParticles);
     }, []);
 
+    // Trajectory fade-out effect
+    useEffect(() => {
+        const fadeInterval = setInterval(() => {
+            setTrajectory(prevTrajectory => {
+                return prevTrajectory
+                    .map(point => ({
+                        ...point,
+                        opacity: Math.max(0, point.opacity - 0.1)
+                    }))
+                    .filter(point => point.opacity > 0.05); // Remove fully faded points
+            });
+        }, 100); // Fade every 100ms
+
+        return () => clearInterval(fadeInterval);
+    }, []);
+
     // Procedural spaceship trajectories with physics and portal coordination
     useEffect(() => {
         const generateTrajectory = () => {
@@ -289,14 +403,11 @@ const BackgroundAnimation = () => {
                 exitPortalY: Math.max(10, Math.min(90, exitPos.y)),
             });
 
-            // Sync portal position
-            setTimeout(() => {
-                const portalPos = getPatternPosition(patternType, params, 0.75);
-                setCurrentPortalPos({
-                    x: Math.max(10, Math.min(90, portalPos.x)),
-                    y: Math.max(10, Math.min(90, portalPos.y))
-                });
-            }, 2500);
+            // Clear trajectory for new pattern
+            setTrajectory([]);
+
+            // Clear future trajectory - will be calculated in animation loop
+            setFutureTrajectory([]);
         };
 
         const animate = (currentTime: number) => {
@@ -318,6 +429,45 @@ const BackgroundAnimation = () => {
                     // Calculate target position and apply physics
                     const targetPos = getPatternPosition(newState.patternType, newState.patternParams, newState.progress);
                     applyPhysics(newState, targetPos.x, targetPos.y, deltaTime);
+
+                    // Add current position to trajectory with fade-out effect
+                    setTrajectory(prevTrajectory => {
+                        let currentId = 0;
+                        if (prevTrajectory.length > 0) {
+                            currentId = Math.max(...prevTrajectory.map(p => p.id)) + 1;
+                        }
+                        const newPoint = { x: newState.x, y: newState.y, opacity: 1.0, id: currentId };
+                        const updatedTrajectory = [...prevTrajectory, newPoint];
+                        // Keep only the last 50 points to avoid performance issues
+                        return updatedTrajectory.length > 50 ? updatedTrajectory.slice(-50) : updatedTrajectory;
+                    });
+
+                    // Calculate future trajectory points ahead of spaceship
+                    setFutureTrajectory(() => {
+                        const futurePoints = [];
+                        const segments = 20; // Number of points ahead
+                        const remainingProgress = 1.0 - newState.progress;
+                        const segmentLength = remainingProgress / segments;
+
+                        if (remainingProgress > 0.01) { // Only show if there's significant progress left
+                            futurePoints.push({
+                                x: newState.x,
+                                y: newState.y
+                            });
+
+                            for (let i = 1; i <= segments; i++) {
+                                const futureProgress = newState.progress + (segmentLength * i);
+                                const clampedProgress = Math.min(futureProgress, 0.99);
+                                const futurePos = getPatternPosition(newState.patternType, newState.patternParams, clampedProgress);
+                                futurePoints.push({
+                                    x: futurePos.x,
+                                    y: futurePos.y
+                                });
+                            }
+                        }
+
+                        return futurePoints;
+                    });
                 }
 
                 return newState;
@@ -387,7 +537,7 @@ const BackgroundAnimation = () => {
             </div>
 
             {/* Enhanced Particle Fonts */}
-            {particles.map((particle, index) => (
+            {particles.map((particle) => (
                 <div
                     key={particle.id}
                     className={`absolute rounded-full animate-floatParticle ${isDark ? 'bg-blue-400/80' : 'bg-primary/60'
@@ -438,9 +588,58 @@ const BackgroundAnimation = () => {
                 />
             ))}
 
-            {/* Enhanced Spaceship with Physics-Based Trajectory */}
+            {/* Trajectory Line */}
+            {trajectory.length > 1 && (
+                <svg
+                    className="absolute inset-0 w-full h-full pointer-events-none"
+                    style={{ zIndex: 5 }}
+                >
+                    <defs>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                            <feMerge>
+                                <feMergeNode in="coloredBlur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    {trajectory.map((point, index) => {
+                        if (index === 0) return null;
+                        const prevPoint = trajectory[index - 1];
+                        return (
+                            <line
+                                key={point.id}
+                                x1={`${prevPoint.x}%`}
+                                y1={`${prevPoint.y}%`}
+                                x2={`${point.x}%`}
+                                y2={`${point.y}%`}
+                                stroke={isDark ? '#6b7280' : '#9ca3af'}
+                                strokeWidth="2"
+                                opacity={point.opacity}
+                                strokeLinecap="round"
+                                filter="url(#glow)"
+                            />
+                        );
+                    })}
+                    {/* Future Trajectory Path */}
+                    {futureTrajectory.length > 1 && (
+                        <path
+                            d={`M ${futureTrajectory.map(point => `${point.x} ${point.y}`).join(' L ')}`}
+                            stroke="#ff0000"
+                            strokeWidth="3"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeDasharray="8,4"
+                            opacity="0.8"
+                        />
+                    )}
+                </svg>
+            )}
+
+            {/* Star Trek USS Enterprise (1701-E) */}
             <div
-                className={`absolute opacity-80 animate-spaceship transform-gpu ${spaceship.isActive ? 'animate-motionBlur' : 'opacity-0'}`}
+                className={`absolute opacity-90 animate-spaceship transform-gpu ${spaceship.isActive ? 'animate-motionBlur' : 'opacity-0'}`}
                 style={{
                     left: `${spaceship.x}%`,
                     top: `${spaceship.y}%`,
@@ -448,87 +647,88 @@ const BackgroundAnimation = () => {
                     transition: spaceship.isActive ? 'transform 0.1s linear' : 'none',
                 }}
             >
-                {/* Advanced Spaceship Design */}
                 <div className="relative transform-gpu" style={{
                     transform: 'translate(-50%, -50%)',
-                    transformOrigin: 'center',
+                    transformOrigin: 'center center',
                 }}>
 
-                    {/* Main Hull */}
-                    <div className={`relative w-20 h-10 transform-gpu ${isDark ? 'bg-gradient-to-r from-gray-700 to-gray-800' : 'bg-gradient-to-r from-gray-800 to-gray-900'
-                        } rounded-lg border shadow-2xl`}>
-                        {/* Cockpit Window */}
-                        <div className="absolute top-1 left-2 w-4 h-3 bg-gradient-to-br from-cyan-400/80 to-blue-500/80 rounded-md border border-white/20">
-                            <div className="w-1 h-1 bg-white rounded-full absolute top-0.5 left-0.5 opacity-70"></div>
+                    {/* SAUCER SECTION (Primary Hull) */}
+                    <div className={`relative transform-gpu ${isDark ? 'bg-gradient-radial from-slate-600 to-slate-800' : 'bg-gradient-radial from-slate-800 to-slate-900'}`}>
+                        {/* Main Saucer Disc */}
+                        <div className="w-32 h-16 border border-gray-600 rounded-t-full"></div>
+
+                        {/* Bridge Tower */}
+                        <div className={`absolute -top-4 left-1/2 transform -translate-x-1/2 w-4 h-6 rounded-full border ${isDark ? 'bg-slate-700 border-gray-500' : 'bg-slate-800 border-gray-600'}`}>
+                            <div className="absolute top-0.5 left-1/2 transform -translate-x-1/2 w-2 h-2 rounded-sm bg-black border">
+                                <div className="w-1 h-1 bg-cyan-400 rounded-full absolute top-0.5 left-0.5 opacity-80 animate-pulse"></div>
+                            </div>
+                            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1 bg-blue-400 rounded-sm opacity-70"></div>
                         </div>
 
-                        {/* Engine Glow */}
-                        <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 w-3 h-3 bg-gradient-to-r from-orange-500 to-red-600 rounded-full shadow-lg shadow-orange-500/60 animate-pulse"></div>
-                        <div className="absolute -left-6 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full blur-sm animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                        {/* Deflector Dish */}
+                        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                            <div className="w-3 h-3 border-2 border-gray-500 rounded-full bg-gradient-to-br from-gray-400 to-gray-600">
+                                <div className="w-1 h-1 bg-cyan-400 rounded-full absolute top-0.5 left-0.5 opacity-90 animate-pulse"></div>
+                            </div>
+                        </div>
 
-                        {/* Details */}
-                        <div className="absolute top-1 right-2 w-2 h-1 bg-red-500/80 rounded-full animate-pulse"></div>
-                        <div className="absolute bottom-1 left-1/3 w-8 h-1 bg-gradient-to-r from-yellow-300 to-green-300 opacity-70"></div>
-
-                        {/* Wings */}
-                        <div className="absolute -top-2 left-0 w-12 h-4 bg-gradient-to-r from-gray-600 to-gray-700 rounded-tl-sm transform rotate-12"></div>
-                        <div className="absolute -bottom-2 left-0 w-12 h-4 bg-gradient-to-r from-gray-600 to-gray-700 rounded-bl-sm transform -rotate-12"></div>
-                        <div className="absolute -top-2 right-0 w-12 h-4 bg-gradient-to-r from-gray-600 to-gray-700 rounded-tr-sm transform -rotate-12"></div>
-                        <div className="absolute -bottom-2 right-0 w-12 h-4 bg-gradient-to-r from-gray-600 to-gray-700 rounded-br-sm transform rotate-12"></div>
+                        {/* Saucer Windows/Details */}
+                        <div className="absolute top-2 left-4 w-1 h-1 bg-cyan-400 rounded-full opacity-70"></div>
+                        <div className="absolute top-2 left-6 w-1 h-1 bg-cyan-400 rounded-full opacity-70"></div>
+                        <div className="absolute top-2 left-20 w-1 h-1 bg-cyan-400 rounded-full opacity-70"></div>
+                        <div className="absolute top-2 left-24 w-1 h-1 bg-cyan-400 rounded-full opacity-70"></div>
+                        <div className="absolute top-4 left-8 w-1.5 h-0.5 bg-cyan-400 rounded-full opacity-60"></div>
+                        <div className="absolute top-4 left-16 w-1.5 h-0.5 bg-cyan-400 rounded-full opacity-60"></div>
                     </div>
 
-                    {/* Enhanced Hyperdrive Trails */}
-                    <div className="absolute -left-20 top-1/4 transform -translate-y-1/2">
-                        <div className={`w-20 h-2 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-90 animate-pulse blur-sm ${spaceship.isActive ? 'animate-floatParticle' : ''
-                            }`}></div>
-                        <div className={`w-16 h-1.5 bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-70 animate-pulse blur-sm ${spaceship.isActive ? 'animate-floatParticle' : ''
-                            }`} style={{ animationDelay: '0.1s' }}></div>
-                        <div className={`w-12 h-1 bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-50 animate-pulse blur-sm ${spaceship.isActive ? 'animate-floatParticle' : ''
-                            }`} style={{ animationDelay: '0.2s' }}></div>
+                    {/* SECONDARY HULL / ENGINEERING SECTION */}
+                    <div className={`absolute top-12 left-1/2 transform -translate-x-1/2 ${isDark ? 'bg-gradient-to-r from-slate-700 to-slate-800' : 'bg-gradient-to-r from-slate-800 to-slate-900'} w-8 h-6 border border-gray-600 rounded-b-md`}>
+                        <div className="w-1 h-1 bg-orange-500 rounded-full absolute top-1 left-1 animate-pulse"></div>
+                        <div className="w-1 h-1 bg-red-500 rounded-full absolute top-1 right-1 animate-pulse"></div>
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3 h-1 bg-gradient-to-r from-yellow-400 to-orange-400 opacity-80"></div>
                     </div>
 
-                    <div className="absolute -right-16 top-3/4 transform -translate-y-1/2">
-                        <div className={`w-16 h-1.5 bg-gradient-to-r from-cyan-400 via-blue-400 to-transparent opacity-80 animate-pulse blur-sm ${spaceship.isActive ? 'animate-floatParticle' : ''
-                            }`}></div>
-                        <div className={`w-12 h-1 bg-gradient-to-r from-blue-400 via-purple-400 to-transparent opacity-60 animate-pulse blur-sm ${spaceship.isActive ? 'animate-floatParticle' : ''
-                            }`} style={{ animationDelay: '0.15s' }}></div>
+                    {/* WARP NACELLE PYLONS */}
+                    {/* Left Pylon */}
+                    <div className={`absolute top-14 -left-8 ${isDark ? 'bg-gradient-to-r from-slate-800 to-slate-900' : 'bg-gradient-to-r from-slate-700 to-slate-800'} w-8 h-2 border border-gray-600 transform rotate-12`}>
+                        <div className="w-1 h-1 bg-orange-500 rounded-full absolute top-0.5 right-0 animate-pulse"></div>
+                    </div>
+                    {/* Right Pylon */}
+                    <div className={`absolute top-14 left-24 ${isDark ? 'bg-gradient-to-r from-slate-800 to-slate-900' : 'bg-gradient-to-r from-slate-700 to-slate-800'} w-8 h-2 border border-gray-600 transform -rotate-12`}>
+                        <div className="w-1 h-1 bg-orange-500 rounded-full absolute top-0.5 left-0 animate-pulse"></div>
                     </div>
 
-                    {/* Engine Exhaust Particles */}
-                    <div className="absolute -left-8 top-1/2 transform -translate-y-1/2">
-                        <div className="w-1 h-1 bg-orange-500 rounded-full animate-ping opacity-80" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-0.5 h-0.5 bg-yellow-400 rounded-full animate-ping opacity-90" style={{ animationDelay: '0.3s' }}></div>
-                        <div className="w-0.5 h-0.5 bg-red-500 rounded-full animate-ping opacity-70" style={{ animationDelay: '0.5s' }}></div>
+                    {/* WARP NACELLES */}
+                    {/* Left Nacelle */}
+                    <div className={`absolute top-10 -left-16 ${isDark ? 'bg-gradient-radial from-blue-600 to-blue-900' : 'bg-gradient-radial from-blue-500 to-blue-800'} w-12 h-3 border border-gray-600 rounded-full`}>
+                        <div className="w-10 h-1.5 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full absolute top-0.75 left-0.75 opacity-90 blur-sm"></div>
+                        <div className="w-8 h-1 bg-gradient-to-r from-blue-300 to-cyan-300 rounded-full absolute top-1 left-1.5 opacity-80 blur-sm"></div>
+                    </div>
+                    {/* Right Nacelle */}
+                    <div className={`absolute top-10 left-20 ${isDark ? 'bg-gradient-radial from-blue-600 to-blue-900' : 'bg-gradient-radial from-blue-500 to-blue-800'} w-12 h-3 border border-gray-600 rounded-full`}>
+                        <div className="w-10 h-1.5 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full absolute top-0.75 left-0.75 opacity-90 blur-sm"></div>
+                        <div className="w-8 h-1 bg-gradient-to-r from-blue-300 to-cyan-300 rounded-full absolute top-1 left-1.5 opacity-80 blur-sm"></div>
                     </div>
 
-                    {/* Random Energy Disruptions */}
-                    <div className={`absolute -left-12 top-0 w-3 h-1 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full opacity-60 ${spaceship.isActive ? 'animate-bounce' : ''
-                        }`} style={{
-                            animationDelay: Math.random() * 3 + 's',
-                            transform: `scale(${0.5 + Math.random() * 1})`,
-                        }}></div>
-
-                    <div className={`absolute -right-8 top-8 w-2 h-1 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full opacity-50 ${spaceship.isActive ? 'animate-spin' : ''
-                        }`} style={{
-                            animationDelay: Math.random() * 4 + 's',
-                            animationDuration: '4s',
-                            transform: `scale(${0.5 + Math.random() * 0.8})`,
-                        }}></div>
+                    {/* WARP FIELD EFFECTS */}
+                    <div className={`absolute top-8 -left-18 w-16 h-1 bg-gradient-to-r from-cyan-400 via-blue-400 to-transparent opacity-60 blur-sm rounded-full ${spaceship.isActive ? 'animate-pulse' : ''}`}></div>
+                    <div className={`absolute top-8 left-14 w-16 h-1 bg-gradient-to-r from-cyan-400 via-blue-400 to-transparent opacity-60 blur-sm rounded-full ${spaceship.isActive ? 'animate-pulse' : ''}`}></div>
+                    <div className={`absolute top-9 -left-18 w-14 h-0.5 bg-gradient-to-r from-blue-400 via-purple-400 to-transparent opacity-50 blur-sm rounded-full ${spaceship.isActive ? 'animate-pulse' : ''} ${spaceship.isActive ? 'animate-floatParticle' : ''}`} style={{ animationDelay: '0.2s' }}></div>
+                    <div className={`absolute top-9 left-16 w-14 h-0.5 bg-gradient-to-r from-blue-400 via-purple-400 to-transparent opacity-50 blur-sm rounded-full ${spaceship.isActive ? 'animate-pulse' : ''} ${spaceship.isActive ? 'animate-floatParticle' : ''}`} style={{ animationDelay: '0.2s' }}></div>
 
                 </div>
 
-                {/* Dynamic Energy Field Around Spaceship */}
-                <div className={`absolute -inset-6 rounded-full border-2 border-cyan-400/20 ${spaceship.isActive ? 'animate-pulse' : 'opacity-0'
-                    }`} style={{
-                        animationDuration: '3s',
-                    }}></div>
+                {/* Warp Drive Bubble/Field */}
+                <div className={`absolute -left-6 -top-4 rounded-full border-2 border-cyan-400/30 ${spaceship.isActive ? 'animate-pulse' : 'opacity-0'}`} style={{
+                    width: '44px',
+                    height: '28px',
+                    animationDuration: '2s',
+                }}></div>
 
-                <div className={`absolute -inset-3 rounded-full border border-blue-500/15 ${spaceship.isActive ? 'animate-pulse' : 'opacity-0'
-                    }`} style={{
-                        animationDelay: '0.5s',
-                        animationDuration: '3.5s',
-                    }}></div>
-
+                <div className={`absolute -inset-2 rounded-full border border-blue-500/20 ${spaceship.isActive ? 'animate-pulse' : 'opacity-0'}`} style={{
+                    animationDelay: '0.5s',
+                    animationDuration: '2.5s',
+                }}></div>
             </div>
 
             {/* Entry Portal Effect */}
@@ -548,10 +748,10 @@ const BackgroundAnimation = () => {
                                 height: '120px',
                                 marginTop: '-60px',
                                 marginLeft: '-60px',
-                                borderColor: isDark ? '#60a5fa' : '#3b82f6',
+                                borderColor: isDark ? '#8b5cf6' : '#7c3aed',
                                 boxShadow: isDark
-                                    ? '0 0 40px rgba(96, 165, 250, 0.9), inset 0 0 20px rgba(96, 165, 250, 0.3)'
-                                    : '0 0 40px rgba(59, 130, 246, 0.9), inset 0 0 20px rgba(59, 130, 246, 0.3)',
+                                    ? '0 0 40px rgba(139, 92, 246, 0.9), inset 0 0 20px rgba(139, 92, 246, 0.3)'
+                                    : '0 0 40px rgba(124, 58, 237, 0.9), inset 0 0 20px rgba(124, 58, 237, 0.3)',
                                 animation: 'portalPulse 2s ease-in-out infinite',
                             }}
                         />
@@ -564,7 +764,7 @@ const BackgroundAnimation = () => {
                                 height: '80px',
                                 marginTop: '-40px',
                                 marginLeft: '-40px',
-                                background: `radial-gradient(circle, transparent 20%, ${isDark ? 'rgba(96,165,250,0.4)' : 'rgba(59,130,246,0.4)'} 50%, transparent 80%)`,
+                                background: `radial-gradient(circle, transparent 20%, ${isDark ? 'rgba(139,92,246,0.4)' : 'rgba(124,58,237,0.4)'} 50%, transparent 80%)`,
                                 filter: 'blur(2px)',
                             }}
                         />
@@ -589,10 +789,10 @@ const BackgroundAnimation = () => {
                                 height: '140px',
                                 marginTop: '-70px',
                                 marginLeft: '-70px',
-                                borderColor: isDark ? '#f97316' : '#ea580c',
+                                borderColor: isDark ? '#fb923c' : '#f59e0b',
                                 boxShadow: isDark
-                                    ? '0 0 50px rgba(249, 115, 22, 1), inset 0 0 30px rgba(249, 115, 22, 0.5)'
-                                    : '0 0 50px rgba(234, 88, 12, 1), inset 0 0 30px rgba(234, 88, 12, 0.5)',
+                                    ? '0 0 50px rgba(251, 146, 60, 1), inset 0 0 30px rgba(251, 146, 60, 0.5)'
+                                    : '0 0 50px rgba(245, 158, 11, 1), inset 0 0 30px rgba(245, 158, 11, 0.5)',
                                 animation: 'portalPulse 1.5s ease-in-out infinite',
                             }}
                         />
@@ -605,7 +805,7 @@ const BackgroundAnimation = () => {
                                 height: '100px',
                                 marginTop: '-50px',
                                 marginLeft: '-50px',
-                                background: `radial-gradient(circle, transparent 15%, ${isDark ? 'rgba(249,115,22,0.5)' : 'rgba(234,88,12,0.5)'} 60%, transparent 85%)`,
+                                background: `radial-gradient(circle, transparent 15%, ${isDark ? 'rgba(251,146,60,0.5)' : 'rgba(245,158,11,0.5)'} 60%, transparent 85%)`,
                                 filter: 'blur(3px)',
                                 animationDelay: '0.5s',
                             }}
@@ -621,7 +821,7 @@ const BackgroundAnimation = () => {
                                     top: `${20 + (i % 4) * 15}%`,
                                     width: `${8 + i * 2}px`,
                                     height: `${8 + i * 2}px`,
-                                    background: `linear-gradient(45deg, transparent, ${isDark ? 'rgba(249,115,22,0.9)' : 'rgba(234,88,12,0.9)'}, transparent)`,
+                                    background: `linear-gradient(45deg, transparent, ${isDark ? 'rgba(234,88,12,0.9)' : 'rgba(220,38,38,0.9)'}, transparent)`,
                                     borderRadius: '50%',
                                     animationDelay: `${i * 0.1}s`,
                                     animationDuration: '2s',

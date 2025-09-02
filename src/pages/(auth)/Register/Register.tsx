@@ -130,7 +130,12 @@ const Register = () => {
     })
 
     try {
-      const { confirmPassword, ...payload } = formData
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        avatar: formData.avatar || undefined
+      }
       console.log('[DEBUG] Sending register API call with:', payload);
       const res = await register(payload).unwrap()
       console.log('[DEBUG] Register API response:', res);
@@ -269,10 +274,10 @@ const Register = () => {
               className="w-full"
             >
               {loading ? (
-                <>
+                <span className='flex items-center justify-center'>
                   <ImSpinner10 className='animate-spin h-5 w-5 mr-2' />
                   Activating Portal...
-                </>
+                </span>
               ) : (
                 'Initialize Portal'
               )}

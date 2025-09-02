@@ -2,6 +2,29 @@ import type { RootState } from "@/lib/store";
 import { createSlice } from "@reduxjs/toolkit";
 
 export type TUser = {
+  id: string;
+  email: string;
+  name: string;
+  avatar: string | null;
+  provider: "local" | "google" | "facebook" | "github" | "LOCAL" | "GOOGLE" | "FACEBOOK" | "GITHUB";
+  isEmailVerified: boolean;
+  isTwoFactorEnabled: boolean;
+};
+
+// Add JWT payload type for decoded token data
+export type JWTPayload = {
+  sub: string;
+  email: string;
+  roles: string[];
+  rememberMe: boolean;
+  iat: number;
+  exp: number;
+  aud: string;
+  iss: string;
+};
+
+// Legacy type for backward compatibility with existing business logic
+export type TUserLegacy = {
   userId: string;
   role: string;
   iat: number;
@@ -30,7 +53,9 @@ export type MenuItem = {
   submenu?: SubMenuItem[];
 };
 
-export type Sidebar = MenuItem[][];
+export type SidebarType = MenuItem[][];
+// Re-export for backward compatibility
+export type Sidebar = SidebarType;
 
 export type DashboardDesign = {
   best_selling_products_report: boolean;
@@ -52,22 +77,24 @@ export type DashboardDesign = {
 
 type TAuthState = {
   user: null | TUser;
+  jwtPayload: null | JWTPayload;
   token: null | string;
   refreshToken: null | string;
   hasBusiness: null | boolean;
   userProfile?:
-    | {
-        public_id: string | null;
-        optimizeUrl: string | null;
-        secure_url: string | null;
-      }
-    | undefined;
+  | {
+    public_id: string | null;
+    optimizeUrl: string | null;
+    secure_url: string | null;
+  }
+  | undefined;
   sidebar: Sidebar;
   dashboardDesign: DashboardDesign;
 };
 
 const initialState: TAuthState = {
   user: null,
+  jwtPayload: null,
   token: null,
   refreshToken: null,
   hasBusiness: null,
@@ -101,8 +128,9 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action) => {
-      const { user, token, refreshToken, hasBusiness, userProfile, dashboardDesign } = action.payload;
+      const { user, jwtPayload, token, refreshToken, hasBusiness, userProfile, dashboardDesign } = action.payload;
       state.user = user;
+      state.jwtPayload = jwtPayload;
       state.token = token;
       state.refreshToken = refreshToken;
       state.hasBusiness = hasBusiness;
@@ -115,6 +143,7 @@ const authSlice = createSlice({
 
     logout: (state) => {
       state.user = initialState.user;
+      state.jwtPayload = initialState.jwtPayload;
       state.token = initialState.token;
       state.refreshToken = initialState.refreshToken;
       state.hasBusiness = initialState.hasBusiness;
@@ -122,10 +151,15 @@ const authSlice = createSlice({
       state.dashboardDesign = initialState.dashboardDesign;
       state.userProfile = initialState.userProfile;
 
-      // Clear storages
-      localStorage.clear();
-      sessionStorage.clear();
+      // Clear authentication tokens from storage
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      sessionStorage.removeItem('accessToken');
+      sessionStorage.removeItem('refreshToken');
+
+      // Clear additional storages
       localStorage.removeItem("persist:root");
+      localStorage.removeItem("playSound");
 
       // Clear cookies
       document.cookie.split(";").forEach((cookie) => {
@@ -156,6 +190,8 @@ const authSlice = createSlice({
           });
         });
       }
+
+      console.info('User logged out successfully');
     },
   },
 });
@@ -174,9 +210,9 @@ export const selectDashboardDesign = (state: RootState) => state.auth.dashboardD
 export const selectSidebar = (state: RootState) => state.auth.sidebar;
 
 export const selectSubscriptionExpired = (state: RootState) => {
-  const user = state.auth.user;
-  if (!user || !user.expiry_date) return false;
-  const expiryDate = new Date(user.expiry_date).getTime();
+  const jwtPayload = state.auth.jwtPayload;
+  if (!jwtPayload || !jwtPayload.exp) return false;
+  const expiryTime = jwtPayload.exp * 1000; // Convert to milliseconds
   const now = Date.now();
-  return now > expiryDate;
+  return now > expiryTime;
 };

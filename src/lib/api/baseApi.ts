@@ -7,6 +7,7 @@ import type {
 } from "@reduxjs/toolkit/query";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { toast } from "sonner";
+import type { TUser } from "../features/auth/authSlice";
 import { logout, setUser } from "../features/auth/authSlice";
 import { type RootState } from "../store";
 
@@ -30,7 +31,17 @@ const API_URL: string = "http://localhost:5555/api";
 const baseQuery = fetchBaseQuery({
   baseUrl: API_URL || "http://31.97.62.51:5555/api",
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).auth.token;
+    // First try to get token from Redux state
+    let token = (getState() as RootState).auth.token;
+
+    // If no token in state, try to get from storage
+    if (!token) {
+      try {
+        token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+      } catch (error) {
+        console.warn('Error accessing token from storage:', error);
+      }
+    }
 
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
@@ -82,7 +93,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<string | FetchArgs, unknown, FetchB
           const response = refreshResult.data as {
             accessToken: string;
             refreshToken: string;
-            user: any;
+            user: TUser;
           };
           api.dispatch(
             setUser({

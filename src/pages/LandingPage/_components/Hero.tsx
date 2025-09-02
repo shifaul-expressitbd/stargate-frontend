@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/shared/buttons/button';
 import { Heading } from '../../../components/shared/typography/heading';
 import { Paragraph } from '../../../components/shared/typography/paragraph';
@@ -19,6 +20,7 @@ const styles = `
 const HologramStyle = () => <style dangerouslySetInnerHTML={{ __html: styles }} />;
 
 const Hero = () => {
+    const navigate = useNavigate();
     return (
         <>
             <HologramStyle />
@@ -47,6 +49,7 @@ const Hero = () => {
                             size="lg"
                             title="Get Started Free"
                             className="text-lg px-10 py-5 font-bold shadow-xl"
+                            onClick={() => navigate('/register')}
                         >
                             Activate Portal
                         </Button>
@@ -62,7 +65,7 @@ const Hero = () => {
                     </div>
                 </div>
 
-            </section>
+            </section >
         </>
     );
 };

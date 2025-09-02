@@ -1,6 +1,6 @@
 import AppLogo from '@/components/app/AppLogo'
 import BackgroundAnimation from '@/pages/LandingPage/_components/BackgroundAnimation'
-import { AnimatePresence, motion } from 'motion/react'
+import { motion } from 'motion/react'
 import { Outlet, useLocation } from 'react-router-dom'
 
 // Hologram effect styles
@@ -28,7 +28,6 @@ const fadeIn = {
 export const AuthLayout = () => {
   const location = useLocation()
   const isRegister = location.pathname === '/register'
-  const isLogin = location.pathname === '/login'
   const isForgotPassword = location.pathname.startsWith('/forgot-password')
 
   const getTitle = () => {
@@ -44,7 +43,7 @@ export const AuthLayout = () => {
   }
 
   return (
-    <AnimatePresence>
+    <>
       <HologramStyle />
       <BackgroundAnimation />
       <div className='min-h-screen w-full flex relative bg-black'>
@@ -91,6 +90,6 @@ export const AuthLayout = () => {
         </motion.div>
 
       </div>
-    </AnimatePresence>
+    </>
   )
 }

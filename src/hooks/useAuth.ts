@@ -1,31 +1,21 @@
-import { useSelector } from 'react-redux'
-import {
-  selectCurrentToken,
-  selectCurrentUser,
-  selectIsLoggedIn,
-  selectSidebar,
-  selectSubscriptionExpired,
-  selectUserHasBusiness,
-  selectUserProfile,
-} from '../lib/features/auth/authSlice'
+import { logout, selectCurrentUser, selectIsLoggedIn, selectUserHasBusiness } from '@/lib/features/auth/authSlice';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 
 export const useAuth = () => {
-  const user = {
-    ...useSelector(selectCurrentUser),
-    picture: useSelector(selectUserProfile),
-  }
-  const token = useSelector(selectCurrentToken)
-  const hasBusiness = useSelector(selectUserHasBusiness)
-  const isLoggedIn = useSelector(selectIsLoggedIn)
-  const sidebar = useSelector(selectSidebar)
-  const subscriptionExpired = useSelector(selectSubscriptionExpired)
+  const dispatch = useAppDispatch();
+
+  const isLoggedIn = useAppSelector(selectIsLoggedIn);
+  const user = useAppSelector(selectCurrentUser);
+  const hasBusiness = useAppSelector(selectUserHasBusiness);
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
 
   return {
-    user,
-    token,
-    hasBusiness,
     isLoggedIn,
-    sidebar,
-    subscriptionExpired,
-  }
-}
+    user,
+    hasBusiness,
+    logout: handleLogout,
+  };
+};
