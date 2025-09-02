@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useMediaQuery } from "react-responsive";
 import {
@@ -26,14 +26,45 @@ export const useSidebar = () => {
   const isDesktop = useMediaQuery({ query: "(min-width: 1920px)" });
 
   const [isManualToggle, setIsManualToggle] = useState(false);
+  const modeChangeTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  // Initialize sidebar mode
+  // Initialize sidebar mode with debouncing to prevent oscillations
   useEffect(() => {
     const mode = getSidebarMode({ isMobile, isTablet, isLaptop, isDesktop });
+    console.log("[DEBUG useSidebar] Media queries at change:", {
+      isMobile,
+      isTablet,
+      isLaptop,
+      isDesktop,
+      windowInnerWidth: window?.innerWidth,
+      devicePixelRatio: window?.devicePixelRatio,
+      timestamp: new Date().toISOString(),
+      previousMode: currentMode,
+      newMode: mode,
+    });
     if (currentMode !== mode) {
-      dispatch(setSidebarMode(mode));
+      console.log("[DEBUG useSidebar] Mode change detected:", { from: currentMode, to: mode });
+
+      // Clear any pending update
+      if (modeChangeTimeout.current) {
+        clearTimeout(modeChangeTimeout.current);
+      }
+
+      // Debounce the dispatch by 100ms to prevent rapid oscillations
+      modeChangeTimeout.current = setTimeout(() => {
+        dispatch(setSidebarMode(mode));
+      }, 100);
     }
   }, [isMobile, isTablet, isLaptop, isDesktop, dispatch, currentMode]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (modeChangeTimeout.current) {
+        clearTimeout(modeChangeTimeout.current);
+      }
+    };
+  }, []);
 
   // Handle sidebar state based on device
   useEffect(() => {

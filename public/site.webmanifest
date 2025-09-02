@@ -1,0 +1,34 @@
+{
+  "name": "Stargate: The new dimension of server-side tracking",
+  "short_name": "Stargate",
+  "description": "Stargate is the next-generation server-side tracking platform, designed to help you regain control over your marketing data. Bypass ad blockers, improve page speed, and enhance data quality with our powerful, all-in-one solution.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/images/logo/logo.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/images/logo/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/logo/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

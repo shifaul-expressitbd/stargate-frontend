@@ -18,6 +18,8 @@ import { twMerge } from 'tailwind-merge'
 
 import Image from '@/components/shared/data-display/image'
 import { Tooltip } from '@/components/shared/data-display/tooltip'
+
+import ErrorBoundary from '@/components/ErrorBoundary'
 import {
   isLinkDisabled as checkLinkDisabled,
   shouldShowLabels
@@ -64,6 +66,25 @@ export const Sidebar = ({ handleLogout }: SidebarProps) => {
     currentMode,
     isCollapsed
   });
+
+  // Get sidebar width class for responsive design
+  const getSidebarWidthClass = () => {
+    switch (currentMode) {
+      case 'mobile-overlay':
+        return 'w-80'; // 320px
+      case 'tablet-icon-only':
+        return 'w-16'; // 64px
+      case 'laptop-compact':
+        return 'w-20'; // 80px
+      case 'desktop-full':
+        return 'w-64'; // 256px
+      default:
+        return 'w-64'; // fallback
+    }
+  };
+
+  const sidebarWidthClass = getSidebarWidthClass();
+  console.log(`[DEBUG] Sidebar: currentMode=${currentMode}, widthClass=${sidebarWidthClass}`);
 
   // Check if link should be disabled
   const isDisabled = (path: string | undefined) =>
@@ -119,7 +140,7 @@ export const Sidebar = ({ handleLogout }: SidebarProps) => {
       role="navigation"
       aria-label="Main navigation"
     >
-      {menuItems.map(item => {
+      {menuItems.map((item, index) => {
         if (!item.title) {
           console.log("[DEBUG] Sidebar: Menu item has no title", JSON.stringify(item, null, 2));
         }
@@ -127,13 +148,14 @@ export const Sidebar = ({ handleLogout }: SidebarProps) => {
           console.log("[DEBUG] Sidebar: Menu item has no path and no submenu", JSON.stringify(item, null, 2));
         }
         return (
-          <MenuItem
-            key={item.title || `menu-item-${Math.random()}`}
-            item={item}
-            isDisabled={isDisabled}
-            showLabels={showLabels}
-            isOpen={openMenus.includes(item.title as string)}
-          />
+          <ErrorBoundary key={item.title || `menu-item-${index}`} fallback={<div>Error loading menu item</div>}>
+            <MenuItem
+              item={item}
+              isDisabled={isDisabled}
+              showLabels={showLabels}
+              isOpen={openMenus.includes(item.title as string)}
+            />
+          </ErrorBoundary>
         );
       })}
     </nav>
@@ -174,7 +196,8 @@ export const Sidebar = ({ handleLogout }: SidebarProps) => {
       data-testid="sidebar"
       className={twMerge(
         "min-h-dvh bg-white dark:bg-primary-dark",
-        isMobile ? "fixed inset-y-0 left-0 top-0 w-3/4 z-50" : "relative"
+        currentMode === 'mobile-overlay' ? "fixed inset-y-0 left-0 top-0 z-50" : "relative",
+        sidebarWidthClass
       )}
     >
       <div className="flex flex-col h-full font-plusjakarta text-sm">

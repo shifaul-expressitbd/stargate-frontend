@@ -53,6 +53,7 @@ export type DashboardDesign = {
 type TAuthState = {
   user: null | TUser;
   token: null | string;
+  refreshToken: null | string;
   hasBusiness: null | boolean;
   userProfile?:
     | {
@@ -68,6 +69,7 @@ type TAuthState = {
 const initialState: TAuthState = {
   user: null,
   token: null,
+  refreshToken: null,
   hasBusiness: null,
   userProfile: {
     public_id: null,
@@ -99,9 +101,10 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action) => {
-      const { user, token, hasBusiness, userProfile, dashboardDesign } = action.payload;
+      const { user, token, refreshToken, hasBusiness, userProfile, dashboardDesign } = action.payload;
       state.user = user;
       state.token = token;
+      state.refreshToken = refreshToken;
       state.hasBusiness = hasBusiness;
       state.userProfile = userProfile;
       state.dashboardDesign = dashboardDesign;
@@ -113,6 +116,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = initialState.user;
       state.token = initialState.token;
+      state.refreshToken = initialState.refreshToken;
       state.hasBusiness = initialState.hasBusiness;
       state.sidebar = initialState.sidebar;
       state.dashboardDesign = initialState.dashboardDesign;

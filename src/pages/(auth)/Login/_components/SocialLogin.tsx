@@ -23,7 +23,7 @@ export const SocialLogin = ({ divider = "top" }: SocialLoginButtonsProps) => {
       )}
 
       {/* Social Buttons */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2 px-4">
         <button
           onClick={() => alert("Sign in with Google")}
           className="flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold py-2 rounded-lg transition-all cursor-pointer"

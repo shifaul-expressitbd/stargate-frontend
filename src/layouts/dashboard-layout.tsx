@@ -9,16 +9,17 @@ import { useSidebar } from '@/hooks/useSidebar'
 import { logout } from '@/lib/features/auth/authSlice'
 import { closeSidebar } from '@/lib/features/sidebar/sidebarSlice'
 import { useAppDispatch } from '@/lib/hooks'
+import { getSidebarWidth } from '@/utils/sidebarUtils'
 import { createPortal } from 'react-dom'
 
 
 export const DashboardLayout = () => {
   const { subscriptionExpired } = useAuth()
-  const { isMobile, isTablet, isCollapsed, isSidebarOpen } = useSidebar()
+  const { isMobile, isTablet, isLaptop, isDesktop, isCollapsed, isSidebarOpen } = useSidebar()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
-  const sidebarMargin = (isMobile || (isTablet && !isSidebarOpen)) ? 0 : isCollapsed ? 20 : 64
+  const sidebarMargin = (isMobile || (isTablet && !isSidebarOpen)) ? 0 : getSidebarWidth(isMobile, isTablet, isLaptop, isDesktop, isCollapsed)
 
   // Modal logic for expired subscription
   const [showModal, setShowModal] = useState(false)
@@ -82,7 +83,7 @@ export const DashboardLayout = () => {
       <main
         className={`
           w-full transition-all duration-300 ease-in-out
-          ${isTablet && isSidebarOpen ? 'ml-[25%]' : `ml-${sidebarMargin}`}
+          ml-[${sidebarMargin}px]
           p-2 scrollbar-thin
         `}
       >

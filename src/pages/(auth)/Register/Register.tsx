@@ -9,26 +9,23 @@ import {
   FaEye,
   FaEyeSlash,
   FaLock,
-  FaPhone,
   FaUser
 } from 'react-icons/fa'
 import { ImSpinner10 } from 'react-icons/im'
-import { Link, useNavigate, useOutletContext } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { SocialLogin } from '../Login/_components/SocialLogin'
 
 interface FormData {
   name: string
   email: string
-  phone: string
   password: string
   confirmPassword: string
+  avatar?: string
 }
 
 const Register = () => {
   const navigate = useNavigate()
-  const { setIsHovered } = useOutletContext<{
-    setIsHovered: (value: boolean) => void
-  }>()
 
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -37,9 +34,9 @@ const Register = () => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
-    phone: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    avatar: ''
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -86,7 +83,6 @@ const Register = () => {
     const requiredFields: Array<keyof FormData> = [
       'name',
       'email',
-      'phone',
       'password',
       'confirmPassword'
     ]
@@ -131,7 +127,10 @@ const Register = () => {
     })
 
     try {
-      const res = await register(formData).unwrap()
+      const { confirmPassword, ...payload } = formData
+      console.log('[DEBUG] Sending register API call with:', payload);
+      const res = await register(payload).unwrap()
+      console.log('[DEBUG] Register API response:', res);
       const successMsg =
         res?.data?.message ||
         'Registration successful! Please verify your email.'
@@ -159,20 +158,20 @@ const Register = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className='flex items-center justify-center'
+      className="w-full max-w-md mx-auto"
     >
-      <div className='w-full md:w-96 bg-white dark:bg-black shadow-md rounded-2xl overflow-hidden space-y-2'>
-        <div className='px-4 pt-4'>
-          <h1 className='text-xl font-bold text-gray-800 dark:text-gray-100'>
-            Create an Account
-          </h1>
-          <p className='text-sm text-gray-600 dark:text-gray-400'>
-            Join us to unlock seamless business management
-          </p>
-        </div>
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl rounded-2xl p-8 border border-gray-200/50 dark:border-gray-700/50">
+        <div className="space-y-6">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Create Account
+            </h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
+              Sign up to start managing your business
+            </p>
+          </div>
 
-        <div className='px-4 space-y-2 text-md py-2'>
-          <form onSubmit={onSubmit} className='space-y-1' noValidate>
+          <form onSubmit={onSubmit} className="space-y-4" noValidate>
             <InputField
               label='Full Name'
               type='text'
@@ -202,39 +201,6 @@ const Register = () => {
               autoComplete='email'
               inputMode='email'
               required
-            />
-
-            <InputField
-              label='Phone Number'
-              type='tel'
-              id='phone'
-              name='phone'
-              placeholder='Enter your phone number'
-              value={formData.phone}
-              onChange={handleChange}
-              error={errors.phone}
-              warning={warnings.phone}
-              icon={FaPhone}
-              autoComplete='tel'
-              required
-              inputMode='numeric' // Shows numeric keyboard on mobile
-              pattern='[0-9]*' // Helps with browser validation
-              maxLength={11} // Limit to 11 digits
-              onKeyDown={e => {
-                // Prevent non-numeric key presses
-                if (
-                  !/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight|Tab/.test(e.key)
-                ) {
-                  e.preventDefault()
-                }
-              }}
-              onPaste={e => {
-                // Validate pasted content
-                const pasteData = e.clipboardData.getData('text')
-                if (!/^\d+$/.test(pasteData)) {
-                  e.preventDefault()
-                }
-              }}
             />
 
             <InputField
@@ -294,13 +260,12 @@ const Register = () => {
             />
 
             <motion.button
-              onHoverStart={() => setIsHovered(true)}
-              onHoverEnd={() => setIsHovered(false)}
               initial={{ scale: 1 }}
               whileHover={{ scale: [0.98, 1] }}
+              transition={{ duration: 0.2 }}
               type='submit'
               disabled={loading}
-              className='w-full flex items-center justify-center bg-primary hover:bg-secondary text-gray-900 hover:text-white font-semibold py-2 rounded-lg transition-all cursor-pointer disabled:text-gray-900 disabled:opacity-70 disabled:cursor-not-allowed'
+              className='w-full flex items-center justify-center bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3 rounded-lg transition-all cursor-pointer hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed'
             >
               {loading ? (
                 <>
@@ -308,22 +273,24 @@ const Register = () => {
                   Registering...
                 </>
               ) : (
-                'Register'
+                'Create Account'
               )}
             </motion.button>
           </form>
-        </div>
 
-        <div className='flex flex-col items-center justify-center w-full border-t border-gray-300 dark:border-gray-600 p-4'>
-          <div className='text-sm text-gray-600 dark:text-gray-400'>
-            Already have an account?
+          <SocialLogin />
+
+          <div className="text-center space-y-2">
+            <p className="text-gray-600 dark:text-gray-400">
+              Already have an account?
+            </p>
+            <Link
+              to='/login'
+              className='text-primary hover:text-secondary transition-colors font-medium'
+            >
+              Sign in instead
+            </Link>
           </div>
-          <Link
-            to='/login'
-            className='text-lg font-semibold text-secondary hover:text-primary transition-colors'
-          >
-            Login
-          </Link>
         </div>
       </div>
     </motion.div>

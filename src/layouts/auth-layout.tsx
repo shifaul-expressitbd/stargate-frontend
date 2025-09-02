@@ -1,41 +1,6 @@
 import AppLogo from '@/components/app/AppLogo'
-import { AnimatePresence, type Easing, motion } from 'motion/react'
-import { useState } from 'react'
-import { Outlet } from 'react-router'
-
-const bubbleVariantsTop = {
-  initial: { scale: 0.8, opacity: 0 },
-  hover: {
-    opacity: 1,
-    scale: 1.2,
-    transition: {
-      duration: 0.8,
-      ease: 'linear' as Easing
-    }
-  },
-  animate: {
-    scale: 1,
-    opacity: 1,
-    transition: { duration: 1, ease: 'easeOut' as Easing }
-  }
-}
-
-const bubbleVariantsBottom = {
-  initial: { scale: 0.5, opacity: 0 },
-  hover: {
-    opacity: 1,
-    scale: 1.2,
-    transition: {
-      duration: 0.8,
-      ease: 'linear' as Easing
-    }
-  },
-  animate: {
-    scale: 1,
-    opacity: 1,
-    transition: { duration: 1, ease: 'easeOut' as Easing }
-  }
-}
+import { AnimatePresence, motion } from 'motion/react'
+import { Outlet, useLocation } from 'react-router-dom'
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -43,64 +8,69 @@ const fadeIn = {
 }
 
 export const AuthLayout = () => {
-  const [isHovered, setIsHovered] = useState(false)
-  // const navigate = useNavigate()
-  // const { user, hasBusiness } = useAuth()
-  // console.log('hasBusiness:', hasBusiness)
-  // if (user?.role === 'developer') {
-  //   navigate('/admin')
-  // } else if (user?.role === 'user' && hasBusiness === false) {
-  //   navigate('/onboarding')
-  // } else if (user?.role === 'user' && hasBusiness === true) {
-  //   navigate('/dashboard')
-  // }
+  const location = useLocation()
+  const isRegister = location.pathname === '/register'
+  const isLogin = location.pathname === '/login'
+  const isForgotPassword = location.pathname.startsWith('/forgot-password')
+
+  const getTitle = () => {
+    if (isRegister) return 'Get Started!'
+    if (isForgotPassword) return 'Reset Password'
+    return 'Welcome Back!'
+  }
+
+  const getSubtitle = () => {
+    if (isRegister) return 'Create your account and join our platform'
+    if (isForgotPassword) return 'Get back into your account'
+    return 'Unlock seamless business management with our powerful platform'
+  }
 
   return (
-    <AnimatePresence>
-      <div className='relative max-w-screen overflow-hidden min-h-dvh flex flex-col items-center justify-center dark:bg-gradient-to-r dark:from-gray-800 dark:via-gray-900 dark:to-gray-800'>
-        <div className='absolute inset-0 z-0 opacity-10 bg-[length:15px_15px] bg-[repeating-linear-gradient(45deg,#444cf7_0,#444cf7_1px,#e5e5f7_0,#e5e5f7_50%)]' />
-        {/* Top Bubble */}
+    <div className='min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900'>
+      {/* Left side - Branding */}
+      <AnimatePresence>
         <motion.div
-          className='absolute -top-16 -left-16 z-0'
-          variants={bubbleVariantsTop}
-          initial='initial'
-          animate={isHovered ? 'hover' : 'animate'}
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          className='hidden lg:flex lg:w-1/2 flex-col justify-center items-center p-12 relative'
         >
-          <div
-            className={`bg-gradient-to-r from-primary to-secondary p-20 md:p-32 rounded-br-[50%] shadow-xl opacity-70
-            }`}
-          />
+          <div className='absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20 dark:from-blue-500/20 dark:to-purple-500/20' />
+          <div className='relative z-10 text-center max-w-md'>
+            <div className='mb-8 flex justify-center'>
+              <AppLogo />
+            </div>
+            <h1 className='text-3xl font-bold text-gray-900 dark:text-white mb-4'>
+              {getTitle()}
+            </h1>
+            <p className='text-lg text-gray-600 dark:text-gray-300 leading-relaxed'>
+              {getSubtitle()}
+            </p>
+          </div>
+          {/* Background decoration */}
+          <div className='absolute top-20 left-10 w-32 h-32 bg-blue-400/10 rounded-full blur-2xl' />
+          <div className='absolute bottom-20 right-10 w-40 h-40 bg-purple-400/10 rounded-full blur-2xl' />
         </motion.div>
+      </AnimatePresence>
 
-        {/* Bottom Bubble */}
-        <motion.div
-          className='absolute -bottom-16 -right-16 z-0'
-          variants={bubbleVariantsBottom}
-          initial='initial'
-          animate={isHovered ? 'hover' : 'animate'}
-        >
-          <div className='bg-gradient-to-r from-primary to-secondary p-20 md:p-32 rounded-tl-[50%] shadow-xl opacity-70' />
-        </motion.div>
-
-        {/* <div className="absolute h-fit top-2 md:top-2 md:right-2 w-fit flex items-center justify-end gap-2 p-2 z-10 rounded-full bg-white dark:bg-black">
-          <ThemeColorPicker />
-          <ThemeToggler />
-        </div> */}
-
+      {/* Right side - Form */}
+      <motion.div
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className='w-full lg:w-1/2 flex items-center justify-center p-6'
+      >
         {/* Main Content */}
-        <div className='container mx-auto md:mx-0 flex flex-col items-center justify-center p-5 my-20 sm:px-6 sm:py-8 lg:py-0 gap-5 sm:gap-10 z-10'>
-          {/* <AuthNavbar /> */}
-          <AppLogo />
+        <div className='w-full max-w-md mx-auto'>
           <motion.div
-            className='bg-transparent w-full'
             variants={fadeIn}
             initial='initial'
             animate='animate'
           >
-            <Outlet context={{ setIsHovered }} />
+            <Outlet />
           </motion.div>
         </div>
-      </div>
-    </AnimatePresence>
+      </motion.div>
+    </div>
   )
 }

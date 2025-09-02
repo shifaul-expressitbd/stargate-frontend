@@ -12,6 +12,9 @@ module.exports = {
         pollinator: 'Pollinator',
         autography: 'Autography',
         airstrip: 'Airstrip',
+        asimovian: ['Asimovian', 'serif'],
+        orbitron: [ 'Orbitron', 'serif'],
+        poppins: ['Poppins', 'sans-serif'],
       },
       colors: {
         primary: {

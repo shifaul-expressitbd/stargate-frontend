@@ -24,10 +24,11 @@ type ErrorResponse = {
 };
 
 // const API_URL: string = '/v2/api'
-const API_URL: string = "http://31.97.62.51/api";
+// const API_URL: string = "http://31.97.62.51:5555/api";
+const API_URL: string = "http://localhost:5555/api";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: API_URL || "http://31.97.62.51/api",
+  baseUrl: API_URL || "http://31.97.62.51:5555/api",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
 
@@ -58,12 +59,20 @@ const baseQueryWithRefreshToken: BaseQueryFn<string | FetchArgs, unknown, FetchB
 
     switch (status) {
       case 401: {
+        const refreshToken = (api.getState() as RootState).auth.refreshToken;
+        if (!refreshToken) {
+          showError("No refresh token available.");
+          api.dispatch(logout());
+          return result;
+        }
         const refreshResult = await baseQuery(
           {
-            url: `${API_URL}/auth/refresh-token`,
-            method: "POST",
+            url: `/auth/refresh?rememberMe=true`,
+            method: "GET",
             credentials: "include",
-            // body: { refreshToken: (api.getState() as RootState).auth.token }
+            headers: {
+              Authorization: `Bearer ${refreshToken}`,
+            },
           },
           api,
           extraOptions
@@ -71,13 +80,15 @@ const baseQueryWithRefreshToken: BaseQueryFn<string | FetchArgs, unknown, FetchB
 
         if (refreshResult.data) {
           const response = refreshResult.data as {
-            token: string;
-            refreshToken?: string;
+            accessToken: string;
+            refreshToken: string;
+            user: any;
           };
           api.dispatch(
             setUser({
-              token: response.token,
+              token: response.accessToken,
               refreshToken: response.refreshToken,
+              user: response.user,
             })
           );
 

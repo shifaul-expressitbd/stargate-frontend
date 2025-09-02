@@ -13,13 +13,13 @@ import { ImSpinner10 } from 'react-icons/im'
 import {
   Link,
   useLocation,
-  useNavigate,
-  useOutletContext,
+  useNavigate
 } from 'react-router-dom'
 import { toast } from 'sonner'
+import { SocialLogin } from './_components/SocialLogin'
 
 interface FormData {
-  credential: string
+  email: string
   password: string
   rememberMe: boolean
 }
@@ -31,11 +31,8 @@ const Login = () => {
   const destination = location.state?.destination || '/dashboard'
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { setIsHovered } = useOutletContext<{
-    setIsHovered: (value: boolean) => void
-  }>()
   const [formData, setFormData] = useState({
-    credential: '',
+    email: '',
     password: '',
     rememberMe: false,
   })
@@ -71,7 +68,7 @@ const Login = () => {
   const handlePasswordToggle = () => setShowPassword(!showPassword)
 
   const validateForm = (): boolean => {
-    const requiredFields: Array<keyof FormData> = ['credential', 'password']
+    const requiredFields: Array<keyof FormData> = ['email', 'password']
     const newErrors: Record<string, string> = {}
     const newWarnings: Record<string, string> = {}
 
@@ -111,15 +108,14 @@ const Login = () => {
 
     try {
       const res = await login(formData).unwrap()
-      // console.log('Login response:', res)
-      // console.log(res.data.hasBusiness)
-      Cookies.set('token', res.data.token, {
+      console.log('Login response:', res)
+      Cookies.set('token', res.data.accessToken, {
         expires: formData.rememberMe ? 7 : undefined,
         secure: true,
         sameSite: 'strict',
       })
 
-      const user = jwtDecode<TUser>(res.data.token)
+      const user = jwtDecode<TUser>(res.data.accessToken)
       // Clear password field
       setFormData((prev) => ({ ...prev, password: '' }))
 
@@ -127,7 +123,8 @@ const Login = () => {
       dispatch(
         setUser({
           user,
-          token: res.data.token,
+          token: res.data.accessToken,
+          refreshToken: res.data.refreshToken,
           hasBusiness: res.data.hasBusiness,
           userProfile: res.data.userProfile,
           dashboardDesign: res.data.dashboardDesign,
@@ -190,33 +187,34 @@ const Login = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="flex items-center justify-center"
+      className="w-full max-w-md mx-auto"
     >
-      <div className="w-full md:w-96 bg-white dark:bg-black shadow-md rounded-2xl overflow-hidden space-y-2">
-        <div className="px-4 pt-4">
-          <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">
-            Welcome!
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Unlock Seamless Business Management
-          </p>
-        </div>
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl rounded-2xl p-8 border border-gray-200/50 dark:border-gray-700/50">
+        <div className="space-y-6">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Sign In
+            </h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
+              Access your account to continue
+            </p>
+          </div>
 
-        <div className="px-4 space-y-2 text-md py-2">
-          <form onSubmit={handleSubmit} className="space-y-2" noValidate>
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <InputField
               required
-              label="Email or Phone"
-              type="text"
-              id="credential"
-              name="credential"
-              placeholder="Enter Your Email or Phone"
-              value={formData.credential}
+              label="Email Address"
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter Your Email"
+              value={formData.email}
               onChange={handleChange}
-              error={errors.credential}
-              warning={warnings.credential}
+              error={errors.email}
+              warning={warnings.email}
               icon={FaUser}
-              autoComplete="credential"
+              autoComplete="email"
+              inputMode="email"
             />
 
             <InputField
@@ -228,9 +226,9 @@ const Login = () => {
               labelRightElement={
                 <Link
                   to="/forgot-password"
-                  className="text-orange-600 hover:text-orange-700 dark:hover:text-primary transition-colors hover:underline"
+                  className="text-orange-600 hover:text-orange-700 dark:text-primary transition-colors hover:underline text-sm"
                 >
-                  Forgot password?
+                  Forgot?
                 </Link>
               }
               autoComplete="current-password"
@@ -260,44 +258,45 @@ const Login = () => {
                 id="rememberMe"
                 checked={formData.rememberMe}
                 onChange={handleChange}
-                className="cursor-pointer"
+                className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary dark:focus:ring-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
               />
               <label
                 htmlFor="rememberMe"
-                className="text-gray-700 dark:text-gray-300 cursor-pointer"
+                className="text-sm text-gray-600 dark:text-gray-400 cursor-pointer"
               >
                 Remember me
               </label>
             </div>
 
             <motion.button
-              onHoverStart={() => setIsHovered(true)}
-              onHoverEnd={() => setIsHovered(false)}
               initial={{ scale: 1 }}
-              whileHover={{ scale: [0.95, 1] }}
+              whileHover={{ scale: [0.98, 1] }}
+              transition={{ duration: 0.2 }}
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center bg-primary hover:bg-secondary text-gray-900 hover:text-white font-semibold py-2 rounded-lg transition-all cursor-pointer disabled:cursor-not-allowed disabled:text-gray-900"
+              className="w-full flex items-center justify-center bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3 rounded-lg transition-all cursor-pointer hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {loading ? (
-                <ImSpinner10 className="animate-spin h-6 w-6" />
+                <ImSpinner10 className="animate-spin h-5 w-5" />
               ) : (
-                'Login'
+                'Sign In'
               )}
             </motion.button>
           </form>
-        </div>
 
-        <div className="flex flex-col items-center justify-center w-full border-t border-gray-300 p-4">
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            {"Don't have an account?"}
+          <SocialLogin />
+
+          <div className="text-center space-y-2">
+            <p className="text-gray-600 dark:text-gray-400">
+              {"Don't have an account?"}
+            </p>
+            <Link
+              to="/register"
+              className="text-primary hover:text-secondary transition-colors font-medium"
+            >
+              Create one now
+            </Link>
           </div>
-          <Link
-            to="/register"
-            className="text-lg font-semibold text-secondary hover:text-primary transition-colors"
-          >
-            Sign up Now
-          </Link>
         </div>
       </div>
     </motion.div>

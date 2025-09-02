@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Urbanist:ital,wght@0,100..900;1,100..900&family=Asimovian&family=Orbitron:wght@400..900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -7,59 +7,6 @@
 body {
   scroll-behavior: smooth;
 }
-
-/* @font-face {
-  font-family: 'Pollinator';
-  src: url('/font/pollinator.woff');
-  font-weight: normal;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Autography';
-  src: url('/font/autography.woff');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'airstrip';
-  src: url('/font/airstrip.woff');
-  font-weight: normal;
-  font-style: normal;
-} */
-/* 
-@font-face {
-  font-family: 'Airstrip';
-  src: url('./assets/fonts/airstrip.woff') format('woff2'),
-    url('./assets/fonts/airstrip.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Pollinator';
-  src: url('./assets/fonts/pollinator.woff2') format('woff2'),
-    url('./assets/fonts/pollinator.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Autography';
-  src: url('./assets/fonts/autography.woff2') format('woff2'),
-    url('./assets/fonts/autography.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Kobiguru';
-  src: url('./assets/fonts/Kobiguru.woff2') format('woff2'),
-    url('./assets/fonts/Kobiguru.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-} */
 
 @font-face {
   font-family: "Airstrip";
@@ -106,6 +53,7 @@ body {
     --color-accent: #ff311f;
     --color-muted: #adb5bd;
   }
+
   .toolbox {
     --color-primary: #ea580c;
     --color-foreground: #f8f8f8;
@@ -246,6 +194,34 @@ body {
     -webkit-text-fill-color: rgb(243 244 246) !important; /* gray-100 */
     -webkit-box-shadow: 0 0 0px 1000px rgb(31 41 55) inset !important; /* gray-800 */
   }
+
+  .text-shadow-hologram {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(255, 255, 255, 0.3);
+  }
+
+  .text-shadow-blue-glow {
+    text-shadow: 0 0 10px rgba(147, 197, 253, 0.5);
+  }
+
+  .text-shadow-white-strong {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.4);
+  }
+
+  .text-shadow-purple-glow {
+    text-shadow: 0 0 10px rgba(147, 51, 234, 0.6);
+  }
+
+  .text-shadow-cyan-glow {
+    text-shadow: 0 0 10px rgba(34, 211, 238, 0.8);
+  }
+
+  .text-shadow-purple-strong-glow {
+    text-shadow: 0 0 10px rgba(147, 51, 234, 0.8);
+  }
+
+  .text-shadow-blue-glow-strong {
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+  }
 }
 
 button,
@@ -337,6 +313,64 @@ input {
   }
 }
 
+/* Sci-Fi Futuristic Fonts */
+.futuristic-text {
+  font-family: "Orbitron", "Airstrip", monospace;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.holographic-heading {
+  font-family: "Asimovian", "Airstrip", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.sci-fi-body {
+  font-family: "Orbitron", "Urbanist", sans-serif;
+  letter-spacing: 0.02em;
+}
+
+/* Enhanced CSS keyframes for sci-fi effects */
+@keyframes hologram-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  15% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.95;
+  }
+  85% {
+    opacity: 1;
+  }
+}
+
+@keyframes energy-pulse {
+  0%,
+  100% {
+    text-shadow: 0 0 10px rgba(147, 197, 253, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 30px rgba(147, 197, 253, 0.8), 0 0 60px rgba(147, 197, 253, 0.4);
+  }
+}
+
+.animate-hologram {
+  animation: hologram-flicker 4s ease-in-out infinite;
+}
+
+.animate-energy-pulse {
+  animation: energy-pulse 3s ease-in-out infinite;
+}
+
 .floating-image {
   display: inline-block;
   animation: float 5s ease-in-out infinite;
@@ -424,6 +458,239 @@ select {
 
 /* end landing page */
 
+@keyframes floatParticle {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.5;
+  }
+  25% {
+    transform: translate(50px, 50px);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-25px, -25px);
+    opacity: 0.5;
+  }
+  75% {
+    /* Portal Rings */
+    transform: translate(-50px, 50px);
+    opacity: 0;
+  }
+}
+
+@keyframes floatLarge {
+  0%,
+  100% {
+    transform: scale(0.8) rotate(0deg);
+    opacity: 0.2;
+  }
+  33% {
+    transform: scale(1.5) rotate(120deg);
+    opacity: 0.6;
+  }
+  66% {
+    transform: scale(1.2) rotate(240deg);
+    opacity: 0.4;
+  }
+}
+
+.animate-floatParticle {
+  animation: floatParticle 8s ease-in-out infinite;
+}
+
+.animate-floatLarge {
+  animation: floatLarge 12s ease-in-out infinite;
+}
+
+@keyframes portalRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-portalRotate {
+  animation: portalRotate 15s linear infinite;
+}
+
+@keyframes spaceship {
+  0% {
+    transform: translate(-50%, -50%) translateX(-200px) translateY(-100px) rotate(-15deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) translateX(-100px) translateY(-50px) rotate(-8deg);
+  }
+  30% {
+    transform: translate(-50%, -50%) translateX(0px) translateY(0px) rotate(0deg);
+  }
+  70% {
+    transform: translate(-50%, -50%) translateX(50px) translateY(20px) rotate(8deg);
+    opacity: 0.8;
+  }
+  90% {
+    transform: translate(-50%, -50%) translateX(150px) translateY(50px) rotate(15deg);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(-50%, -50%) translateX(300px) translateY(150px) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+.animate-spaceship {
+  animation: spaceship 8s ease-in-out infinite;
+}
+
+@keyframes portalPulse {
+  0% {
+    transform: scale(0.8) rotateX(15deg);
+    opacity: 0.9;
+    filter: blur(0px);
+  }
+  50% {
+    transform: scale(1.2) rotateX(15deg);
+    opacity: 0.5;
+    filter: blur(1px);
+  }
+  100% {
+    transform: scale(0.8) rotateX(15deg);
+    opacity: 0.9;
+    filter: blur(0px);
+  }
+}
+
+.animate-portalPulse {
+  animation: portalPulse 3s ease-in-out infinite;
+}
+
+@keyframes motionBlur {
+  0%,
+  100% {
+    filter: blur(0px);
+    transform: scale(1);
+  }
+  50% {
+    filter: blur(2px);
+    transform: scale(1.1);
+  }
+}
+
+.animate-motionBlur {
+  animation: motionBlur 4s ease-in-out infinite;
+}
+
+@keyframes depthField {
+  0%,
+  100% {
+    backdrop-filter: blur(0px);
+    opacity: 0.8;
+  }
+  50% {
+    backdrop-filter: blur(3px);
+    opacity: 0.4;
+  }
+}
+
+.animate-depthField {
+  animation: depthField 6s ease-in-out infinite;
+}
+
+@keyframes parallax1 {
+  0%,
+  100% {
+    transform: translateY(0px) translateX(0px) scale(0.9);
+  }
+  33% {
+    transform: translateY(-20px) translateX(10px) scale(1);
+  }
+  66% {
+    transform: translateY(10px) translateX(-15px) scale(0.95);
+  }
+}
+
+@keyframes parallax2 {
+  0%,
+  100% {
+    transform: translateY(0px) translateX(0px) scale(0.8);
+  }
+  50% {
+    transform: translateY(-30px) translateX(20px) scale(1.1);
+  }
+}
+
+@keyframes parallax3 {
+  0%,
+  100% {
+    transform: translateY(0px) translateX(0px) scale(1.2);
+  }
+  25% {
+    transform: translateY(15px) translateX(-25px) scale(1);
+  }
+  75% {
+    transform: translateY(-15px) translateX(15px) scale(1.3);
+  }
+}
+
+@keyframes particleStorm {
+  0% {
+    transform: translateY(0px) translateX(0px) rotate(0deg) scale(0.8);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translateY(-50px) translateX(30px) rotate(90deg) scale(1.2);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-100px) translateX(60px) rotate(180deg) scale(1);
+    opacity: 0.6;
+  }
+  75% {
+    transform: translateY(-150px) translateX(90px) rotate(270deg) scale(0.9);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-200px) translateX(120px) rotate(360deg) scale(0.7);
+    opacity: 0;
+  }
+}
+
+.animate-particleStorm {
+  animation: particleStorm 10s ease-in-out infinite;
+}
+
+@keyframes energyBurst {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.5) rotate(90deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(2) rotate(180deg);
+    opacity: 0.6;
+  }
+  75% {
+    transform: scale(1.5) rotate(270deg);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.animate-energyBurst {
+  animation: energyBurst 8s ease-out infinite;
+}
+
+/* end landing page */
 @media print {
   .invoice-page {
     box-shadow: none !important;
