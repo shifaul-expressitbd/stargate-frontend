@@ -24,13 +24,10 @@ type ErrorResponse = {
 };
 
 // const API_URL: string = '/v2/api'
-// const API_URL: string = 'http://192.168.0.250:5000/v2/api'
-// const API_URL: string = 'http://192.168.0.250:5001/v2/api'
-const API_URL: string = "https://backend.stargate.app/v2/api";
-// const API_URL: string = 'https://developer.stargate.app/v2/api'
+const API_URL: string = "http://31.97.62.51/api";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: API_URL || "https://backend.stargate.app/v2/api",
+  baseUrl: API_URL || "http://31.97.62.51/api",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
 

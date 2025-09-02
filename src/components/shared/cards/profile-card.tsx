@@ -39,16 +39,16 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
             className="w-full h-full object-cover"
           />
         </div>
-        <h3 className="text-xl font-semibold text-primary dark:text-white">
+        <h3 className="text-xl font-semibold text-blue-800 dark:text-white">
           {name}
         </h3>
-        <p className="text-secondary dark:text-slate-300">{role}</p>
+        <p className="text-gray-800 dark:text-slate-300">{role}</p>
       </div>
 
       {/* Bio */}
       {bio && (
         <div className="px-6 pb-6">
-          <p className="text-gray-700 dark:text-slate-300 text-center">{bio}</p>
+          <p className="text-gray-800 dark:text-slate-300 text-center">{bio}</p>
         </div>
       )}
 
@@ -61,7 +61,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 <div className="text-xl font-bold text-primary dark:text-white">
                   {stat.value}
                 </div>
-                <div className="text-xs text-secondary dark:text-slate-300">
+                <div className="text-xs text-gray-700 dark:text-slate-300">
                   {stat.label}
                 </div>
               </div>
@@ -76,13 +76,16 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
           <div className="flex justify-center space-x-4">
             {socialLinks.map((link, index) => {
               const Icon = link.icon;
+              const platformName = link.href.includes('github') ? 'GitHub' : link.href.includes('linkedin') ? 'LinkedIn' : 'Social Media';
               return (
                 <a
                   key={index}
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-primary dark:hover:text-white"
+                  className="text-gray-700 hover:text-primary dark:hover:text-white"
+                  aria-label={`Visit ${name}'s ${platformName} profile`}
+                  title={`${platformName} profile`}
                 >
                   <Icon className="w-5 h-5" />
                 </a>

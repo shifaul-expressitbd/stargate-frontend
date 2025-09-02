@@ -87,7 +87,7 @@ export const AnalyticsCard: React.FC<AnalyticsCardProps> = ({
               </div>
               {trend && (
                 <div
-                  className={`flex items-center py-1 ${trend.isPositive ? 'text-green-500' : 'text-red-500'
+                  className={`flex items-center py-1 ${trend.isPositive ? 'text-green-700' : 'text-red-700'
                     }`}
                 >
                   {trend.isPositive ? (

@@ -43,7 +43,8 @@ export const WithSettingsGear: Story = {
     args: {
         title: 'User Settings',
         rightElement: (
-            <button className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full">
+            <button className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full"
+                aria-label="Settings">
                 <FaCog className="text-lg" />
             </button>
         ),
@@ -75,7 +76,8 @@ export const WithBreadcrumbAndAction: Story = {
             </nav>
         ),
         rightElement: (
-            <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+            <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                aria-label="Add new item">
                 <FaPlus className="text-lg" />
             </button>
         ),
@@ -99,7 +101,8 @@ export const ComplexLayout: Story = {
         title: 'Team Management',
         leftElement: (
             <div className="flex items-center gap-3">
-                <button className="text-gray-600 hover:text-gray-800 p-1">
+                <button className="text-gray-600 hover:text-gray-800 p-1"
+                    aria-label="Go back">
                     <FaArrowLeft />
                 </button>
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">

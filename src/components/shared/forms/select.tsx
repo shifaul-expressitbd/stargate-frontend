@@ -34,9 +34,9 @@ interface SelectProps {
   dropdownIndicator?: React.ComponentType<{ className?: string }>
   clearAllConfirmation?: string
   noOptionsMessage?:
-    | string
-    | React.ReactNode
-    | ((searchTerm: string) => React.ReactNode)
+  | string
+  | React.ReactNode
+  | ((searchTerm: string) => React.ReactNode)
   searchPlaceholder?: string
   showSelectAll?: boolean
   selectAllLabel?: string
@@ -120,6 +120,7 @@ const Select: React.FC<SelectProps> = ({
   const [actualPlacement, setActualPlacement] = useState(menuPlacement)
   // Track if dropdown height has been measured
   const [dropdownHeight, setDropdownHeight] = useState<number | null>(null)
+
 
   // Memoized filtered and enabled options
   const filteredOptions = useMemo(
@@ -287,13 +288,13 @@ const Select: React.FC<SelectProps> = ({
         // Adjust if dropdown goes beyond screen height
         if (
           position.top +
-            (dropdownRef.current?.offsetHeight || calculateDropdownHeight()) >
+          (dropdownRef.current?.offsetHeight || calculateDropdownHeight()) >
           viewportHeight
         ) {
           position.top = Math.max(
             0,
             viewportHeight -
-              (dropdownRef.current?.offsetHeight || calculateDropdownHeight())
+            (dropdownRef.current?.offsetHeight || calculateDropdownHeight())
           )
         }
         break
@@ -310,13 +311,13 @@ const Select: React.FC<SelectProps> = ({
         // Adjust if dropdown goes beyond screen height
         if (
           position.top +
-            (dropdownRef.current?.offsetHeight || calculateDropdownHeight()) >
+          (dropdownRef.current?.offsetHeight || calculateDropdownHeight()) >
           viewportHeight
         ) {
           position.top = Math.max(
             0,
             viewportHeight -
-              (dropdownRef.current?.offsetHeight || calculateDropdownHeight())
+            (dropdownRef.current?.offsetHeight || calculateDropdownHeight())
           )
         }
         break
@@ -483,14 +484,16 @@ const Select: React.FC<SelectProps> = ({
         {/* Trigger */}
         <div
           id={id}
+          role="button"
           onClick={handleToggle}
-          aria-haspopup="listbox"
+          aria-haspopup="true"
           aria-expanded={isOpen}
           aria-controls={id ? `${id}-dropdown` : undefined}
+          tabIndex={disabled ? -1 : 0}
           className={twMerge(
             'w-full flex items-center p-2 h-10 rounded border bg-white dark:bg-black text-gray-900 dark:text-white',
             'cursor-pointer select-none',
-            'border-gray-300 dark:border-gray-600 hover:border-secondary  dark:hover:border-secondary  focus:outline-none',
+            'border-gray-300 dark:border-gray-600 hover:border-secondary  dark:hover:border-secondary  focus:outline-none focus:ring-2 focus:ring-orange-300',
             isOpen && 'ring-2 ring-orange-200 dark:ring-orange-600',
             error && 'border-red-500',
             disabled && 'opacity-50 cursor-not-allowed',
@@ -552,7 +555,7 @@ const Select: React.FC<SelectProps> = ({
                     if (!isOpen) openDropdown()
                   }}
                   onFocus={openDropdown}
-                  className="flex-1 min-w-[50px] bg-transparent outline-none text-sm placeholder-gray-400"
+                  className="flex-1 min-w-[50px] bg-transparent outline-none text-sm placeholder-gray-700"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
@@ -577,7 +580,13 @@ const Select: React.FC<SelectProps> = ({
             ) : mode === 'single' && value.length > 0 && value[0] ? (
               <span>{value[0].label as string}</span>
             ) : (
-              <span className="text-gray-400">{placeholder}</span>
+              <span
+                className={disabled ? "text-gray-600" : "text-gray-600"}
+                style={disabled ? { color: 'black !important' } : undefined}
+              >
+                {placeholder}
+                {/* Debug: Disabled state uses text-black for 21:1 contrast */}
+              </span>
             )}
           </div>
 

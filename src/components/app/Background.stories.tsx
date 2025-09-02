@@ -91,7 +91,10 @@ const Template: StoryFn<BackgroundProps> = (args: BackgroundProps) => (
                         left: 0,
                         right: 0,
                         fontSize: '0.8rem',
-                        opacity: 0.7
+                        color: '#000',
+                        backgroundColor: 'rgba(255,255,255,0.7)',
+                        padding: '2px 5px',
+                        borderRadius: '3px'
                     }}>
                         Animation: {args.animation} ({args.animationDuration}s)
                     </div>

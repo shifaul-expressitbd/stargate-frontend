@@ -67,14 +67,8 @@ export const DashboardLayout = () => {
   return (
     <div className="relative flex w-full min-h-dvh bg-main dark:bg-black overflow-hidden">
       {/* Sidebar */}
-      <aside
-        className={`
-          inset-y-0 left-0 z-30 transition-all duration-300 ease-in-out
-          ${isSidebarOpen ? (isMobile ? '' : (isTablet ? 'fixed top-0 bottom-0 w-3/4 translate-x-0 z-50' : isCollapsed ? 'w-20' : 'w-64')) : 'hidden'}
-        `}
-      >
-        <Sidebar handleLogout={handleLogout} />
-      </aside>
+
+      <Sidebar handleLogout={handleLogout} />
 
       {/* Backdrop for mobile and tablet */}
       {(isMobile || isTablet) && isSidebarOpen && (

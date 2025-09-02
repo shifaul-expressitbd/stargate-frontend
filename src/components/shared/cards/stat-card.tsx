@@ -86,7 +86,7 @@ export const StatCard: React.FC<StatCardProps> = ({
 
               {trend && (
                 <div
-                  className={`flex items-center self-start md:self-end md:place-self-end ${trend.isPositive ? 'text-green-500' : 'text-red-500'
+                  className={`flex items-center self-start md:self-end md:place-self-end ${trend.isPositive ? 'text-green-700' : 'text-red-700'
                     }`}
                 >
                   {trend.isPositive ? (

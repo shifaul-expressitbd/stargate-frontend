@@ -37,7 +37,7 @@ export const Badge = ({
       'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
     gray: 'bg-gray-100 text-gray-800 dark:bg-primary-dark    dark:text-gray-200',
     orange:
-      'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-300',
+      'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
     golden:
       'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
   }

@@ -123,7 +123,7 @@ export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
                 checked
                   ? error
                     ? "text-red-600 dark:text-red-400"
-                    : "text-primary dark:text-secondary "
+                    : "text-blue-600 dark:text-slate-300 "
                   : "text-gray-500 dark:text-gray-400",
                 disabled && "opacity-50"
               )}

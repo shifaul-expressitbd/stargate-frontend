@@ -29,6 +29,7 @@ interface ModalProps {
   size?: ModalSize
   disableClickOutside?: boolean
   isConfirming?: boolean
+  "aria-label"?: string
 }
 
 const sizeClasses: Record<ModalSize, string> = {
@@ -55,6 +56,7 @@ const Modal: React.FC<ModalProps> = ({
   size = 'md',
   disableClickOutside = false,
   isConfirming = false,
+  "aria-label": ariaLabel,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null)
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null)
@@ -66,10 +68,18 @@ const Modal: React.FC<ModalProps> = ({
     document.body.appendChild(element)
     setPortalElement(element)
 
+    console.log('Modal debugging:', {
+      showHeader,
+      hasTitle: !!title,
+      hasModalTitleElement: !!document.getElementById('modal-title'),
+      ariaLabelledBy: showHeader ? 'modal-title' : undefined,
+      isAriaIssueifiable: showHeader === false && !!title // No header but has title = ARIA violation
+    })
+
     return () => {
       document.body.removeChild(element)
     }
-  }, [])
+  }, [showHeader, title])
 
   // Focus management
   useEffect(() => {
@@ -152,7 +162,8 @@ const Modal: React.FC<ModalProps> = ({
             transition={{ type: 'spring', damping: 25 }}
             role="dialog"
             aria-modal="true"
-            aria-labelledby="modal-title"
+            aria-labelledby={showHeader ? "modal-title" : undefined}
+            aria-label={!showHeader ? ariaLabel : undefined}
             className={twMerge(
               'relative bg-white dark:bg-primary-dark rounded-lg shadow-xl w-full max-h-[90vh] flex flex-col',
               sizeClasses[size],

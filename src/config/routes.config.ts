@@ -102,27 +102,36 @@ export const adminMenuItems: MenuItem[] = [
 
 // Helper function to transform sidebar data from API to MenuItem format
 export const transformSidebarData = (sidebarData: Sidebar): MenuItem[] => {
-  if (!sidebarData || !Array.isArray(sidebarData)) return [];
+  console.log("[DEBUG] transformSidebarData input:", JSON.stringify(sidebarData, null, 2));
+  if (!sidebarData || !Array.isArray(sidebarData)) {
+    console.log("[DEBUG] transformSidebarData: invalid sidebarData, returning empty array");
+    return [];
+  }
 
-  return sidebarData.map((item: MenuItem) => ({
+  const result = sidebarData.map((item: MenuItem) => ({
     title: item.title || "",
     path: item.path,
     icon: typeof item.icon === "string" ? getIconComponent(item.icon) : item.icon,
     element: item.element,
     submenu: item.submenu
       ? item.submenu.map((sub: SubMenuItem) => ({
-        title: sub.title,
-        path: sub.path,
-        icon: typeof sub.icon === "string" ? getIconComponent(sub.icon) : sub.icon,
-        element: sub.element,
-      }))
+          title: sub.title,
+          path: sub.path,
+          icon: typeof sub.icon === "string" ? getIconComponent(sub.icon) : sub.icon,
+          element: sub.element,
+        }))
       : undefined,
   }));
+  console.log("[DEBUG] transformSidebarData output:", JSON.stringify(result, null, 2));
+  return result;
 };
 
 // Helper function to get icon component from string
 const getIconComponent = (iconName?: string): IconType | undefined => {
-  if (!iconName) return undefined;
+  if (!iconName) {
+    console.log("[DEBUG] getIconComponent: no iconName provided");
+    return undefined;
+  }
 
   // Map your icon strings to actual icon components
   const iconMap: Record<string, IconType> = {
@@ -173,20 +182,27 @@ const getIconComponent = (iconName?: string): IconType | undefined => {
     GiGlowingArtifact: GiGlowingArtifact,
   };
 
-  return iconMap[iconName];
+  const icon = iconMap[iconName];
+  if (!icon) {
+    console.log(`[DEBUG] getIconComponent: icon '${iconName}' not found in iconMap`);
+  }
+  return icon;
 };
 
 // Hook to get user menu items
 export const useUserMenuItems = () => {
   const { user, sidebar } = useAuth();
-  // console.log(sidebar)
+  console.log("[DEBUG] useUserMenuItems user:", JSON.stringify(user, null, 2));
+  console.log("[DEBUG] useUserMenuItems sidebar:", JSON.stringify(sidebar, null, 2));
   // ts-error-ignore
   const menuItems = transformSidebarData(sidebar as Array<MenuItem>);
+  console.log("[DEBUG] useUserMenuItems menuItems after transform:", JSON.stringify(menuItems, null, 2));
   if (
     user.owner_id === "682ad002c20c6404b3e2a884" ||
     user.owner_id === "6829ddabc20c6404b3e2a66b" ||
     user.owner_id === "683aef36d77b9d480817af7e"
   ) {
+    console.log("[DEBUG] useUserMenuItems: Applying custom logic for owner_id:", user.owner_id);
     const concatedMenu = [
       ...menuItems.slice(0, 10),
       {
@@ -196,7 +212,9 @@ export const useUserMenuItems = () => {
       },
       ...menuItems.slice(10),
     ];
+    console.log("[DEBUG] useUserMenuItems: Returning concated menu with added item");
     return concatedMenu;
   }
+  console.log("[DEBUG] useUserMenuItems: Returning standard menuItems");
   return menuItems;
 };

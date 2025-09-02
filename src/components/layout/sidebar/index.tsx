@@ -50,11 +50,14 @@ export const Sidebar = ({ handleLogout }: SidebarProps) => {
   } = useSidebar();
 
   const { user } = useAuth();
+  console.log("[DEBUG] Sidebar user:", JSON.stringify(user, null, 2));
   const userMenuItems = useUserMenuItems();
+  console.log("[DEBUG] Sidebar userMenuItems:", JSON.stringify(userMenuItems, null, 2));
   const subscription = useSubscription(user?.warning_date);
   const { isExpired, remainingTime } = subscription;
-  const menuItems: MenuItem[] =
-    user?.role === 'developer' ? adminMenuItems : userMenuItems;
+  const menuItems: MenuItem[] = user?.role === 'developer' ? adminMenuItems : userMenuItems;
+  console.log("[DEBUG] Sidebar final menuItems:", JSON.stringify(menuItems, null, 2));
+  console.log("[DEBUG] Sidebar menuItems length:", menuItems.length);
 
   // Determine if labels should be visible
   const showLabels = shouldShowLabels({
@@ -116,15 +119,23 @@ export const Sidebar = ({ handleLogout }: SidebarProps) => {
       role="navigation"
       aria-label="Main navigation"
     >
-      {menuItems.map(item => (
-        <MenuItem
-          key={item.title}
-          item={item}
-          isDisabled={isDisabled}
-          showLabels={showLabels}
-          isOpen={openMenus.includes(item.title as string)}
-        />
-      ))}
+      {menuItems.map(item => {
+        if (!item.title) {
+          console.log("[DEBUG] Sidebar: Menu item has no title", JSON.stringify(item, null, 2));
+        }
+        if (!item.path && !item.submenu) {
+          console.log("[DEBUG] Sidebar: Menu item has no path and no submenu", JSON.stringify(item, null, 2));
+        }
+        return (
+          <MenuItem
+            key={item.title || `menu-item-${Math.random()}`}
+            item={item}
+            isDisabled={isDisabled}
+            showLabels={showLabels}
+            isOpen={openMenus.includes(item.title as string)}
+          />
+        );
+      })}
     </nav>
   );
 
@@ -151,7 +162,7 @@ export const Sidebar = ({ handleLogout }: SidebarProps) => {
             showLabels ? 'w-5 h-5' : 'w-6 h-6',
             'text-gray-500 dark:text-gray-400 group-hover:text-red-500'
           )} />
-          {showLabels && <span>Sign Out</span>}
+          {showLabels && <span className='text-nowrap'>Sign Out</span>}
         </button>
       </Tooltip>
     </div>
@@ -162,7 +173,7 @@ export const Sidebar = ({ handleLogout }: SidebarProps) => {
       ref={sidebarRef}
       data-testid="sidebar"
       className={twMerge(
-        "h-full bg-white dark:bg-primary-dark",
+        "min-h-dvh bg-white dark:bg-primary-dark",
         isMobile ? "fixed inset-y-0 left-0 top-0 w-3/4 z-50" : "relative"
       )}
     >
@@ -301,7 +312,8 @@ const MenuItem = ({
       className={({ isActive }) => getMenuLinkClasses(isActive, isDisabled(item.path), showLabels)}
       aria-disabled={isDisabled(item.path)}
       tabIndex={isDisabled(item.path) ? -1 : undefined}
-      aria-label={item.title || 'Navigation Item'}
+      aria-label={!showLabels ? (item.title || 'Navigation Item') : undefined}
+      title={item.title}
     >
       {item.icon && (
         <Tooltip content={!showLabels ? (item.title || 'Menu Item') : ''}>
@@ -398,6 +410,7 @@ const SubMenu = ({
               className={({ isActive }) => getSubMenuLinkClasses(isActive, isDisabled(sub.path), showLabels)}
               aria-disabled={isDisabled(sub.path)}
               tabIndex={isDisabled(sub.path) ? -1 : undefined}
+              aria-label={!showLabels ? (sub.title || 'Menu Item') : undefined}
             >
               {showLabels && sub.title}
             </NavLink>
@@ -413,12 +426,12 @@ const getStatusColor = (remainingTime: { unit: string; value: number }) => {
   const { unit, value } = remainingTime;
 
   if ((unit === 'days' && value <= 1) || unit === 'hours' || unit === 'minutes') {
-    return 'text-red-500';
+    return 'text-red-700 dark:text-red-400';
   }
   if (unit === 'days' && value <= 3) {
-    return 'text-yellow-500';
+    return 'text-yellow-700 dark:text-yellow-400';
   }
-  return 'text-green-500';
+  return 'text-green-700 dark:text-green-400';
 };
 
 const getIconClasses = (isDisabled: boolean, showLabels: boolean) =>

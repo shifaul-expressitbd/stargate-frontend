@@ -47,7 +47,7 @@ export const Breadcrumb = ({
           {index < breadcrumbItems.length - 1 ? (
             <Link
               to={item.path}
-              className="text-sm font-medium text-gray-500 dark:text-gray-200 hover:text-gray-700 transition-colors"
+              className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               {item.label}
             </Link>

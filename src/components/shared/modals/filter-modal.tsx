@@ -43,7 +43,7 @@ export const FilterModal = ({
         <h2 className="text-xl font-bold mb-4 dark:text-white">Filter</h2>
         {filterFields.map((field) => (
           <div key={field.key} className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor={`${field.key}-select`} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {field.label}
             </label>
             {field.type === "checkbox" || field.type === "radio" ? (
@@ -81,6 +81,7 @@ export const FilterModal = ({
               </div>
             ) : field.type === "select" ? (
               <select
+                id={`${field.key}-select`}
                 value={filters[field.key]?.[0] || ""}
                 onChange={(e) =>
                   handleFilterChange(field.key, e.target.value, true)

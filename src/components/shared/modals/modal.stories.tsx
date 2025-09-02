@@ -56,6 +56,7 @@ export const NoHeader: Story = {
         onClose: () => console.log('Modal closed'),
         showHeader: false,
         showFooter: false,
+        "aria-label": "No Header Modal",
         children: (
             <div className="p-6 text-center">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
@@ -99,9 +100,9 @@ export const Large: Story = {
         size: 'lg',
         children: (
             <div className="p-4">
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-4">
+                <h2 className="font-semibold text-gray-900 dark:text-white mb-4">
                     Form Content Example
-                </h4>
+                </h2>
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -169,10 +170,16 @@ export const WithFormContent: Story = {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label
+                            htmlFor="user-role-select"
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                        >
                             Role
                         </label>
-                        <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        <select
+                            id="user-role-select"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        >
                             <option>User</option>
                             <option>Admin</option>
                             <option>Manager</option>

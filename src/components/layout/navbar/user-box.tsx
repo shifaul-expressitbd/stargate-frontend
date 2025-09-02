@@ -26,10 +26,10 @@ export const UserBox = () => {
       <Dropdown align="right">
         <DropdownTrigger>
           <div className="flex items-center space-x-2 cursor-pointer">
-            <div className="relative p-2 rounded-full bg-gray-200 hover:bg-gray-100 dark:bg-primary-dark    dark:hover:bg-gray-500 cursor-pointer transition-colors text-primary">
+            <div className="relative p-2 rounded-full bg-gray-200 hover:bg-gray-100 dark:bg-primary-dark    dark:hover:bg-gray-500 cursor-pointer transition-colors text-blue-800">
               <Icon icon={FaUser} size={20} />
             </div>
-            <div className="hidden md:block text-primary">
+            <div className="hidden md:block text-blue-600">
               <h1 className="font-semibold text-nowrap">
                 {(user && user.userId) ? user.userId : "Welcome Guest"}{" "}
                 {/* Display user ID or "Welcome Guest" */}
