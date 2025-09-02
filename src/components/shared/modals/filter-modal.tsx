@@ -87,6 +87,7 @@ export const FilterModal = ({
                   handleFilterChange(field.key, e.target.value, true)
                 }
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm text-gray-700 dark:text-gray-300 dark:bg-primary-dark   "
+                aria-label={field.label}
               >
                 <option value="">All</option>
                 {field.options.map((option) => (

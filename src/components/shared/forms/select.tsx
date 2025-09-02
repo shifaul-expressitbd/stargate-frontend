@@ -484,8 +484,8 @@ const Select: React.FC<SelectProps> = ({
         {/* Trigger */}
         <div
           id={id}
-          role="button"
           onClick={handleToggle}
+          role="combobox"
           aria-haspopup="true"
           aria-expanded={isOpen}
           aria-controls={id ? `${id}-dropdown` : undefined}
