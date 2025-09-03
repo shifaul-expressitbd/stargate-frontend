@@ -24,12 +24,12 @@ type ErrorResponse = {
   status?: number;
 };
 
-// const API_URL: string = '/v2/api'
+const API_URL: string = "/api";
 // const API_URL: string = "http://31.97.62.51:5555/api";
-const API_URL: string = "http://localhost:5555/api";
+// const API_URL: string = "http://localhost:5555/api";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: API_URL || "http://31.97.62.51:5555/api",
+  baseUrl: API_URL,
   prepareHeaders: (headers, { getState }) => {
     // First try to get token from Redux state
     let token = (getState() as RootState).auth.token;
@@ -37,9 +37,9 @@ const baseQuery = fetchBaseQuery({
     // If no token in state, try to get from storage
     if (!token) {
       try {
-        token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+        token = localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken");
       } catch (error) {
-        console.warn('Error accessing token from storage:', error);
+        console.warn("Error accessing token from storage:", error);
       }
     }
 

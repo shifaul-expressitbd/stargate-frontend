@@ -348,7 +348,11 @@ const Login = () => {
               className="w-full"
             >
               {loading ? (
-                <ImSpinner10 className="animate-spin h-5 w-5" />
+                <span className="flex items-center justify-center">
+                  <ImSpinner10 className="animate-spin h-5 w-5" />
+                  'Activating ...'
+                </span>
+
               ) : (
                 'Activate Portal'
               )}

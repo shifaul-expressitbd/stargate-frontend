@@ -1,4 +1,5 @@
-import { useVerifyNewUserMutation } from '@/lib/features/auth/authApi'
+import { Button } from '@/components/shared/buttons/button'
+import { useResendVerificationEmailMutation, useVerifyNewUserMutation } from '@/lib/features/auth/authApi'
 import {
   setSidebar,
   setUser
@@ -8,15 +9,20 @@ import { motion } from 'motion/react'
 import { useEffect, useState } from 'react'
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'
 import { ImSpinner10 } from 'react-icons/im'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
 const VerifyNewUser = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
   const dispatch = useAppDispatch()
+  const [resendVerificationEmail] = useResendVerificationEmailMutation()
   const [verifyNewUser, { isLoading, isSuccess, data, error, isError }] = useVerifyNewUserMutation() as any
   const [verificationTriggered, setVerificationTriggered] = useState(false)
+  const [countdown, setCountdown] = useState(60)
+  const [isDisabled, setIsDisabled] = useState(true)
+  const [resendCount, setResendCount] = useState(0)
 
   // Get token and message from URL
   const token = searchParams.get('token')
@@ -80,6 +86,36 @@ const VerifyNewUser = () => {
     }
   }, [isError, error])
 
+  // Countdown effect
+  useEffect(() => {
+    if (countdown > 0 && isDisabled) {
+      const timer = setInterval(() => setCountdown(prev => prev - 1), 1000)
+      return () => clearInterval(timer)
+    } else if (countdown === 0) {
+      setIsDisabled(false)
+    }
+  }, [countdown, isDisabled])
+
+  // Handle resend
+  const handleResend = async () => {
+    // Get email from navigation state first, fallback to localStorage
+    const email = location.state?.email || localStorage.getItem('verificationEmail')
+    if (!email) {
+      toast.error('No email found. Please register again.')
+      return
+    }
+
+    try {
+      const resendTime = resendCount === 0 ? 60 : 120
+      await resendVerificationEmail(email).unwrap()
+      toast.success('Verification email resent!')
+      setCountdown(resendTime)
+      setIsDisabled(true)
+      setResendCount(prev => prev + 1)
+    } catch (error) {
+      toast.error('Failed to resend email.')
+    }
+  }
 
   // If message param exists and no token, show message to check email
   if (message && !token) {
@@ -101,6 +137,16 @@ const VerifyNewUser = () => {
             <p className="text-blue-100 text-sm">
               Click the link to verify your account and continue.
             </p>
+            <Button
+              title='Resend Verification Email'
+              variant="alien-primary"
+              size="lg"
+              disabled={isDisabled}
+              onClick={handleResend}
+              className="mt-4"
+            >
+              {isDisabled ? `Resend Email (${countdown}s)` : 'Resend Verification Email'}
+            </Button>
           </div>
           {/* Cosmic Background Decorations */}
           <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
@@ -132,7 +178,8 @@ const VerifyNewUser = () => {
             </h1>
             <p className="text-blue-100">Please wait while we confirm your identity</p>
             <Link
-              to='/register?resend=true'
+              to={{ pathname: '/verify-email', search: 'message=true' }}
+              state={{ email: location.state?.email || localStorage.getItem('verificationEmail') }}
               className='text-cyan-300 hover:text-blue-300 font-orbitron text-shadow-cyan-glow hover:underline font-bold transition-all duration-200'
             >
               Didn't receive the email? Click here to resend
@@ -175,9 +222,14 @@ const VerifyNewUser = () => {
     )
   }
 
-  // If error, show error message
+  // If error, show error message with resend option if applicable
   if (isError) {
     const errorMessage = error?.data?.message || 'Invalid or expired verification token'
+    const errorCode = error?.data?.code
+
+    // Check if this is an invalid token error for a potentially existing user
+    const isInvalidTokenForExistingUser = errorCode === 'INVALID_TOKEN' || errorMessage.includes('Invalid or expired verification token')
+
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -192,7 +244,28 @@ const VerifyNewUser = () => {
               Verification Failed
             </h1>
             <p className="text-blue-100">{errorMessage}</p>
-            <p className="text-blue-100 text-sm">Please try again or contact support.</p>
+
+            {isInvalidTokenForExistingUser && (
+              <div className="space-y-3">
+                <p className="text-blue-100 text-sm">
+                  The verification link may have expired or been used. We can send you a new one if your account exists.
+                </p>
+                <Button
+                  title='Resend Verification Email'
+                  variant="alien-primary"
+                  size="lg"
+                  disabled={isDisabled}
+                  onClick={handleResend}
+                  className="mt-4"
+                >
+                  {isDisabled ? `Resend Email (${countdown}s)` : 'Resend Verification Email'}
+                </Button>
+              </div>
+            )}
+
+            {!isInvalidTokenForExistingUser && (
+              <p className="text-blue-100 text-sm">Please try again or contact support.</p>
+            )}
           </div>
           <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-red-500/5 to-purple-500/5 rounded-2xl" />

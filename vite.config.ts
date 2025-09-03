@@ -13,15 +13,10 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     proxy: {
-      "/v2/api": {
-        target: "https://backend.stargate.app",
+      "/api": {
+        target: "http://localhost:5555",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, "/v2/api"),
-      },
-      "/api/pdf": {
-        target: "http://31.97.62.51:4000",
-        changeOrigin: true,
-        // rewrite: (path) => path.replace(/^\/api\/pdf/, '/pdf'),
+        rewrite: (path) => path.replace(/^\/api/, "/api"),
       },
     },
   },

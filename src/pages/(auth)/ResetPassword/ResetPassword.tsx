@@ -1,9 +1,9 @@
 import { Button } from '@/components/shared/buttons/button'
 import { InputField } from '@/components/shared/forms/input-field'
-import { useResetPasswordMutation } from '@/lib/features/auth/authApi'
+import { useForgotPasswordMutation, useResetPasswordMutation } from '@/lib/features/auth/authApi'
 import TError from '@/types/TError.type'
 import { motion } from 'motion/react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FaEye, FaEyeSlash, FaLock } from 'react-icons/fa'
 import { ImSpinner10 } from 'react-icons/im'
 import {
@@ -19,7 +19,6 @@ const ResetPassword = () => {
   const { credential } = location.state || {}
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
-    credential: credential || '',
     newPassword: '',
     confirmPassword: ''
   })
@@ -28,7 +27,39 @@ const ResetPassword = () => {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const lastAttemptRef = useRef(0)
 
+  const searchParams = new URLSearchParams(location.search)
+  const token = searchParams.get('token')
+  const message = searchParams.get('message')
+
+  const [forgotPassword, { isLoading: resendLoading }] = useForgotPasswordMutation()
   const [resetPassword] = useResetPasswordMutation()
+
+  useEffect(() => {
+    if (!token && !message) {
+      toast.error('Invalid reset link. Please request a new password reset.')
+      navigate('/login')
+    }
+  }, [token, message, navigate])
+
+  const handleResend = async () => {
+    if (!credential) {
+      toast.error('Unable to resend. Please try forgot password again.')
+      return
+    }
+
+    try {
+      await forgotPassword(credential.toLowerCase()).unwrap()
+
+      toast.success('Password reset email resent successfully!')
+    } catch (error) {
+      if (error instanceof TError) {
+        const errorMessage = error.message || error?.data?.message || 'Failed to resend email'
+        toast.error(errorMessage)
+      } else {
+        toast.error('Failed to resend email')
+      }
+    }
+  }
 
   const sanitizeInput = (value: string): string => {
     return value.replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -40,8 +71,7 @@ const ResetPassword = () => {
 
     setFormData(prev => ({
       ...prev,
-      [id]: sanitizedValue,
-      credential: credential || ''
+      [id]: sanitizedValue
     }))
     setErrors(prev => ({ ...prev, [id]: '' }))
   }
@@ -55,8 +85,8 @@ const ResetPassword = () => {
 
     if (!formData.newPassword) {
       newErrors.newPassword = 'New password is required'
-    } else if (formData.newPassword.length < 8) {
-      newErrors.newPassword = 'Password must be at least 8 characters'
+    } else if (formData.newPassword.length < 6) {
+      newErrors.newPassword = 'Password must be at least 6 characters'
     }
 
     if (!formData.confirmPassword) {
@@ -82,6 +112,11 @@ const ResetPassword = () => {
 
     if (!validateForm()) return
 
+    if (!token) {
+      toast.error('Invalid reset token.')
+      return
+    }
+
     setLoading(true)
     const toastId = toast.loading('Resetting password...', {
       id: 'verify-pass',
@@ -90,8 +125,8 @@ const ResetPassword = () => {
 
     try {
       await resetPassword({
-        credential: formData.credential?.toLowerCase(),
-        newPassword: formData.newPassword
+        token,
+        password: formData.newPassword
       }).unwrap()
 
       toast.success('Password reset successfully! Redirecting to login...', {
@@ -99,7 +134,7 @@ const ResetPassword = () => {
         duration: 2000
       })
 
-      navigate('/login', { state: { credential: formData.credential } })
+      navigate('/login')
     } catch (error) {
       toast.dismiss(toastId)
       if (error instanceof TError) {
@@ -117,6 +152,63 @@ const ResetPassword = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (message === 'true') {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className='flex items-center justify-center'
+      >
+        <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-cyan-400/30 relative overflow-hidden">
+          <div className="space-y-6">
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-white animate-hologram font-asimovian text-shadow-white-strong tracking-[0.1em] uppercase">
+                Quantum Reset
+              </h1>
+              <p className="mt-2 text-lg text-blue-100 font-orbitron text-shadow-blue-glow">
+                Password reset email sent!
+              </p>
+              <p className="mt-4 text-cyan-200 font-orbitron">
+                Please check your email for instructions on how to reset your password.
+              </p>
+              <div className="mt-6 space-y-4">
+                {credential && (
+                  <Button
+                    variant="alien-secondary"
+                    size="lg"
+                    onClick={handleResend}
+                    disabled={resendLoading}
+                    title="Resend Reset Email"
+                    className="w-full"
+                  >
+                    {resendLoading ? (
+                      <span className='flex items-center justify-center'>
+                        <ImSpinner10 className="animate-spin h-5 w-5 mr-2" />
+                        Sending...
+                      </span>
+                    ) : (
+                      'Resend Reset Email'
+                    )}
+                  </Button>
+                )}
+                <Link
+                  to="/login"
+                  className="block text-center text-cyan-300 hover:text-blue-300 font-orbitron text-shadow-cyan-glow hover:underline font-bold transition-all duration-200"
+                  style={{
+                    textShadow: '0 0 5px rgba(34, 211, 238, 0.5)'
+                  }}
+                >
+                  Re-enter Stargate
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    )
   }
 
   return (

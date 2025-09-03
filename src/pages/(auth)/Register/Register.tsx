@@ -147,7 +147,8 @@ const Register = () => {
         id: toastId,
         duration: 2000
       })
-      navigate('/verify-email?message=true')
+      // localStorage.setItem('verificationEmail', formData.email)
+      navigate('/verify-email?message=true', { state: { email: formData.email } })
     } catch (error) {
       toast.dismiss(toastId)
       if (error instanceof TError) {

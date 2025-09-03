@@ -49,10 +49,10 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
     resetPassword: builder.mutation({
-      query: (data) => ({
+      query: ({ token, password }: { token: string; password: string }) => ({
         url: "/auth/reset-password",
         method: "POST",
-        body: data,
+        body: { token, password },
       }),
     }),
     // Verify user with token (from email link or OTP)
@@ -61,6 +61,13 @@ export const authApi = baseApi.injectEndpoints({
         url: "/auth/verify-email",
         method: "GET",
         params: { token },
+      }),
+    }),
+    resendVerificationEmail: builder.mutation({
+      query: (email: string) => ({
+        url: "/auth/resend-verification-email",
+        method: "POST",
+        body: { email },
       }),
     }),
     verifyForgotPasswordOtp: builder.mutation({
@@ -87,6 +94,7 @@ export const authApi = baseApi.injectEndpoints({
 export const {
   useRegisterMutation,
   useVerifyNewUserMutation,
+  useResendVerificationEmailMutation,
   useVerifyForgotPasswordOtpMutation,
   useVerifyEmailQuery,
   useLoginMutation,

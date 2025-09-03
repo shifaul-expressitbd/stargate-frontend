@@ -86,7 +86,7 @@ const ForgotPassword = () => {
         }
       )
       setTimeout(() => {
-        navigate('/verify-otp', { state: { credential } })
+        navigate('/reset-password?message=true', { state: { credential } })
       }, 1000)
     } catch (error) {
       toast.dismiss(toastId)
@@ -148,10 +148,10 @@ const ForgotPassword = () => {
               className="w-full"
             >
               {loading ? (
-                <>
+                <span className='flex items-center justify-center'>
                   <ImSpinner10 className="animate-spin h-5 w-5 mr-2" />
                   Transmitting...
-                </>
+                </span>
               ) : (
                 'Send Reset Signal'
               )}

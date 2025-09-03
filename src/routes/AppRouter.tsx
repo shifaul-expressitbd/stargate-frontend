@@ -9,7 +9,6 @@ import Login from '@/pages/(auth)/Login/Login'
 import OAuthCallback from '@/pages/(auth)/OAuthCallback/OAuthCallback'
 import Register from '@/pages/(auth)/Register/Register'
 import ResetPassword from '@/pages/(auth)/ResetPassword/ResetPassword'
-import VerifyForgotPasswordOtp from '@/pages/(auth)/VerifyForgotPasswordOtp/VerifyForgotPasswordOtp'
 import VerifyNewUser from '@/pages/(auth)/VerifyNewUser/VerifyNewUser'
 import ClientDashboard from '@/pages/(client)/ClientDashboard'
 import NotFoundPage from '@/pages/NotFoundPage'
@@ -58,7 +57,6 @@ const AppRouter: React.FC = () => {
             }
           />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/verify-otp" element={<VerifyForgotPasswordOtp />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route
             path="/auth/callback"
