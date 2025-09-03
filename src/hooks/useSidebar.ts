@@ -22,6 +22,22 @@ export const useSidebar = () => {
 
   const [isManualToggle, setIsManualToggle] = useState(false);
   const modeChangeTimeout = useRef<NodeJS.Timeout | null>(null);
+  const autoAdjustTimeout = useRef<NodeJS.Timeout | null>(null);
+  const [isManualAdjusting, setIsManualAdjusting] = useState(false);
+  const pendingReset = useRef(false);
+  const lastToggleTime = useRef<number>(0);
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (modeChangeTimeout.current) {
+        clearTimeout(modeChangeTimeout.current);
+      }
+      if (autoAdjustTimeout.current) {
+        clearTimeout(autoAdjustTimeout.current);
+      }
+    };
+  }, []);
 
   // INTERNAL USE ONLY: Media queries for hook logic - NOT returned to prevent re-render cascades
   // These are used for internal sidebar behavior calculation only
@@ -53,21 +69,33 @@ export const useSidebar = () => {
     }
   }, [isMobile, isTablet, isLaptop, isDesktop, dispatch, currentMode]);
 
-  // Cleanup timeout on unmount
+  // Handle sidebar state based on device - optimized with memoized calculation and debounced
   useEffect(() => {
-    return () => {
-      if (modeChangeTimeout.current) {
-        clearTimeout(modeChangeTimeout.current);
+    if (
+      isSidebarOpen !== shouldSidebarBeOpenValue &&
+      !isManualAdjusting &&
+      Date.now() - lastToggleTime.current > 1000
+    ) {
+      // Clear any pending auto-adjust
+      if (autoAdjustTimeout.current) {
+        clearTimeout(autoAdjustTimeout.current);
       }
-    };
-  }, []);
-
-  // Handle sidebar state based on device - optimized with memoized calculation
-  useEffect(() => {
-    if (isSidebarOpen !== shouldSidebarBeOpenValue) {
-      dispatch(shouldSidebarBeOpenValue ? openSidebar() : closeSidebar());
+      // Debounce the dispatch by 100ms to prevent rapid oscillations
+      autoAdjustTimeout.current = setTimeout(() => {
+        dispatch(shouldSidebarBeOpenValue ? openSidebar() : closeSidebar());
+      }, 100);
+    } else if (
+      isSidebarOpen === shouldSidebarBeOpenValue ||
+      isManualAdjusting ||
+      Date.now() - lastToggleTime.current <= 1000
+    ) {
+      // No adjustment needed, clear any pending timeout
+      if (autoAdjustTimeout.current) {
+        clearTimeout(autoAdjustTimeout.current);
+        autoAdjustTimeout.current = null;
+      }
     }
-  }, [shouldSidebarBeOpenValue, isSidebarOpen, dispatch]);
+  }, [shouldSidebarBeOpenValue, isSidebarOpen, dispatch, isManualAdjusting]);
 
   // Handle collapse state for desktop and laptop
   useEffect(() => {
@@ -79,8 +107,20 @@ export const useSidebar = () => {
     }
   }, [isDesktop, isLaptop, dispatch]);
 
+  // Reset manual toggle when media queries change to re-enable auto behavior
+  useEffect(() => {
+    if (!pendingReset.current) {
+      pendingReset.current = true;
+      setTimeout(() => {
+        setIsManualToggle(false);
+        pendingReset.current = false;
+      }, 200);
+    }
+  }, [isMobile, isTablet, isLaptop, isDesktop]);
+
   // Set isCollapsed based on current mode
   useEffect(() => {
+    if (isManualAdjusting) return;
     // Always keep collapsed false for mobile and tablet
     if (currentMode === "mobile-overlay" || currentMode === "tablet-icon-only") {
       dispatch(setCollapsed(false));
@@ -97,20 +137,32 @@ export const useSidebar = () => {
         dispatch(setCollapsed(true)); // Default to collapsed for laptop-compact
       }
     }
-  }, [currentMode, dispatch]);
+  }, [currentMode, dispatch, isManualAdjusting]);
 
   const open = () => {
     setIsManualToggle(true);
+    setIsManualAdjusting(true);
+    lastToggleTime.current = Date.now();
     dispatch(openSidebar());
+    setTimeout(() => {
+      setIsManualAdjusting(false);
+    }, 500);
   };
 
   const close = () => {
     setIsManualToggle(true);
+    setIsManualAdjusting(true);
+    lastToggleTime.current = Date.now();
     dispatch(closeSidebar());
+    setTimeout(() => {
+      setIsManualAdjusting(false);
+    }, 500);
   };
 
   const toggle = () => {
     setIsManualToggle(true);
+    setIsManualAdjusting(true);
+    lastToggleTime.current = Date.now();
 
     if (isDesktop || isLaptop) {
       if (isCollapsed) {
@@ -122,19 +174,27 @@ export const useSidebar = () => {
         dispatch(isSidebarOpen ? setCollapsed(true) : openSidebar());
         localStorage.setItem("sidebar-collapsed", isSidebarOpen ? "true" : "false");
       }
-      return;
+    } else {
+      // Mobile/tablet toggle
+      dispatch(isSidebarOpen ? closeSidebar() : openSidebar());
     }
 
-    // Mobile/tablet toggle
-    dispatch(isSidebarOpen ? closeSidebar() : openSidebar());
+    setTimeout(() => {
+      setIsManualAdjusting(false);
+    }, 500);
   };
 
   const toggleCollapse = () => {
     if (isDesktop || isLaptop) {
       const newCollapsed = !isCollapsed;
+      setIsManualToggle(true);
+      setIsManualAdjusting(true);
+      lastToggleTime.current = Date.now();
       dispatch(setCollapsed(newCollapsed));
       localStorage.setItem("sidebar-collapsed", JSON.stringify(newCollapsed));
-      setIsManualToggle(true);
+      setTimeout(() => {
+        setIsManualAdjusting(false);
+      }, 500);
     }
   };
 

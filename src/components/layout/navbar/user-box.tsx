@@ -7,9 +7,6 @@ import { useAppDispatch } from "@/lib/hooks";
 import { FaCog, FaSignOutAlt, FaUser } from "react-icons/fa";
 import { FiChevronDown } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-// import { Dropdown, DropdownContent, DropdownTrigger } from "@/components/ui/dropdown";
-// import { Icon } from "@/components/ui/icon";
-// import { Button } from "@/components/ui/button";
 
 export const UserBox = () => {
   const { user } = useAuth();

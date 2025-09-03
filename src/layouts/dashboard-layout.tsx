@@ -22,7 +22,7 @@ export const DashboardLayout = memo(() => {
   const location = useLocation()
 
   // COMPUTE RESPONSIVE VALUES LOCALLY - BALANCE OF PERFORMANCE AND ACCURACY
-  const mediaQueryOptions = { debounceMs: 50 };
+  const mediaQueryOptions = { debounceMs: 100 };
   const isMobile = useMediaQuery({ query: "(max-width: 767px)", ...mediaQueryOptions });
   const isTablet = useMediaQuery({ query: "(min-width: 768px) and (max-width: 1279px)", ...mediaQueryOptions });
 

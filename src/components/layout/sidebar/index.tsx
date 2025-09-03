@@ -167,7 +167,7 @@ const ALWAYS_ACTIVE_PATHS = [
 
 export const Sidebar = memo(({ handleLogout }: SidebarProps) => {
   // COMPUTE RESPONSIVE VALUES DIRECTLY IN COMPONENT - ELIMINATES HOOK EXPENSE
-  const mediaQueryOptions = { debounceMs: 50 }; // Throttle to prevent rapid resize events
+  const mediaQueryOptions = { debounceMs: 100 }; // Throttle to prevent rapid resize events
   const isMobile = useMediaQuery({ query: "(max-width: 767px)", ...mediaQueryOptions });
   const isTablet = useMediaQuery({ query: "(min-width: 768px) and (max-width: 1279px)", ...mediaQueryOptions });
   const isLaptop = useMediaQuery({ query: "(min-width: 1280px) and (max-width: 1919px)", ...mediaQueryOptions });
