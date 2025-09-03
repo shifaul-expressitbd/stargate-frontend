@@ -1,33 +1,62 @@
-import { useAuth } from '@/hooks/useAuth'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '@/hooks/useAuth';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
-import { Navbar } from '@/components/layout/navbar'
-import { Sidebar } from '@/components/layout/sidebar'
-import Modal from '@/components/shared/modals/modal'
-import { useSidebar } from '@/hooks/useSidebar'
-import { logout } from '@/lib/features/auth/authSlice'
-import { closeSidebar } from '@/lib/features/sidebar/sidebarSlice'
-import { useAppDispatch } from '@/lib/hooks'
-import { getSidebarWidth } from '@/utils/sidebarUtils'
-import { createPortal } from 'react-dom'
+import { Navbar } from '@/components/layout/navbar';
+import { Sidebar } from '@/components/layout/sidebar';
+import Modal from '@/components/shared/modals/modal';
+import { useSidebar } from '@/hooks/useSidebar';
+import { logout, selectSubscriptionExpired } from '@/lib/features/auth/authSlice';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { getSidebarWidth } from '@/utils/sidebarUtils';
+import { createPortal } from 'react-dom';
+import { useMediaQuery } from 'react-responsive';
 
 
-export const DashboardLayout = () => {
-  const { subscriptionExpired } = useAuth()
-  const { isMobile, isTablet, isLaptop, isDesktop, isCollapsed, isSidebarOpen } = useSidebar()
+export const DashboardLayout = memo(() => {
+  const { } = useAuth()
+  const subscriptionExpired = useAppSelector(selectSubscriptionExpired)
+  const { isSidebarOpen } = useSidebar()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
-  const sidebarMargin = (isMobile || (isTablet && !isSidebarOpen)) ? 0 : getSidebarWidth(isMobile, isTablet, isLaptop, isDesktop, isCollapsed)
+
+  // COMPUTE RESPONSIVE VALUES LOCALLY - BALANCE OF PERFORMANCE AND ACCURACY
+  const mediaQueryOptions = { debounceMs: 50 };
+  const isMobile = useMediaQuery({ query: "(max-width: 767px)", ...mediaQueryOptions });
+  const isTablet = useMediaQuery({ query: "(min-width: 768px) and (max-width: 1279px)", ...mediaQueryOptions });
+
+  // Memoize sidebar margin to prevent dynamic Tailwind class recreation
+  const sidebarMargin = useMemo(() =>
+    (isMobile || (isTablet && !isSidebarOpen)) ? 0 : getSidebarWidth(isMobile, isTablet, false, false, false),
+    [isMobile, isTablet, isSidebarOpen]
+  );
 
   // Modal logic for expired subscription
   const [showModal, setShowModal] = useState(false)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const shouldShowReminder = useMemo(() => ['/profile', '/payment', '/siteStore'].some((path) =>
-    location.pathname.startsWith(path)
-  ), [location.pathname])
+  const shouldShowReminder = useMemo(() =>
+    ['/profile', '/payment', '/siteStore'].some((path) =>
+      location.pathname.startsWith(path)
+    ),
+    [location.pathname]
+  )
+
+  // Memoize event handlers
+  const handleLogout = useCallback(() => {
+    dispatch(logout())
+    navigate('/login', { replace: true })
+  }, [dispatch, navigate])
+
+  const handleCloseModal = useCallback(() => {
+    setShowModal(false)
+    if (subscriptionExpired && shouldShowReminder) {
+      timeoutRef.current = setTimeout(() => {
+        setShowModal(true)
+      }, 30_000)
+    }
+  }, [subscriptionExpired, shouldShowReminder])
 
   useEffect(() => {
     if (subscriptionExpired && shouldShowReminder) {
@@ -41,14 +70,7 @@ export const DashboardLayout = () => {
     }
   }, [subscriptionExpired, shouldShowReminder, location.pathname])
 
-  const handleCloseModal = () => {
-    setShowModal(false)
-    if (subscriptionExpired && shouldShowReminder) {
-      timeoutRef.current = setTimeout(() => {
-        setShowModal(true)
-      }, 30_000)
-    }
-  }
+  // handleCloseModal is now memoized above
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -57,11 +79,7 @@ export const DashboardLayout = () => {
     }
   }, [])
 
-  // Logout handler
-  const handleLogout = () => {
-    dispatch(logout())
-    navigate('/login', { replace: true })
-  }
+  // handleLogout is now memoized above
 
 
 
@@ -70,14 +88,6 @@ export const DashboardLayout = () => {
       {/* Sidebar */}
 
       <Sidebar handleLogout={handleLogout} />
-
-      {/* Backdrop for mobile and tablet */}
-      {(isMobile || isTablet) && isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => dispatch(closeSidebar())}
-        />
-      )}
 
       {/* Main Content */}
       <main
@@ -121,4 +131,4 @@ export const DashboardLayout = () => {
         )}
     </div>
   )
-}
+}); // Close memo wrapper

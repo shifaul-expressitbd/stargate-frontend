@@ -1,7 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import AppLogo from './AppLogo';
 
-const meta: Meta<typeof AppLogo> = {
+interface AppLogoProps {
+    variant?: 'default' | 'landing';
+    size?: 'sm' | 'md' | 'lg';
+}
+
+const meta: Meta<AppLogoProps> = {
     title: 'App/AppLogo',
     component: AppLogo,
     parameters: {
@@ -13,12 +18,9 @@ const meta: Meta<typeof AppLogo> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-    args: {},
-};
+export const Default: Story = {};
 
 export const WithDeveloper: Story = {
-    args: {},
     parameters: {
         mockData: {
             user: { role: 'developer' },
@@ -28,7 +30,6 @@ export const WithDeveloper: Story = {
 };
 
 export const WithUserNoBusiness: Story = {
-    args: {},
     parameters: {
         mockData: {
             user: { role: 'user' },
@@ -38,7 +39,6 @@ export const WithUserNoBusiness: Story = {
 };
 
 export const WithUserWithBusiness: Story = {
-    args: {},
     parameters: {
         mockData: {
             user: { role: 'user' },
@@ -48,7 +48,6 @@ export const WithUserWithBusiness: Story = {
 };
 
 export const NoUser: Story = {
-    args: {},
     parameters: {
         mockData: {
             user: null,

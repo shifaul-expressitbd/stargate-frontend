@@ -1,5 +1,5 @@
-import { useSidebar } from '@/hooks/useSidebar'
 import { FaPlus } from 'react-icons/fa'
+import { useMediaQuery } from 'react-responsive'
 import { Link } from 'react-router-dom'
 
 interface AddBtnProps {
@@ -17,7 +17,7 @@ const AddBtn = ({
   showTextOnMobile = false,
   className = '',
 }: AddBtnProps) => {
-  const { isDesktop } = useSidebar()
+  const isDesktop = useMediaQuery({ query: "(min-width: 768px)" })
   const shouldShowText = isDesktop || showTextOnMobile
 
   return (

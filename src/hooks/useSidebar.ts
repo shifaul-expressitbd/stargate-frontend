@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useMediaQuery } from "react-responsive";
 import {
@@ -20,31 +20,27 @@ export const useSidebar = () => {
     openMenus,
   } = useSelector((state: RootState) => state.sidebar);
 
-  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
-  const isTablet = useMediaQuery({ query: "(min-width: 768px) and (max-width: 1279px)" });
-  const isLaptop = useMediaQuery({ query: "(min-width: 1280px) and (max-width: 1919px)" });
-  const isDesktop = useMediaQuery({ query: "(min-width: 1920px)" });
-
   const [isManualToggle, setIsManualToggle] = useState(false);
   const modeChangeTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  // INTERNAL USE ONLY: Media queries for hook logic - NOT returned to prevent re-render cascades
+  // These are used for internal sidebar behavior calculation only
+  const mediaQueryOptions = { debounceMs: 100 }; // Throttled for performance
+  const isMobile = useMediaQuery({ query: "(max-width: 767px)", ...mediaQueryOptions });
+  const isTablet = useMediaQuery({ query: "(min-width: 768px) and (max-width: 1279px)", ...mediaQueryOptions });
+  const isLaptop = useMediaQuery({ query: "(min-width: 1280px) and (max-width: 1919px)", ...mediaQueryOptions });
+  const isDesktop = useMediaQuery({ query: "(min-width: 1920px)", ...mediaQueryOptions });
+
+  // Memoize shouldSidebarBeOpen computation to prevent recalculation
+  const shouldSidebarBeOpenValue = useMemo(
+    () => shouldSidebarBeOpen({ isDesktop, isMobile, isManualToggle }),
+    [isDesktop, isMobile, isManualToggle]
+  );
 
   // Initialize sidebar mode with debouncing to prevent oscillations
   useEffect(() => {
     const mode = getSidebarMode({ isMobile, isTablet, isLaptop, isDesktop });
-    console.log("[DEBUG useSidebar] Media queries at change:", {
-      isMobile,
-      isTablet,
-      isLaptop,
-      isDesktop,
-      windowInnerWidth: window?.innerWidth,
-      devicePixelRatio: window?.devicePixelRatio,
-      timestamp: new Date().toISOString(),
-      previousMode: currentMode,
-      newMode: mode,
-    });
     if (currentMode !== mode) {
-      console.log("[DEBUG useSidebar] Mode change detected:", { from: currentMode, to: mode });
-
       // Clear any pending update
       if (modeChangeTimeout.current) {
         clearTimeout(modeChangeTimeout.current);
@@ -66,35 +62,40 @@ export const useSidebar = () => {
     };
   }, []);
 
-  // Handle sidebar state based on device
+  // Handle sidebar state based on device - optimized with memoized calculation
   useEffect(() => {
-    const shouldOpen = shouldSidebarBeOpen({
-      isDesktop,
-      isMobile,
-      isManualToggle,
-    });
-
-    if (isSidebarOpen !== shouldOpen) {
-      dispatch(shouldOpen ? openSidebar() : closeSidebar());
+    if (isSidebarOpen !== shouldSidebarBeOpenValue) {
+      dispatch(shouldSidebarBeOpenValue ? openSidebar() : closeSidebar());
     }
-  }, [isDesktop, isMobile, isManualToggle, isSidebarOpen, dispatch]);
+  }, [shouldSidebarBeOpenValue, isSidebarOpen, dispatch]);
 
-  // Handle desktop collapse state
+  // Handle collapse state for desktop and laptop
   useEffect(() => {
-    if (isDesktop && typeof window !== "undefined") {
+    if ((isDesktop || isLaptop) && typeof window !== "undefined") {
       const savedCollapsed = localStorage.getItem("sidebar-collapsed");
       if (savedCollapsed !== null) {
         dispatch(setCollapsed(JSON.parse(savedCollapsed)));
       }
     }
-  }, [isDesktop, dispatch]);
+  }, [isDesktop, isLaptop, dispatch]);
 
   // Set isCollapsed based on current mode
   useEffect(() => {
-    if (currentMode === "desktop-full" || currentMode === "tablet-icon-only") {
+    // Always keep collapsed false for mobile and tablet
+    if (currentMode === "mobile-overlay" || currentMode === "tablet-icon-only") {
       dispatch(setCollapsed(false));
-    } else {
-      dispatch(setCollapsed(true));
+    }
+    // For desktop-full and laptop-compact, allow toggling but default to appropriate state
+    else if (currentMode === "desktop-full") {
+      dispatch(setCollapsed(false));
+    } else if (currentMode === "laptop-compact") {
+      // Check localStorage for user preference, default to true (collapsed) if not set
+      const savedCollapsed = localStorage.getItem("sidebar-collapsed");
+      if (savedCollapsed !== null) {
+        dispatch(setCollapsed(JSON.parse(savedCollapsed)));
+      } else {
+        dispatch(setCollapsed(true)); // Default to collapsed for laptop-compact
+      }
     }
   }, [currentMode, dispatch]);
 
@@ -111,7 +112,7 @@ export const useSidebar = () => {
   const toggle = () => {
     setIsManualToggle(true);
 
-    if (isDesktop) {
+    if (isDesktop || isLaptop) {
       if (isCollapsed) {
         // Expand from collapsed state
         dispatch(setCollapsed(false));
@@ -129,7 +130,7 @@ export const useSidebar = () => {
   };
 
   const toggleCollapse = () => {
-    if (isDesktop) {
+    if (isDesktop || isLaptop) {
       const newCollapsed = !isCollapsed;
       dispatch(setCollapsed(newCollapsed));
       localStorage.setItem("sidebar-collapsed", JSON.stringify(newCollapsed));
@@ -141,14 +142,12 @@ export const useSidebar = () => {
     dispatch(toggleOpenMenu(title));
   };
 
+  // IMPORTANT: No longer return media query values to prevent cascading re-renders
+  // Components should compute their own responsive values as needed
   return {
     isSidebarOpen,
     isCollapsed,
     currentMode,
-    isDesktop,
-    isTablet,
-    isLaptop,
-    isMobile,
     open,
     close,
     toggle,

@@ -9,6 +9,8 @@ export type TUser = {
   provider: "local" | "google" | "facebook" | "github" | "LOCAL" | "GOOGLE" | "FACEBOOK" | "GITHUB";
   isEmailVerified: boolean;
   isTwoFactorEnabled: boolean;
+  role: string;
+  warning_date: string;
 };
 
 // Add JWT payload type for decoded token data
@@ -76,18 +78,18 @@ export type DashboardDesign = {
 };
 
 type TAuthState = {
-  user: null | TUser;
+  user: null | TUser | TUserLegacy;
   jwtPayload: null | JWTPayload;
   token: null | string;
   refreshToken: null | string;
   hasBusiness: null | boolean;
   userProfile?:
-  | {
-    public_id: string | null;
-    optimizeUrl: string | null;
-    secure_url: string | null;
-  }
-  | undefined;
+    | {
+        public_id: string | null;
+        optimizeUrl: string | null;
+        secure_url: string | null;
+      }
+    | undefined;
   sidebar: Sidebar;
   dashboardDesign: DashboardDesign;
 };
@@ -152,10 +154,10 @@ const authSlice = createSlice({
       state.userProfile = initialState.userProfile;
 
       // Clear authentication tokens from storage
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      sessionStorage.removeItem('accessToken');
-      sessionStorage.removeItem('refreshToken');
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      sessionStorage.removeItem("accessToken");
+      sessionStorage.removeItem("refreshToken");
 
       // Clear additional storages
       localStorage.removeItem("persist:root");
@@ -191,7 +193,7 @@ const authSlice = createSlice({
         });
       }
 
-      console.info('User logged out successfully');
+      console.info("User logged out successfully");
     },
   },
 });

@@ -1,6 +1,5 @@
 import AdminDashboard from "@/pages/(admin)/AdminDashboard";
 import type { IconType } from "react-icons";
-
 import {
   FaBlender,
   FaBox,
@@ -16,7 +15,7 @@ import {
 } from "react-icons/fa";
 import { MdLocalGroceryStore, MdOutlinePayments, MdSupportAgent } from "react-icons/md";
 
-// Define types that match your authSlice exactly
+// Types
 export type SubMenuItem = {
   title: string;
   path: string;
@@ -34,7 +33,25 @@ export type MenuItem = {
 
 export type Sidebar = MenuItem[];
 
-// Default admin menu items (fallback when no sidebar is provided)
+// Icon mapping for string-to-component conversion
+const iconMap: Record<string, IconType> = {
+  FaTachometerAlt: FaTachometerAlt,
+  FaUsers: FaUsers,
+  FaRegEnvelope: FaRegEnvelope,
+  MdOutlinePayments: MdOutlinePayments,
+  FaBlender: FaBlender,
+  MdSupportAgent: MdSupportAgent,
+  FaUser: FaUser,
+  FaCreditCard: FaCreditCard,
+  FaCheckCircle: FaCheckCircle,
+  MdLocalGroceryStore: MdLocalGroceryStore,
+  FaBox: FaBox,
+  FaShoppingCart: FaShoppingCart,
+  FaChartLine: FaChartLine,
+  FaCogs: FaCogs,
+};
+
+// Default admin menu items
 export const adminMenuItems: MenuItem[] = [
   {
     title: "Admin Dashboard",
@@ -42,7 +59,6 @@ export const adminMenuItems: MenuItem[] = [
     icon: FaTachometerAlt,
     element: AdminDashboard,
   },
-
   {
     title: "All Users",
     path: "/admin/subscriber/all-users",
@@ -58,11 +74,6 @@ export const adminMenuItems: MenuItem[] = [
     path: "/admin/subscriber/all-payments",
     icon: MdOutlinePayments,
   },
-  // {
-  //   title: 'Renewal Request',
-  //   path: '/admin/subscriber/renewal-request',
-  //   icon: IoGitPullRequestSharp,
-  // },
   {
     title: "All Endpoints",
     path: "/admin/subscriber/endpoints",
@@ -75,9 +86,8 @@ export const adminMenuItems: MenuItem[] = [
   },
 ];
 
-// Hardcoded user menu items for development phase
-// TODO: In production, these will come from backend via useAuth hook
-export const userMenuItems: MenuItem[] = [
+// Development user menu items (fallback when no backend data)
+export const devUserMenuItems: MenuItem[] = [
   {
     title: "Dashboard",
     path: "/dashboard",
@@ -130,61 +140,51 @@ export const userMenuItems: MenuItem[] = [
   },
 ];
 
-// Helper function to transform sidebar data from API to MenuItem format
-export const transformSidebarData = (sidebarData: Sidebar): MenuItem[] => {
-  console.log("[DEBUG] transformSidebarData input:", JSON.stringify(sidebarData, null, 2));
+// Helper function to get icon component from string
+const getIconComponent = (iconName?: string): IconType | undefined => {
+  return iconName ? iconMap[iconName] : undefined;
+};
+
+// Transform sidebar data from API to MenuItem format
+export const transformSidebarData = (sidebarData: unknown): MenuItem[] => {
   if (!sidebarData || !Array.isArray(sidebarData)) {
-    console.log("[DEBUG] transformSidebarData: invalid sidebarData, returning empty array");
     return [];
   }
 
-  const result = sidebarData.map((item: MenuItem) => ({
+  return (sidebarData as MenuItem[]).map((item) => ({
     title: item.title || "",
     path: item.path,
     icon: typeof item.icon === "string" ? getIconComponent(item.icon) : item.icon,
     element: item.element,
-    submenu: item.submenu
-      ? item.submenu.map((sub: SubMenuItem) => ({
-          title: sub.title,
-          path: sub.path,
-          icon: typeof sub.icon === "string" ? getIconComponent(sub.icon) : sub.icon,
-          element: sub.element,
-        }))
-      : undefined,
+    submenu: item.submenu?.map((sub) => ({
+      title: sub.title,
+      path: sub.path,
+      icon: typeof sub.icon === "string" ? getIconComponent(sub.icon) : sub.icon,
+      element: sub.element,
+    })),
   }));
-  console.log("[DEBUG] transformSidebarData output:", JSON.stringify(result, null, 2));
-  return result;
-};
-
-// Helper function to get icon component from string
-const getIconComponent = (iconName?: string): IconType | undefined => {
-  if (!iconName) {
-    console.log("[DEBUG] getIconComponent: no iconName provided");
-    return undefined;
-  }
-
-  // Map your icon strings to actual icon components
-  const iconMap: Record<string, IconType> = {
-    FaTachometerAlt: FaTachometerAlt,
-  };
-
-  const icon = iconMap[iconName];
-  if (!icon) {
-    console.log(`[DEBUG] getIconComponent: icon '${iconName}' not found in iconMap`);
-  }
-  return icon;
 };
 
 // Hook to get user menu items
 export const useUserMenuItems = () => {
-  // DEVELOPMENT PHASE: Using hardcoded userMenuItems instead of backend data
-  // TODO: In production, uncomment the lines below and comment out the return statement
-  /*
-  const { user, sidebar } = useAuth();
-  const menuItems = transformSidebarData(sidebar as Array<MenuItem>);
-  return menuItems;
-  */
+  // In production: use backend data
+  if (process.env.NODE_ENV === "production") {
+    // Uncomment and implement when backend is ready
+    /*
+    const { sidebar } = useAuth();
+    const menuItems = transformSidebarData(sidebar);
+    return menuItems.length > 0 ? menuItems : devUserMenuItems;
+    */
 
-  // For development: return hardcoded menu items
-  return userMenuItems;
+    // Fallback for production if backend isn't ready yet
+    return devUserMenuItems;
+  }
+
+  // In development: use hardcoded menu items
+  return devUserMenuItems;
+};
+
+// Hook to get admin menu items (if needed)
+export const useAdminMenuItems = () => {
+  return adminMenuItems;
 };

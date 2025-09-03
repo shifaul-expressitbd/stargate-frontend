@@ -78,18 +78,15 @@ const createMockStore = (overrides: Partial<RootState>) => {
 
 // Base mock data
 const mockAuthUser = {
-    userId: 'mock-user-123',
-    role: 'user',
-    iat: Date.now() / 1000,
-    exp: (Date.now() / 1000) + (24 * 60 * 60), // 24 hours from now
-    expiry_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
-    balance: '1000.00',
+    id: 'mock-user-123',
+    email: 'john.doe@example.com',
     name: 'John Doe',
-    owner_id: 'mock-owner-id-123',
-    renewal_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-    status: 'active',
+    avatar: '/images/avatar/avatar1.png',
+    provider: 'local' as const,
+    isEmailVerified: true,
+    isTwoFactorEnabled: false,
+    role: 'user',
     warning_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-    user_id: 'mock-user-id-123',
 };
 
 const mockSidebarItems = [
@@ -143,7 +140,18 @@ const mockSidebarItems = [
 const defaultMockState: Partial<RootState> = {
     auth: {
         user: mockAuthUser,
+        jwtPayload: {
+            sub: 'mock-user-123',
+            email: 'john.doe@example.com',
+            roles: ['user'],
+            rememberMe: true,
+            iat: Date.now() / 1000,
+            exp: (Date.now() / 1000) + (24 * 60 * 60), // 24 hours
+            aud: 'mock-audience',
+            iss: 'mock-issuer',
+        },
         token: 'mock-jwt-token-123',
+        refreshToken: 'mock-refresh-token-123',
         hasBusiness: true,
         sidebar: [mockSidebarItems],
         dashboardDesign: {

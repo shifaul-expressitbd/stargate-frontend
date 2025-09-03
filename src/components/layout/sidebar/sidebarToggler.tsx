@@ -8,6 +8,7 @@ import {
   HiMiniBars3CenterLeft,
   HiXMark
 } from 'react-icons/hi2';
+import { useMediaQuery } from 'react-responsive';
 import { twMerge } from 'tailwind-merge';
 
 interface SidebarTogglerProps {
@@ -21,14 +22,12 @@ export const SidebarToggler = ({
   variant = 'default',
   className
 }: SidebarTogglerProps) => {
-  const {
-    isSidebarOpen,
-    toggle,
-    isMobile,
-    isCollapsed,
-    toggleCollapse,
-    isDesktop
-  } = useSidebar();
+  const { isSidebarOpen, toggle, isCollapsed, toggleCollapse } = useSidebar();
+
+  // Internal media queries for component logic - following the pattern from useSidebar
+  const mediaQueryOptions = { debounceMs: 100 };
+  const isMobile = useMediaQuery({ query: "(max-width: 767px)", ...mediaQueryOptions });
+  const isDesktop = useMediaQuery({ query: "(min-width: 1920px)", ...mediaQueryOptions });
 
   const sizeClasses = {
     sm: 'w-8 h-8',

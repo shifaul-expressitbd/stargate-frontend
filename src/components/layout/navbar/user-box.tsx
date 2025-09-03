@@ -31,7 +31,7 @@ export const UserBox = () => {
             </div>
             <div className="hidden md:block text-blue-600">
               <h1 className="font-semibold text-nowrap">
-                {(user && user.userId) ? user.userId : "Welcome Guest"}{" "}
+                {(user && 'id' in user && user.id) ? user.id : (user && 'userId' in user && user.userId) ? user.userId : "Welcome Guest"}{" "}
                 {/* Display user ID or "Welcome Guest" */}
               </h1>
               <div className="flex items-center">
