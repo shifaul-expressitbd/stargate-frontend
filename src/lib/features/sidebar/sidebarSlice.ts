@@ -24,12 +24,14 @@ interface SidebarState {
 
 /**
  * Default initial state for the sidebar redux slice
+ * Note: isOpen defaults to false to ensure mobile/tablet start closed
+ * The useSidebar hook will determine the correct state on mount
  */
 const initialState: SidebarState = {
-  isOpen: true,                    // Desktop/laptop default to open
-  isCollapsed: false,             // Desktop/laptop default to expanded
-  currentMode: "desktop-expandable", // Default mode for most development environments
-  openMenus: [],                  // No menus expanded by default
+  isOpen: false, // Default to false - ensures mobile/tablet start closed
+  isCollapsed: false, // Desktop/laptop default to expanded
+  currentMode: "mobile-overlay", // Default to mobile-overlay for most device types
+  openMenus: [], // No menus expanded by default
 };
 
 /**

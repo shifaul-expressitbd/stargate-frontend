@@ -78,13 +78,6 @@ export const useSidebar = (): UseSidebarReturn => {
   // Use centralized responsive context
   const { isMobile, isTablet, isLaptop, isDesktop } = useResponsive();
 
-  // Initialize previous mode on first mount
-  useEffect(() => {
-    if (isInitialMount.current) {
-      previousMode.current = currentMode;
-    }
-  }, [currentMode]);
-
   // Memoize shouldSidebarBeOpen computation - consider both mobile and tablet as small screens
   const shouldSidebarBeOpenValue = useMemo(() => {
     // For small screens (mobile + tablet), default to closed
@@ -93,6 +86,21 @@ export const useSidebar = (): UseSidebarReturn => {
     }
     return true; // Desktop/laptop default to open
   }, [isMobile, isTablet]);
+
+  // Initialize sidebar state properly on first mount based on device type
+  useEffect(() => {
+    if (isInitialMount.current) {
+      previousMode.current = currentMode;
+      // Ensure sidebar starts in correct state based on device type
+      if (isSidebarOpen !== shouldSidebarBeOpenValue) {
+        dispatch(shouldSidebarBeOpenValue ? openSidebar() : closeSidebar());
+      }
+      // Set mode appropriately based on device
+      const correctMode = getSidebarMode({ isMobile, isTablet, isLaptop, isDesktop });
+      dispatch(setSidebarMode(correctMode));
+      isInitialMount.current = false; // Mark initialization as complete
+    }
+  }, [currentMode, isMobile, isTablet, isLaptop, isDesktop, dispatch, isSidebarOpen, shouldSidebarBeOpenValue]);
 
   // Initialize sidebar mode with debouncing
   useEffect(() => {
@@ -107,7 +115,7 @@ export const useSidebar = (): UseSidebarReturn => {
     }
   }, [isMobile, isTablet, isLaptop, isDesktop, dispatch, currentMode]);
 
-  // Handle sidebar state based on device
+  // Handle sidebar state based on device - updated to respect initial state correction
   useEffect(() => {
     // COMPLETELY DISABLE auto-adjust for mobile/tablet - they should respect user actions
     if (isMobile || isTablet) {
@@ -119,9 +127,8 @@ export const useSidebar = (): UseSidebarReturn => {
     }
 
     // Only run auto-adjust for desktop/laptop devices
-    // Skip auto-adjust during initial mount and manual adjustments
-    if (isInitialMount.current || isManualAdjusting || Date.now() - lastToggleTime.current < 1000) {
-      isInitialMount.current = false;
+    // Skip auto-adjust during manual adjustments
+    if (isManualAdjusting || Date.now() - lastToggleTime.current < 1000) {
       return;
     }
 
@@ -138,7 +145,7 @@ export const useSidebar = (): UseSidebarReturn => {
         autoAdjustTimeout.current = null;
       }
     }
-  }, [shouldSidebarBeOpenValue, isSidebarOpen, dispatch, isManualAdjusting, isMobile, isTablet]);
+  }, [shouldSidebarBeOpenValue, isSidebarOpen, dispatch, isManualAdjusting, isMobile, isTablet, isInitialMount]);
 
   // Enhanced transition logic for mode changes with smart state preservation
   useEffect(() => {
