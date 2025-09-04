@@ -46,7 +46,7 @@ const ClientDashboard = () => {
             statusColor: 'orange'
         },
         {
-            id: 'd94aa791-6bfc-40a3-ac0e-72cf46d96550',
+            id: 'd94aa791-6bfc-40a3-ac0e-72cf46d96551',
             name: 'meds',
             domain: 'https://meds.com',
             code: 'QNJ3MIpIeU',
@@ -56,7 +56,7 @@ const ClientDashboard = () => {
             statusColor: 'orange'
         },
         {
-            id: 'd94aa791-6bfc-40a3-ac0e-72cf46d96550',
+            id: 'd94aa791-6bfc-40a3-ac0e-72cf46d96552',
             name: 'meds',
             domain: 'https://meds.com',
             code: 'QNJ3MIpIeU',
@@ -66,7 +66,7 @@ const ClientDashboard = () => {
             statusColor: 'orange'
         },
         {
-            id: 'd94aa791-6bfc-40a3-ac0e-72cf46d96550',
+            id: 'd94aa791-6bfc-40a3-ac0e-72cf46d96553',
             name: 'meds',
             domain: 'https://meds.com',
             code: 'QNJ3MIpIeU',
@@ -76,7 +76,7 @@ const ClientDashboard = () => {
             statusColor: 'orange'
         },
         {
-            id: 'd94aa791-6bfc-40a3-ac0e-72cf46d96550',
+            id: 'd94aa791-6bfc-40a3-ac0e-72cf46d96554',
             name: 'meds',
             domain: 'https://meds.com',
             code: 'QNJ3MIpIeU',
@@ -238,7 +238,7 @@ const ClientDashboard = () => {
             className="w-full h-full relative custom-scroll overflow-y-scroll pb-8"
         >
 
-            <div className="relative z-10 space-y-6 pt-20 p-4 md:p-8">
+            <div className="relative z-10 space-y-6 md:pt-20 p-4 md:p-8">
                 {/* Header Section */}
                 <div className="space-y-4">
                     <div className="flex items-center gap-2">
@@ -348,21 +348,21 @@ const ClientDashboard = () => {
                                                 </div>
 
                                                 {/* Usage */}
-                                                <div className="flex-1 max-w-xs mx-4">
+                                                <div className="flex mx-4 items-center justify-end">
                                                     <div className="text-right mb-1">
                                                         <span className="text-xs text-cyan-300 font-orbitron">{container.usage.toLocaleString()} / {container.maxUsage.toLocaleString()}</span>
                                                     </div>
                                                     <div className="w-full bg-black/40 rounded-full h-2">
                                                         <div className="bg-green-500 h-2 rounded-full" style={{ width: `${(container.usage / container.maxUsage) * 100}%` }}></div>
                                                     </div>
+                                                    {/* Package */}
+                                                    <div className="flex items-center gap-2 flex-shrink-0">
+                                                        <span className="px-2 py-1 text-xs font-orbitron bg-black/40 border border-green-500 text-green-400 rounded-md uppercase tracking-wider">
+                                                            {container.package}
+                                                        </span>
+                                                    </div>
                                                 </div>
 
-                                                {/* Package */}
-                                                <div className="flex items-center gap-2 flex-shrink-0">
-                                                    <span className="px-2 py-1 text-xs font-orbitron bg-black/40 border border-green-500 text-green-400 rounded-md uppercase tracking-wider">
-                                                        {container.package}
-                                                    </span>
-                                                </div>
                                             </div>
                                         </a>
                                     </div>

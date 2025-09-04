@@ -33,7 +33,7 @@ interface SidebarProps {
 }
 
 export const Sidebar = memo(({ }: SidebarProps) => {
-  const { isMobile } = useResponsive();
+  const { isMobile, isTablet } = useResponsive();
   const dispatch = useDispatch();
   const { pathname } = useLocation();
   const { color } = useTheme();
@@ -62,8 +62,10 @@ export const Sidebar = memo(({ }: SidebarProps) => {
   // Memoize showLabels
   const showLabels = useMemo(() => shouldShowLabels({
     currentMode,
-    isCollapsed
-  }), [currentMode, isCollapsed]);
+    isCollapsed,
+    isMobile,
+    isTablet
+  }), [currentMode, isCollapsed, isMobile, isTablet]);
 
   // Memoize sidebar width class
   const sidebarWidthClass = useMemo(() => {
@@ -145,180 +147,186 @@ export const Sidebar = memo(({ }: SidebarProps) => {
   }, [isMobile, isSidebarOpen]);
 
   return (
-    <aside
-      ref={el => { sidebarRef.current = el; }}
-      data-testid="sidebar"
-      className={twMerge(
-        "min-h-dvh max-h-dvh backdrop-blur-md relative overflow-hidden",
-        color === 'cosmic'
-          ? "bg-black/60 border-r border-cyan-400/30"
-          : "bg-white dark:bg-primary-dark",
-        currentMode === 'mobile-overlay' ? "fixed inset-y-0 left-0 top-0 z-50" : "relative",
-        isSidebarOpen ? "block" : "hidden",
-        currentMode === 'mobile-overlay' && isSidebarOpen ? "shadow-xl" : ""
-      )}
-    >
-      <div className={twMerge("flex flex-col h-full font-plusjakarta text-sm", sidebarWidthClass)}>
-        {/* Header */}
-        <div className={twMerge(
+    <>
+      <aside
+        ref={el => { sidebarRef.current = el; }}
+        data-testid="sidebar"
+        className={twMerge(
+          "min-h-dvh max-h-dvh backdrop-blur-md relative overflow-hidden",
           color === 'cosmic'
-            ? 'border-b border-cyan-400/30'
-            : 'border-b border-gray-200 dark:border-gray-700',
-          isCollapsed ? 'p-4' : 'px-5 py-4'
-        )}>
-          {/* User Info */}
-          {showLabels ? (
-            <div className={twMerge(
-              'w-full dark:text-white flex gap-3 items-center',
-              color === 'cosmic' ? 'text-cyan-200' : 'text-gray-500'
-            )}>
-              <Link to='/profile' className='min-w-fit'>
-                <img
-                  src='/images/logo/logo.png'
-                  alt="StarGate"
-                  className='w-10 h-10 aspect-square object-cover dark:hidden'
-                />
-                <img
-                  src='/images/logo/logo-white.png'
-                  alt="StarGate"
-                  className='w-10 h-10 aspect-square object-cover hidden dark:block'
-                />
-              </Link>
-              <div className='max-w-[75%] min-w-0'>
-                <p className='text-3xl leading-10 font-asimovian font-extrabold text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text drop-shadow-[0_0_8px_rgba(138,43,226,0.6)] truncate'>
-                  StarGate
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className='w-full flex justify-center'>
-              <Tooltip
-                content={user?.name || 'Profile'}
-                position="right"
-                delay={600}
-                showArrow={true}
-              >
-                <Link to='/profile' className='block'>
+            ? "bg-black/60 border-r border-cyan-400/30"
+            : "bg-white dark:bg-primary-dark",
+          currentMode === 'mobile-overlay' ? "fixed inset-y-0 left-0 top-0 z-50" : "relative",
+          isSidebarOpen ? "block" : "hidden",
+          currentMode === 'mobile-overlay' && isSidebarOpen ? "shadow-xl" : ""
+        )}
+      >
+        <div className={twMerge("flex flex-col h-full font-plusjakarta text-sm", sidebarWidthClass)}>
+          {/* Header */}
+          <div className={twMerge(
+            color === 'cosmic'
+              ? 'border-b border-cyan-400/30'
+              : 'border-b border-gray-200 dark:border-gray-700',
+            isCollapsed ? 'p-4' : 'px-5 py-4'
+          )}>
+            {/* User Info */}
+            {showLabels ? (
+              <div className={twMerge(
+                'w-full dark:text-white flex gap-3 items-center',
+                color === 'cosmic' ? 'text-cyan-200' : 'text-gray-500'
+              )}>
+                <Link to='/profile' className='min-w-fit'>
                   <img
                     src='/images/logo/logo.png'
                     alt="StarGate"
-                    className='w-8 h-8 rounded-full aspect-square object-cover transition-transform duration-200 hover:scale-110 dark:hidden'
+                    className='w-10 h-10 aspect-square object-cover dark:hidden'
                   />
                   <img
                     src='/images/logo/logo-white.png'
                     alt="StarGate"
-                    className='w-8 h-8 rounded-full aspect-square object-cover transition-transform duration-200 hover:scale-110 hidden dark:block'
+                    className='w-10 h-10 aspect-square object-cover hidden dark:block'
                   />
                 </Link>
-              </Tooltip>
-            </div>
-          )}
-
-          {/* Mobile Close Button */}
-          {isMobile && isSidebarOpen && (
-            <button
-              onClick={closeSidebar}
-              className={twMerge(
-                "fixed top-4 right-4 p-2 rounded-md transition-colors",
-                color === 'cosmic'
-                  ? "hover:bg-cyan-500/20 dark:hover:bg-gray-800"
-                  : "hover:bg-gray-100 dark:hover:bg-gray-800"
-              )}
-              aria-label="Close sidebar"
-            >
-              <FaTimes className={twMerge(
-                color === 'cosmic' ? "text-cyan-400" : "text-gray-600 dark:text-gray-400"
-              )} />
-            </button>
-          )}
-        </div>
-
-        {/* Menu */}
-        <nav
-          className={twMerge(
-            'flex-1 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-400/20 scrollbar-track-gray-100/0 hover:scrollbar-thumb-gray-400 hover:scrollbar-track-gray-100 dark:scrollbar-track-gray-700 py-4 space-y-2',
-            showLabels ? 'px-5' : 'px-2'
-          )}
-          role="navigation"
-          aria-label="Main navigation"
-        >
-          {menuItems.map((item, index) => {
-            if (!item.title) return null;
-            if (!item.path && !item.submenu) return null;
-
-            return (
-              <ErrorBoundary key={item.title || `menu-item-${index}`} fallback={<div>Error loading menu item</div>}>
-                <MenuItem
-                  item={item}
-                  isDisabled={isDisabled}
-                  showLabels={showLabels}
-                  isOpen={openMenus.includes(item.title as string)}
-                  color={color}
-                />
-              </ErrorBoundary>
-            );
-          })}
-        </nav>
-
-        {/* Footer */}
-        <div className={twMerge(
-          color === 'cosmic'
-            ? 'border-t border-cyan-400/30'
-            : 'border-t border-gray-200 dark:border-gray-700',
-          showLabels ? 'p-3' : 'p-2'
-        )}>
-          {showLabels ? (
-            <div className={twMerge(
-              'w-full dark:text-white flex gap-3 items-center',
-              color === 'cosmic' ? 'text-cyan-200' : 'text-gray-500'
-            )}>
-              <Link to='/profile' className='min-w-fit'>
-                <img
-                  src={avatar}
-                  alt={`${user?.name || 'User'} profile picture`}
-                  className='w-10 h-10 rounded-full aspect-square object-cover'
-                />
-              </Link>
-              <div className='max-w-[75%] min-w-0'>
-                <p className='text-lg leading-6 font-semibold capitalize truncate'>
-                  {user?.name}
-                </p>
-                {!isExpired && remainingTime.text && (
-                  <p className={twMerge(getStatusColor(remainingTime, color), 'text-sm')}>
-                    {remainingTime.text}
+                <div className='max-w-[75%] min-w-0'>
+                  <p className='text-3xl leading-10 font-asimovian font-extrabold text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text drop-shadow-[0_0_8px_rgba(138,43,226,0.6)] truncate'>
+                    StarGate
                   </p>
-                )}
-                {isExpired && (
-                  <p className={color === 'cosmic' ? 'text-red-400 text-sm' : 'text-red-500 text-sm'}>
-                    Expired
-                  </p>
-                )}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className='w-full flex justify-center'>
-              <Tooltip
-                content={user?.name || 'Profile'}
-                position="right"
-                delay={600}
-                showArrow={true}
+            ) : (
+              <div className='w-full flex justify-center'>
+                <Tooltip
+                  content={user?.name || 'Profile'}
+                  position="right"
+                  delay={600}
+                  showArrow={true}
+                >
+                  <Link to='/profile' className='block'>
+                    <img
+                      src='/images/logo/logo.png'
+                      alt="StarGate"
+                      className='w-8 h-8 rounded-full aspect-square object-cover transition-transform duration-200 hover:scale-110 dark:hidden'
+                    />
+                    <img
+                      src='/images/logo/logo-white.png'
+                      alt="StarGate"
+                      className='w-8 h-8 rounded-full aspect-square object-cover transition-transform duration-200 hover:scale-110 hidden dark:block'
+                    />
+                  </Link>
+                </Tooltip>
+              </div>
+            )}
+
+            {/* Mobile Close Button */}
+            {isMobile && isSidebarOpen && (
+              <button
+                onClick={() => {
+                  console.log('sidebar: Mobile close button clicked');
+                  closeSidebar();
+                }}
+                className={twMerge(
+                  "fixed top-4 right-4 p-2 rounded-md transition-colors",
+                  color === 'cosmic'
+                    ? "hover:bg-cyan-500/20 dark:hover:bg-gray-800"
+                    : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                )}
+                aria-label="Close sidebar"
               >
-                <Link to='/profile' className='block'>
+                <FaTimes className={twMerge(
+                  color === 'cosmic' ? "text-cyan-400" : "text-gray-600 dark:text-gray-400"
+                )} />
+              </button>
+            )}
+          </div>
+
+          {/* Menu */}
+          <nav
+            className={twMerge(
+              'flex-1 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-400/20 scrollbar-track-gray-100/0 hover:scrollbar-thumb-gray-400 hover:scrollbar-track-gray-100 dark:scrollbar-track-gray-700 py-4 space-y-2',
+              showLabels ? 'px-5' : 'px-2'
+            )}
+            role="navigation"
+            aria-label="Main navigation"
+          >
+            {menuItems.map((item, index) => {
+              if (!item.title) return null;
+              if (!item.path && !item.submenu) return null;
+
+              return (
+                <ErrorBoundary key={item.title || `menu-item-${index}`} fallback={<div>Error loading menu item</div>}>
+                  <MenuItem
+                    item={item}
+                    isDisabled={isDisabled}
+                    showLabels={showLabels}
+                    isOpen={openMenus.includes(item.title as string)}
+                    color={color}
+                  />
+                </ErrorBoundary>
+              );
+            })}
+          </nav>
+
+          {/* Footer */}
+          <div className={twMerge(
+            color === 'cosmic'
+              ? 'border-t border-cyan-400/30'
+              : 'border-t border-gray-200 dark:border-gray-700',
+            showLabels ? 'p-3' : 'p-2'
+          )}>
+            {showLabels ? (
+              <div className={twMerge(
+                'w-full dark:text-white flex gap-3 items-center',
+                color === 'cosmic' ? 'text-cyan-200' : 'text-gray-500'
+              )}>
+                <Link to='/profile' className='min-w-fit'>
                   <img
                     src={avatar}
                     alt={`${user?.name || 'User'} profile picture`}
-                    className='w-8 h-8 rounded-full aspect-square object-cover transition-transform duration-200 hover:scale-110'
+                    className='w-10 h-10 rounded-full aspect-square object-cover'
                   />
                 </Link>
-              </Tooltip>
-            </div>
-          )}
+                <div className='max-w-[75%] min-w-0'>
+                  <p className='text-lg leading-6 font-semibold capitalize truncate'>
+                    {user?.name}
+                  </p>
+                  {!isExpired && remainingTime.text && (
+                    <p className={twMerge(getStatusColor(remainingTime, color), 'text-sm')}>
+                      {remainingTime.text}
+                    </p>
+                  )}
+                  {isExpired && (
+                    <p className={color === 'cosmic' ? 'text-red-400 text-sm' : 'text-red-500 text-sm'}>
+                      Expired
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className='w-full flex justify-center'>
+                <Tooltip
+                  content={user?.name || 'Profile'}
+                  position="right"
+                  delay={600}
+                  showArrow={true}
+                >
+                  <Link to='/profile' className='block'>
+                    <img
+                      src={avatar}
+                      alt={`${user?.name || 'User'} profile picture`}
+                      className='w-8 h-8 rounded-full aspect-square object-cover transition-transform duration-200 hover:scale-110'
+                    />
+                  </Link>
+                </Tooltip>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Cosmic Background Decorations */}
-      {cosmicDecorations}
-    </aside>
+        {/* Cosmic Background Decorations */}
+        {cosmicDecorations}
+      </aside>
+      <div className={twMerge('w-screen h-screen', (currentMode === 'mobile-overlay' && isSidebarOpen) ? "fixed inset-y-0 left-0 top-0 z-40" : "relative hidden",)} onClick={() => { closeSidebar() }} />
+    </>
   );
 });
 
@@ -413,7 +421,12 @@ const MenuItem = memo(({
               <li key={i}>
                 <NavLink
                   to={isDisabled(sub.path) ? '#' : sub.path!}
-                  onClick={() => !isDisabled(sub.path) && !isDesktop && close()}
+                  onClick={() => {
+                    if (!isDisabled(sub.path) && !isDesktop) {
+                      console.log('sidebar: Submenu NavLink clicked, calling close()');
+                      close();
+                    }
+                  }}
                   className={({ isActive }) => twMerge(
                     'block p-2 rounded-l-md transition-all duration-200 text-sm',
                     showLabels ? 'pl-6' : 'text-center',
@@ -444,7 +457,12 @@ const MenuItem = memo(({
   return (
     <NavLink
       to={isDisabled(item.path) ? '#' : item.path!}
-      onClick={() => !isDisabled(item.path) && !isDesktop && toggle()}
+      onClick={() => {
+        if (!isDisabled(item.path) && !isDesktop) {
+          console.log('sidebar: Main NavLink clicked, calling toggle()');
+          toggle();
+        }
+      }}
       className={({ isActive }) => twMerge(
         'flex items-center p-3 transition-all duration-200 group relative',
         showLabels ? 'gap-3 rounded-l-lg' : 'flex-col gap-2 justify-center rounded-lg',

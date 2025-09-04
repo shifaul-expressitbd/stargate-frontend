@@ -10,11 +10,7 @@
  * shouldSidebarBeOpen({ isMobile: false }); // returns: true (open for desktop UX)
  * ```
  */
-export const shouldSidebarBeOpen = ({
-  isMobile,
-}: {
-  isMobile: boolean;
-}): boolean => {
+export const shouldSidebarBeOpen = ({ isMobile }: { isMobile: boolean }): boolean => {
   // On mobile, default to closed to maximize screen real estate
   if (isMobile) {
     return false;
@@ -73,31 +69,49 @@ export const getSidebarMode = ({
  * @param options - Options object containing display context
  * @param options.currentMode - Current sidebar mode ('mobile-overlay', 'laptop-compact', 'desktop-expandable')
  * @param options.isCollapsed - Whether the sidebar is currently in collapsed state
+ * @param options.isMobile - Whether device is mobile (<=767px) for fine-tuned control
+ * @param options.isTablet - Whether device is tablet (768px-1279px) for fine-tuned control
  * @returns {boolean} True if labels should be shown, false for icon-only mode
  *
  * @example
  * ```typescript
- * shouldShowLabels({ currentMode: 'mobile-overlay', isCollapsed: false });
- * // returns: false (mobile overlay never shows labels)
+ * shouldShowLabels({ currentMode: 'mobile-overlay', isCollapsed: false, isMobile: true, isTablet: false });
+ * // returns: true (mobile now shows labels)
  *
- * shouldShowLabels({ currentMode: 'desktop-expandable', isCollapsed: false });
+ * shouldShowLabels({ currentMode: 'mobile-overlay', isCollapsed: false, isMobile: false, isTablet: true });
+ * // returns: true (tablet shows labels)
+ *
+ * shouldShowLabels({ currentMode: 'desktop-expandable', isCollapsed: false, isMobile: false, isTablet: false });
  * // returns: true (expanded desktop shows labels)
  *
- * shouldShowLabels({ currentMode: 'laptop-compact', isCollapsed: true });
+ * shouldShowLabels({ currentMode: 'laptop-compact', isCollapsed: true, isMobile: false, isTablet: false });
  * // returns: false (collapsed mode hides labels)
  * ```
  */
 export const shouldShowLabels = ({
   currentMode,
   isCollapsed,
+  isMobile = false,
+  isTablet = false,
 }: {
   currentMode: string;
   isCollapsed: boolean;
+  isMobile?: boolean;
+  isTablet?: boolean;
 }): boolean => {
-  // Mobile overlay mode never shows labels (icon-only for space efficiency)
-  if (currentMode === "mobile-overlay") return false;
+  // Mobile overlay mode needs fine-tuned handling
+  if (currentMode === "mobile-overlay") {
+    // Mobile (<=767px): Now show labels along with tablet for better UX
+    if (isMobile) return true;
 
-  // For other modes, show labels only when not collapsed
+    // Tablet (768px-1279px): Show labels - plenty of space available
+    if (isTablet) return true;
+
+    // Fallback for edge cases
+    return false;
+  }
+
+  // For other modes (laptop-compact, desktop-expandable), show labels only when not collapsed
   return !isCollapsed;
 };
 
@@ -141,10 +155,10 @@ export const getTogglerTooltip = ({
   // Desktop or collapsed state: Handle expansion/collapse actions
   if (isDesktop || isCollapsed) {
     return isCollapsed
-      ? "Expand sidebar"          // Expand when collapsed
+      ? "Expand sidebar" // Expand when collapsed
       : isSidebarOpen
-        ? "Collapse sidebar"       // Collapse when open
-        : "Open sidebar";          // Open when closed
+      ? "Collapse sidebar" // Collapse when open
+      : "Open sidebar"; // Open when closed
   }
 
   // Default: Handle standard collapse/expand for other devices

@@ -139,7 +139,7 @@ export const DashboardLayout = memo(() => {
         className={`
           w-full max-h-dvh transition-all duration-300 ease-in-out
           ml-[${sidebarMargin}px]
-          p-2 scrollbar-none overflow-hidden
+          scrollbar-none overflow-hidden
         `}
       >
 

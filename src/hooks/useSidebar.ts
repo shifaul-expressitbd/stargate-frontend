@@ -9,7 +9,7 @@ import {
   toggleOpenMenu,
 } from "../lib/features/sidebar/sidebarSlice";
 import type { RootState } from "../lib/store";
-import { getSidebarMode, shouldSidebarBeOpen } from "../utils/sidebarUtils";
+import { getSidebarMode } from "../utils/sidebarUtils";
 import { useResponsive } from "./useResponsive";
 
 /**
@@ -56,12 +56,12 @@ export const useSidebar = (): UseSidebarReturn => {
     openMenus,
   } = useSelector((state: RootState) => state.sidebar);
 
-  const [isManualToggle, setIsManualToggle] = useState(false);
   const modeChangeTimeout = useRef<NodeJS.Timeout | null>(null);
   const autoAdjustTimeout = useRef<NodeJS.Timeout | null>(null);
   const [isManualAdjusting, setIsManualAdjusting] = useState(false);
   const lastToggleTime = useRef<number>(0);
   const isInitialMount = useRef(true);
+  const previousMode = useRef<SidebarMode | null>(null);
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -78,11 +78,21 @@ export const useSidebar = (): UseSidebarReturn => {
   // Use centralized responsive context
   const { isMobile, isTablet, isLaptop, isDesktop } = useResponsive();
 
-  // Memoize shouldSidebarBeOpen computation
-  const shouldSidebarBeOpenValue = useMemo(
-    () => shouldSidebarBeOpen({ isMobile }),
-    [isMobile]
-  );
+  // Initialize previous mode on first mount
+  useEffect(() => {
+    if (isInitialMount.current) {
+      previousMode.current = currentMode;
+    }
+  }, [currentMode]);
+
+  // Memoize shouldSidebarBeOpen computation - consider both mobile and tablet as small screens
+  const shouldSidebarBeOpenValue = useMemo(() => {
+    // For small screens (mobile + tablet), default to closed
+    if (isMobile || isTablet) {
+      return false;
+    }
+    return true; // Desktop/laptop default to open
+  }, [isMobile, isTablet]);
 
   // Initialize sidebar mode with debouncing
   useEffect(() => {
@@ -99,8 +109,18 @@ export const useSidebar = (): UseSidebarReturn => {
 
   // Handle sidebar state based on device
   useEffect(() => {
+    // COMPLETELY DISABLE auto-adjust for mobile/tablet - they should respect user actions
+    if (isMobile || isTablet) {
+      if (autoAdjustTimeout.current) {
+        clearTimeout(autoAdjustTimeout.current);
+        autoAdjustTimeout.current = null;
+      }
+      return;
+    }
+
+    // Only run auto-adjust for desktop/laptop devices
     // Skip auto-adjust during initial mount and manual adjustments
-    if (isInitialMount.current || isManualAdjusting || isManualToggle) {
+    if (isInitialMount.current || isManualAdjusting || Date.now() - lastToggleTime.current < 1000) {
       isInitialMount.current = false;
       return;
     }
@@ -111,69 +131,95 @@ export const useSidebar = (): UseSidebarReturn => {
       }
       autoAdjustTimeout.current = setTimeout(() => {
         dispatch(shouldSidebarBeOpenValue ? openSidebar() : closeSidebar());
-      }, 100);
+      }, 200);
     } else {
       if (autoAdjustTimeout.current) {
         clearTimeout(autoAdjustTimeout.current);
         autoAdjustTimeout.current = null;
       }
     }
-  }, [
-    shouldSidebarBeOpenValue,
-    isSidebarOpen,
-    dispatch,
-    isManualAdjusting,
-    isManualToggle
-  ]);
+  }, [shouldSidebarBeOpenValue, isSidebarOpen, dispatch, isManualAdjusting, isMobile, isTablet]);
 
-  // Handle collapse state for desktop and laptop from localStorage
+  // Enhanced transition logic for mode changes with smart state preservation
   useEffect(() => {
-    if ((isDesktop || isLaptop) && typeof window !== "undefined") {
-      const savedCollapsed = localStorage.getItem("sidebar-collapsed");
-      if (savedCollapsed !== null) {
-        dispatch(setCollapsed(JSON.parse(savedCollapsed)));
-      }
-    }
-  }, [isDesktop, isLaptop, dispatch]);
+    if (isManualAdjusting || isInitialMount.current) return;
 
-  // Note: Desktop/laptop modes now default to open state
-  // Toggle functions ensure collapse rather than close behavior
+    const prevMode = previousMode.current;
+    previousMode.current = currentMode;
 
-  // Set isCollapsed based on current mode
-  useEffect(() => {
-    if (isManualAdjusting) return;
-    if (currentMode === "mobile-overlay") {
-      dispatch(setCollapsed(false));
-    } else if (currentMode === "desktop-expandable") {
-      dispatch(setCollapsed(false));
-    } else if (currentMode === "laptop-compact") {
-      const savedCollapsed = localStorage.getItem("sidebar-collapsed");
-      if (savedCollapsed !== null) {
-        dispatch(setCollapsed(JSON.parse(savedCollapsed)));
-      } else {
-        dispatch(setCollapsed(true));
-      }
+    // Skip if mode hasn't actually changed
+    if (prevMode === currentMode) return;
+
+    let newCollapsed = isCollapsed;
+    let newOpen = isSidebarOpen;
+
+    // Handle transitions based on previous mode
+    switch (currentMode) {
+      case "mobile-overlay":
+        // Clean slate for mobile/tablet - reset until user interacts
+        newCollapsed = false;
+        newOpen = false;
+        break;
+
+      case "laptop-compact":
+        if (prevMode === "desktop-expandable") {
+          // Desktop → Laptop: Always compact for laptop
+          newCollapsed = true;
+          // Keep open state
+        } else if (prevMode === "mobile-overlay") {
+          // Mobile/Tablet → Laptop: Start with laptop defaults
+          newCollapsed = true;
+          newOpen = true; // Laptop should be open by default
+        }
+        break;
+
+      case "desktop-expandable":
+        if (prevMode === "laptop-compact") {
+          // Laptop → Desktop: Start expanded, respect user's expanding preference
+          newCollapsed = false;
+          // Keep open state
+        } else if (prevMode === "mobile-overlay") {
+          // Mobile/Tablet → Desktop: Start with desktop defaults
+          newCollapsed = false;
+          newOpen = true; // Desktop should be open by default
+        } else {
+          // First load or direct transition - check localStorage
+          const savedCollapsed = localStorage.getItem("sidebar-collapsed");
+          if (savedCollapsed !== null) {
+            newCollapsed = JSON.parse(savedCollapsed);
+          } else {
+            newCollapsed = false;
+          }
+        }
+        break;
     }
-  }, [currentMode, dispatch, isManualAdjusting]);
+
+    // Apply state changes
+    if (newCollapsed !== isCollapsed) {
+      dispatch(setCollapsed(newCollapsed));
+    }
+    if (newOpen !== isSidebarOpen) {
+      dispatch(newOpen ? openSidebar() : closeSidebar());
+    }
+  }, [currentMode, dispatch, isManualAdjusting, isCollapsed, isSidebarOpen]);
 
   /**
    * Opens the sidebar with manual adjustment tracking
    */
   const open = useCallback(() => {
-    setIsManualToggle(true);
     setIsManualAdjusting(true);
     lastToggleTime.current = Date.now();
     dispatch(openSidebar());
     setTimeout(() => {
       setIsManualAdjusting(false);
-    }, 500);
+    }, 1000); // Increased to match debounce timing + buffer
   }, [dispatch]);
 
   /**
    * Closes the sidebar with manual adjustment tracking
    */
   const close = useCallback(() => {
-    setIsManualToggle(true);
+    console.log("useSidebar: close() function triggered");
     setIsManualAdjusting(true);
     lastToggleTime.current = Date.now();
     dispatch(closeSidebar());
@@ -188,7 +234,6 @@ export const useSidebar = (): UseSidebarReturn => {
    * Mobile/Tablet: Toggles between open/closed states
    */
   const toggle = useCallback(() => {
-    setIsManualToggle(true);
     setIsManualAdjusting(true);
     lastToggleTime.current = Date.now();
 
@@ -202,13 +247,18 @@ export const useSidebar = (): UseSidebarReturn => {
       dispatch(openSidebar());
     } else {
       // Mobile/tablet: Simple open/close logic
+      console.log(
+        `useSidebar: toggle() - mobile/tablet - triggering ${isSidebarOpen ? "closeSidebar()" : "openSidebar()"}`
+      );
       dispatch(isSidebarOpen ? closeSidebar() : openSidebar());
     }
 
+    // Extended manual toggle duration for mobile/tablet to prevent auto-adjust conflicts
+    const resetDelay = isMobile || isTablet ? 2500 : 1000; // 2.5s for mobile/tablet, 1s for others
     setTimeout(() => {
       setIsManualAdjusting(false);
-    }, 500);
-  }, [isDesktop, isLaptop, isCollapsed, dispatch, isSidebarOpen]);
+    }, resetDelay);
+  }, [isDesktop, isLaptop, isCollapsed, dispatch, isSidebarOpen, isMobile, isTablet]);
 
   /**
    * Toggles the collapsed state of the sidebar
@@ -220,7 +270,6 @@ export const useSidebar = (): UseSidebarReturn => {
 
     if (isDesktop || isLaptop) {
       const newCollapsed = !isCollapsed;
-      setIsManualToggle(true);
       setIsManualAdjusting(true);
       lastToggleTime.current = Date.now();
       dispatch(setCollapsed(newCollapsed));
@@ -239,22 +288,25 @@ export const useSidebar = (): UseSidebarReturn => {
    * Toggles the expansion state of a specific menu item
    * @param title - The title of the menu item to toggle
    */
-  const handleToggleMenu = useCallback((title: string) => {
-    dispatch(toggleOpenMenu(title));
-  }, [dispatch]);
+  const handleToggleMenu = useCallback(
+    (title: string) => {
+      dispatch(toggleOpenMenu(title));
+    },
+    [dispatch]
+  );
 
   return {
     // State
-    isSidebarOpen,      // boolean: Current open state
-    isCollapsed,        // boolean: Current collapsed state (desktop/laptop)
-    currentMode,        // SidebarMode: Active responsive mode
-    openMenus,          // string[]: Currently expanded menu items
+    isSidebarOpen, // boolean: Current open state
+    isCollapsed, // boolean: Current collapsed state (desktop/laptop)
+    currentMode, // SidebarMode: Active responsive mode
+    openMenus, // string[]: Currently expanded menu items
 
     // Actions
-    open,               // (): Opens sidebar manually
-    close,              // (): Closes sidebar manually
-    toggle,             // (): Toggles sidebar (device-adaptive)
-    toggleCollapse,     // (): Toggles collapsed state (desktop/laptop)
+    open, // (): Opens sidebar manually
+    close, // (): Closes sidebar manually
+    toggle, // (): Toggles sidebar (device-adaptive)
+    toggleCollapse, // (): Toggles collapsed state (desktop/laptop)
     toggleMenu: handleToggleMenu, // (title: string): Toggles menu expansion
   } as const;
 };
