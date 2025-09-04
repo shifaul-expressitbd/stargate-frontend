@@ -68,18 +68,18 @@ export const Sidebar = memo(({ }: SidebarProps) => {
   }), [currentMode, isCollapsed, isMobile, isTablet]);
 
   // Memoize sidebar width class
-  const sidebarWidthClass = useMemo(() => {
-    switch (currentMode) {
-      case 'mobile-overlay':
-        return 'w-80';
-      case 'laptop-compact':
-        return isCollapsed ? 'w-20' : 'w-64';
-      case 'desktop-expandable':
-        return isCollapsed ? 'w-20' : 'w-64';
-      default:
-        return 'w-64';
-    }
-  }, [currentMode, isCollapsed]);
+  // const sidebarWidthClass = useMemo(() => {
+  //   switch (currentMode) {
+  //     case 'mobile-overlay':
+  //       return 'w-80';
+  //     case 'laptop-compact':
+  //       return isCollapsed ? 'w-20' : 'w-64';
+  //     case 'desktop-expandable':
+  //       return isCollapsed ? 'w-20' : 'w-64';
+  //     default:
+  //       return 'w-64';
+  //   }
+  // }, [currentMode, isCollapsed]);
 
   // Memoize isDisabled function
   const isDisabled = useCallback((path: string | undefined) => {
@@ -161,7 +161,9 @@ export const Sidebar = memo(({ }: SidebarProps) => {
           currentMode === 'mobile-overlay' && isSidebarOpen ? "shadow-xl" : ""
         )}
       >
-        <div className={twMerge("flex flex-col h-full font-plusjakarta text-sm", sidebarWidthClass)}>
+        <div className={twMerge("flex flex-col h-full font-plusjakarta text-sm w-fit",
+          // sidebarWidthClass
+        )}>
           {/* Header */}
           <div className={twMerge(
             color === 'cosmic'
