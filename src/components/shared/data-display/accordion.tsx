@@ -8,6 +8,14 @@ type AccordionTriggerProps = {
   isOpen: boolean;
 };
 
+// New CollapsibleTrigger Props with title and date support
+type CollapsibleTriggerProps = {
+  title: string;
+  date?: string;
+  onClick: () => void;
+  isOpen: boolean;
+};
+
 // Accordion Content Props
 type AccordionContentProps = {
   children: React.ReactNode;
@@ -38,6 +46,34 @@ export const AccordionTrigger = ({
   );
 };
 
+// Collapsible Trigger Component (compatible with Collapsible API)
+export const CollapsibleTrigger = ({
+  title,
+  date,
+  onClick,
+  isOpen,
+}: CollapsibleTriggerProps) => {
+  const triggerClass = twMerge(
+    "flex justify-between items-center cursor-pointer p-4 bg-black/20 rounded-t-lg hover:bg-black/40 dark:bg-black/60 dark:hover:bg-black/40 hover:shadow-lg hover:shadow-blue-500/25 hover:shadow-cyan-400/20 transition-all duration-300 text-white font-orbitron border border-white/10 backdrop-blur-sm animate-hologram",
+    isOpen ? "" : "rounded-b-lg"
+  );
+
+  return (
+    <div
+      className={triggerClass}
+      onClick={onClick}
+    >
+      <div className="flex items-center justify-between flex-1">
+        <h4 className="font-medium">{title}</h4>
+        {date && <span className="text-muted-foreground text-xs">{date}</span>}
+      </div>
+      <span className="transform transition-transform duration-200">
+        {isOpen ? "▲" : "▼"}
+      </span>
+    </div>
+  );
+};
+
 // Accordion Content Component
 export const AccordionContent = ({
   children,
@@ -52,6 +88,52 @@ export const AccordionContent = ({
         }`}>
         {children}
       </div>
+    </div>
+  );
+};
+
+// Collapsible Component (compatible with original Collapsible API, now supports controlled state)
+export const Collapsible = ({
+  title,
+  date,
+  children,
+  defaultOpen = false,
+  className = '',
+  isOpen: controlledIsOpen,
+  onToggle
+}: {
+  title: string;
+  date?: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+  className?: string;
+  isOpen?: boolean;
+  onToggle?: () => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  const isControlled = controlledIsOpen !== undefined;
+  const currentIsOpen = isControlled ? controlledIsOpen : isOpen;
+
+  const toggleOpen = () => {
+    if (onToggle) {
+      onToggle();
+    } else if (!isControlled) {
+      setIsOpen(!isOpen);
+    }
+  };
+
+  return (
+    <div className={`rounded-lg border ${className}`}>
+      <CollapsibleTrigger
+        title={title}
+        date={date}
+        onClick={toggleOpen}
+        isOpen={currentIsOpen}
+      />
+      <AccordionContent isOpen={currentIsOpen}>
+        {children}
+      </AccordionContent>
     </div>
   );
 };
@@ -78,3 +160,4 @@ export const Accordion = ({ trigger, children }: AccordionProps) => {
     </div>
   );
 };
+

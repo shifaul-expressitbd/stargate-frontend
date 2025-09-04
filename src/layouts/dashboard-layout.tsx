@@ -73,13 +73,63 @@ export const DashboardLayout = memo(() => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current)
     }
   }, [])
-
   // handleLogout is now memoized above
 
+  // Cosmic particle component
+  const CosmicParticle = ({
+    delay = '0s',
+    size = '4px',
+    color = 'cyan',
+    style = {}
+  }: {
+    delay?: string;
+    size?: string;
+    color?: string;
+    style?: React.CSSProperties;
+  }) => {
+    const colorMap = {
+      cyan: 'bg-cyan-400',
+      purple: 'bg-purple-400',
+      blue: 'bg-blue-400'
+    };
 
+    return (
+      <div
+        className={`absolute rounded-full ${colorMap[color as keyof typeof colorMap]} opacity-60 animate-floatParticle pointer-events-none`}
+        style={{
+          width: size,
+          height: size,
+          animationDelay: delay,
+          animationDuration: '8s',
+          ...style,
+        }}
+      />
+    );
+  };
 
   return (
     <div className="relative flex w-full min-h-dvh bg-main dark:bg-black overflow-hidden">
+      {/* Cosmic Background with Particles */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-black to-slate-900" />
+
+        {/* Floating Particles */}
+        <CosmicParticle delay="0s" size="3px" color="cyan" style={{ top: '10%', left: '10%' }} />
+        <CosmicParticle delay="1s" size="2px" color="purple" style={{ top: '20%', left: '80%' }} />
+        <CosmicParticle delay="2s" size="4px" color="blue" style={{ top: '30%', left: '20%' }} />
+        <CosmicParticle delay="1.5s" size="2px" color="cyan" style={{ top: '40%', left: '90%' }} />
+        <CosmicParticle delay="0.5s" size="3px" color="purple" style={{ top: '50%', left: '30%' }} />
+        <CosmicParticle delay="3s" size="2px" color="blue" style={{ top: '60%', left: '70%' }} />
+        <CosmicParticle delay="2.5s" size="4px" color="cyan" style={{ top: '70%', left: '15%' }} />
+        <CosmicParticle delay="0.8s" size="3px" color="purple" style={{ top: '80%', left: '85%' }} />
+        <CosmicParticle delay="1.2s" size="2px" color="blue" style={{ top: '85%', left: '40%' }} />
+        <CosmicParticle delay="2.2s" size="3px" color="cyan" style={{ top: '15%', left: '60%' }} />
+
+        {/* Subtle Gradient Overlays */}
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/5 to-purple-500/5" />
+      </div>
+
       {/* Sidebar */}
 
       <Sidebar handleLogout={handleLogout} />
@@ -87,14 +137,13 @@ export const DashboardLayout = memo(() => {
       {/* Main Content */}
       <main
         className={`
-          w-full transition-all duration-300 ease-in-out
+          w-full max-h-dvh transition-all duration-300 ease-in-out
           ml-[${sidebarMargin}px]
-          p-2 scrollbar-thin
+          p-2 scrollbar-none overflow-hidden
         `}
       >
 
-        <Navbar handleLogout={handleLogout} />
-
+        <Navbar />
         <Outlet />
       </main>
 

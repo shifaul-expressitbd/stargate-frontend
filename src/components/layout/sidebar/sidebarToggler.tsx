@@ -2,10 +2,9 @@ import { useResponsive } from '@/hooks/useResponsive';
 import { useSidebar } from '@/hooks/useSidebar';
 import { getTogglerTooltip } from '@/utils/sidebarUtils';
 import { AnimatePresence, motion } from 'motion/react';
+import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
 import {
   HiBars3,
-  HiBarsArrowDown,
-  HiBarsArrowUp,
   HiMiniBars3CenterLeft,
   HiXMark
 } from 'react-icons/hi2';
@@ -46,9 +45,7 @@ export const SidebarToggler = ({
   const getIcon = () => {
     if (isMobile) return isSidebarOpen ? HiXMark : HiBars3;
     if (isDesktop) {
-      if (isCollapsed) return HiBarsArrowDown;
-      if (isSidebarOpen) return HiBarsArrowUp;
-      return HiBars3;
+      return isCollapsed ? GoSidebarCollapse : GoSidebarExpand;
     }
     return isSidebarOpen ? HiMiniBars3CenterLeft : HiBars3;
   };
@@ -99,9 +96,9 @@ export const SidebarToggler = ({
       <AnimatePresence mode='wait'>
         <motion.div
           key={`${isSidebarOpen}-${isCollapsed}`}
-          initial={{ opacity: 0, scale: 0.8, rotate: -45 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          exit={{ opacity: 0, scale: 0.8, rotate: 45 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.2, ease: 'easeInOut' }}
         >
           <IconComponent className={twMerge(

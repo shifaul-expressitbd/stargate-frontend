@@ -190,6 +190,8 @@ export const baseApi = createApi({
     "areasOfExpense",
     "missingProducts",
     "dashboard",
+    "sgtmContainers",
+    "sgtmRegions",
   ],
   endpoints: () => ({}),
 });

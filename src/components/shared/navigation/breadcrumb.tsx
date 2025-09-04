@@ -10,14 +10,27 @@ interface BreadcrumbItem {
 interface BreadcrumbProps {
   separator?: React.ReactNode;
   className?: string;
+  itemClassName?: string;
+  iconClassName?: string;
   labelMap?: Record<string, string>;
+  homeLabel?: string;
 }
 
 export const Breadcrumb = ({
   separator = "/",
   className = "",
+  itemClassName = "",
+  iconClassName = "",
   labelMap = {},
+  homeLabel = "Home",
 }: BreadcrumbProps) => {
+  // Helper function to filter out hover-related classes for non-link elements
+  const filterHoverClasses = (classes: string) => {
+    return classes
+      .split(' ')
+      .filter(cls => !cls.includes('hover:') && !cls.includes('focus:') && !cls.includes('active:'))
+      .join(' ');
+  };
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
 
@@ -33,26 +46,27 @@ export const Breadcrumb = ({
   });
 
   breadcrumbItems.unshift({
-    label: "Home",
+    label: homeLabel,
     path: "/",
-    icon: <RiHome6Line className="w-4 h-4" />,
+    icon: <RiHome6Line className={`w-4 h-4 ${iconClassName || 'text-white'}`} />,
   });
 
   return (
     <nav className={`flex items-center space-x-2 ${className}`}>
       {breadcrumbItems.map((item, index) => (
         <div key={index} className="flex items-center">
-          {item.icon && <span className="mr-2">{item.icon}</span>}
+          {item.icon && <span className={`mr-2 ${iconClassName || itemClassName}`}>{item.icon}</span>}
 
           {index < breadcrumbItems.length - 1 ? (
             <Link
               to={item.path}
-              className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className={`${itemClassName} hover:opacity-80 transition-colors`}
+              style={{ fontSize: itemClassName ? 'inherit' : '0.875rem', fontWeight: itemClassName ? 'inherit' : '500' }}
             >
               {item.label}
             </Link>
           ) : (
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-400">
+            <span className={`${filterHoverClasses(itemClassName)}`}>
               {item.label}
             </span>
           )}

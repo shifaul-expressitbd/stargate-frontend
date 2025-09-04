@@ -2,11 +2,14 @@ import AdminDashboard from "@/pages/(admin)/AdminDashboard";
 import type { IconType } from "react-icons";
 import {
   FaBlender,
+  FaBookOpen,
   FaBox,
   FaChartLine,
   FaCheckCircle,
   FaCogs,
   FaCreditCard,
+  FaDatabase,
+  FaList,
   FaRegEnvelope,
   FaShoppingCart,
   FaTachometerAlt,
@@ -49,6 +52,9 @@ const iconMap: Record<string, IconType> = {
   FaShoppingCart: FaShoppingCart,
   FaChartLine: FaChartLine,
   FaCogs: FaCogs,
+  FaBookOpen: FaBookOpen,
+  FaDatabase: FaDatabase,
+  FaList: FaList,
 };
 
 // Default admin menu items
@@ -86,12 +92,39 @@ export const adminMenuItems: MenuItem[] = [
   },
 ];
 
-// Development user menu items (fallback when no backend data)
+// Development user menu items - TAGGRS Structure (fallback when no backend data)
 export const devUserMenuItems: MenuItem[] = [
   {
     title: "Dashboard",
     path: "/dashboard",
-    icon: FaTachometerAlt,
+    icon: FaTachometerAlt, // Using existing icon for panels-top-left equivalent
+  },
+  {
+    title: "Products",
+    path: "/products",
+    icon: FaDatabase,
+  },
+  {
+    title: "Documentation",
+    path: "/documentation",
+    icon: FaBookOpen,
+    submenu: [
+      {
+        title: "Getting Started",
+        path: "/documentation/getting-started",
+        icon: FaList,
+      },
+      {
+        title: "GTM Templates",
+        path: "/documentation/tracking-templates",
+        icon: FaBox,
+      },
+      {
+        title: "Trust & Safety",
+        path: "/documentation/transparency-center",
+        icon: FaCheckCircle,
+      },
+    ],
   },
   {
     title: "Profile",
@@ -99,44 +132,9 @@ export const devUserMenuItems: MenuItem[] = [
     icon: FaUser,
   },
   {
-    title: "Payments",
-    path: "/payment",
-    icon: FaCreditCard,
-  },
-  {
-    title: "Subscription",
-    path: "/subscription",
-    icon: FaCheckCircle,
-  },
-  {
-    title: "Site Store",
-    path: "/siteStore",
-    icon: MdLocalGroceryStore,
-  },
-  {
-    title: "Products",
-    path: "/products",
-    icon: FaBox,
-  },
-  {
-    title: "Orders",
-    path: "/orders",
-    icon: FaShoppingCart,
-  },
-  {
     title: "Support",
     path: "/support",
     icon: MdSupportAgent,
-  },
-  {
-    title: "Analytics",
-    path: "/analytics",
-    icon: FaChartLine,
-  },
-  {
-    title: "Settings",
-    path: "/settings",
-    icon: FaCogs,
   },
 ];
 

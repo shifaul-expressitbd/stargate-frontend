@@ -5,19 +5,17 @@ import { useAuth } from '@/hooks/useAuth';
 import { useResponsive } from '@/hooks/useResponsive';
 import { useSidebar } from '@/hooks/useSidebar';
 import { useSubscription } from '@/hooks/useSubscription';
+import useTheme from '@/hooks/useTheme';
 import { setOpenMenus } from '@/lib/features/sidebar/sidebarSlice';
 import { sidebarRef } from '@/lib/refs';
 import { shouldShowLabels } from '@/utils/sidebarUtils';
 import { motion } from 'motion/react';
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { FaCaretDown, FaCaretUp, FaTimes } from 'react-icons/fa';
-import { MdLogout } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
 import avatar from '/images/avatar/avatar1.png';
-
-// Create ref outside component
 
 
 const ALWAYS_ACTIVE_PATHS = [
@@ -34,10 +32,11 @@ interface SidebarProps {
   handleLogout: () => void;
 }
 
-export const Sidebar = memo(({ handleLogout }: SidebarProps) => {
+export const Sidebar = memo(({ }: SidebarProps) => {
   const { isMobile } = useResponsive();
   const dispatch = useDispatch();
   const { pathname } = useLocation();
+  const { color } = useTheme();
   const {
     isSidebarOpen,
     isCollapsed,
@@ -88,8 +87,21 @@ export const Sidebar = memo(({ handleLogout }: SidebarProps) => {
     return false;
   }, [isExpired]);
 
-  // Memoize handleLogout
-  const handleLogoutMemoized = useCallback(() => handleLogout(), [handleLogout]);
+  // Memoize cosmic background decorations
+  const cosmicDecorations = useMemo(() => color === 'cosmic' ? (
+    <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+      {/* Subtle Gradient Overlays */}
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/5 to-purple-500/5" />
+
+      {/* Glowing Borders */}
+      <div className="absolute inset-4 border border-cyan-400/20 rounded-xl animate-pulse" style={{ animationDuration: '3s' }} />
+      <div className="absolute inset-2 border border-purple-400/15 rounded-xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
+
+      {/* Floating Particles */}
+      <div className="absolute top-4 right-6 w-1 h-1 bg-cyan-400 rounded-full animate-ping opacity-60" style={{ animationDuration: '2s' }} />
+      <div className="absolute bottom-6 left-8 w-1 h-1 bg-purple-400 rounded-full animate-ping opacity-40" style={{ animationDuration: '3s', animationDelay: '1.5s' }} />
+    </div>
+  ) : null, [color]);
 
   // Auto-expand relevant menu on route change
   useEffect(() => {
@@ -137,7 +149,10 @@ export const Sidebar = memo(({ handleLogout }: SidebarProps) => {
       ref={el => { sidebarRef.current = el; }}
       data-testid="sidebar"
       className={twMerge(
-        "min-h-dvh bg-white dark:bg-primary-dark",
+        "min-h-dvh max-h-dvh backdrop-blur-md relative overflow-hidden",
+        color === 'cosmic'
+          ? "bg-black/60 border-r border-cyan-400/30"
+          : "bg-white dark:bg-primary-dark",
         currentMode === 'mobile-overlay' ? "fixed inset-y-0 left-0 top-0 z-50" : "relative",
         isSidebarOpen ? "block" : "hidden",
         currentMode === 'mobile-overlay' && isSidebarOpen ? "shadow-xl" : ""
@@ -146,31 +161,33 @@ export const Sidebar = memo(({ handleLogout }: SidebarProps) => {
       <div className={twMerge("flex flex-col h-full font-plusjakarta text-sm", sidebarWidthClass)}>
         {/* Header */}
         <div className={twMerge(
-          'border-b border-gray-200 dark:border-gray-700',
+          color === 'cosmic'
+            ? 'border-b border-cyan-400/30'
+            : 'border-b border-gray-200 dark:border-gray-700',
           isCollapsed ? 'p-4' : 'px-5 py-4'
         )}>
           {/* User Info */}
           {showLabels ? (
-            <div className='w-full text-gray-500 dark:text-white flex gap-3 items-center'>
+            <div className={twMerge(
+              'w-full dark:text-white flex gap-3 items-center',
+              color === 'cosmic' ? 'text-cyan-200' : 'text-gray-500'
+            )}>
               <Link to='/profile' className='min-w-fit'>
-
                 <img
-                  src={avatar}
-                  alt={`${user?.name || 'User'} profile picture`}
-                  className='w-10 h-10 rounded-full aspect-square object-cover'
+                  src='/images/logo/logo.png'
+                  alt="StarGate"
+                  className='w-10 h-10 aspect-square object-cover dark:hidden'
                 />
-
+                <img
+                  src='/images/logo/logo-white.png'
+                  alt="StarGate"
+                  className='w-10 h-10 aspect-square object-cover hidden dark:block'
+                />
               </Link>
               <div className='max-w-[75%] min-w-0'>
-                <p className='text-base font-semibold capitalize truncate'>
-                  {user?.name}
+                <p className='text-3xl leading-10 font-asimovian font-extrabold text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text drop-shadow-[0_0_8px_rgba(138,43,226,0.6)] truncate'>
+                  StarGate
                 </p>
-                {!isExpired && remainingTime.text && (
-                  <p className={getStatusColor(remainingTime)}>
-                    {remainingTime.text}
-                  </p>
-                )}
-                {isExpired && <p className='text-red-500 text-xs'>Expired</p>}
               </div>
             </div>
           ) : (
@@ -182,13 +199,16 @@ export const Sidebar = memo(({ handleLogout }: SidebarProps) => {
                 showArrow={true}
               >
                 <Link to='/profile' className='block'>
-
                   <img
-                    src={avatar}
-                    alt={`${user?.name || 'User'} profile picture`}
-                    className='w-8 h-8 rounded-full aspect-square object-cover transition-transform duration-200 hover:scale-110'
+                    src='/images/logo/logo.png'
+                    alt="StarGate"
+                    className='w-8 h-8 rounded-full aspect-square object-cover transition-transform duration-200 hover:scale-110 dark:hidden'
                   />
-
+                  <img
+                    src='/images/logo/logo-white.png'
+                    alt="StarGate"
+                    className='w-8 h-8 rounded-full aspect-square object-cover transition-transform duration-200 hover:scale-110 hidden dark:block'
+                  />
                 </Link>
               </Tooltip>
             </div>
@@ -198,10 +218,17 @@ export const Sidebar = memo(({ handleLogout }: SidebarProps) => {
           {isMobile && isSidebarOpen && (
             <button
               onClick={closeSidebar}
-              className="fixed top-4 right-4 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className={twMerge(
+                "fixed top-4 right-4 p-2 rounded-md transition-colors",
+                color === 'cosmic'
+                  ? "hover:bg-cyan-500/20 dark:hover:bg-gray-800"
+                  : "hover:bg-gray-100 dark:hover:bg-gray-800"
+              )}
               aria-label="Close sidebar"
             >
-              <FaTimes className="w-4 h-4" />
+              <FaTimes className={twMerge(
+                color === 'cosmic' ? "text-cyan-400" : "text-gray-600 dark:text-gray-400"
+              )} />
             </button>
           )}
         </div>
@@ -209,7 +236,7 @@ export const Sidebar = memo(({ handleLogout }: SidebarProps) => {
         {/* Menu */}
         <nav
           className={twMerge(
-            'flex-1 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-track-gray-700 py-4 space-y-2',
+            'flex-1 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-400/20 scrollbar-track-gray-100/0 hover:scrollbar-thumb-gray-400 hover:scrollbar-track-gray-100 dark:scrollbar-track-gray-700 py-4 space-y-2',
             showLabels ? 'px-5' : 'px-2'
           )}
           role="navigation"
@@ -226,6 +253,7 @@ export const Sidebar = memo(({ handleLogout }: SidebarProps) => {
                   isDisabled={isDisabled}
                   showLabels={showLabels}
                   isOpen={openMenus.includes(item.title as string)}
+                  color={color}
                 />
               </ErrorBoundary>
             );
@@ -234,46 +262,77 @@ export const Sidebar = memo(({ handleLogout }: SidebarProps) => {
 
         {/* Footer */}
         <div className={twMerge(
-          'border-t border-gray-200 dark:border-gray-700',
+          color === 'cosmic'
+            ? 'border-t border-cyan-400/30'
+            : 'border-t border-gray-200 dark:border-gray-700',
           showLabels ? 'p-3' : 'p-2'
         )}>
-          <Tooltip content={!showLabels ? 'Sign Out' : ''}>
-            <button
-              onClick={handleLogoutMemoized}
-              className={twMerge(
-                'flex items-center p-3 rounded-lg font-medium transition-all duration-200 group w-full',
-                showLabels
-                  ? 'gap-3 text-gray-600 dark:text-white hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900'
-                  : 'flex-col gap-2 justify-center text-gray-600 dark:text-white hover:bg-red-50 hover:text-red-600',
-                'focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50'
-              )}
-              aria-label="Sign Out"
-            >
-              <MdLogout className={twMerge(
-                'transition-colors duration-200',
-                showLabels ? 'w-5 h-5' : 'w-6 h-6',
-                'text-gray-500 dark:text-gray-400 group-hover:text-red-500'
-              )} />
-              {showLabels && <span className='text-nowrap'>Sign Out</span>}
-            </button>
-          </Tooltip>
+          {showLabels ? (
+            <div className={twMerge(
+              'w-full dark:text-white flex gap-3 items-center',
+              color === 'cosmic' ? 'text-cyan-200' : 'text-gray-500'
+            )}>
+              <Link to='/profile' className='min-w-fit'>
+                <img
+                  src={avatar}
+                  alt={`${user?.name || 'User'} profile picture`}
+                  className='w-10 h-10 rounded-full aspect-square object-cover'
+                />
+              </Link>
+              <div className='max-w-[75%] min-w-0'>
+                <p className='text-lg leading-6 font-semibold capitalize truncate'>
+                  {user?.name}
+                </p>
+                {!isExpired && remainingTime.text && (
+                  <p className={twMerge(getStatusColor(remainingTime, color), 'text-sm')}>
+                    {remainingTime.text}
+                  </p>
+                )}
+                {isExpired && (
+                  <p className={color === 'cosmic' ? 'text-red-400 text-sm' : 'text-red-500 text-sm'}>
+                    Expired
+                  </p>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className='w-full flex justify-center'>
+              <Tooltip
+                content={user?.name || 'Profile'}
+                position="right"
+                delay={600}
+                showArrow={true}
+              >
+                <Link to='/profile' className='block'>
+                  <img
+                    src={avatar}
+                    alt={`${user?.name || 'User'} profile picture`}
+                    className='w-8 h-8 rounded-full aspect-square object-cover transition-transform duration-200 hover:scale-110'
+                  />
+                </Link>
+              </Tooltip>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Cosmic Background Decorations */}
+      {cosmicDecorations}
     </aside>
   );
 });
 
 // Helper Functions
-const getStatusColor = (remainingTime: { unit: string; value: number }) => {
+const getStatusColor = (remainingTime: { unit: string; value: number }, color?: string) => {
   const { unit, value } = remainingTime;
 
   if ((unit === 'days' && value <= 1) || unit === 'hours' || unit === 'minutes') {
-    return 'text-red-700 dark:text-red-400';
+    return color === 'cosmic' ? 'text-red-400' : 'text-red-700 dark:text-red-400';
   }
   if (unit === 'days' && value <= 3) {
-    return 'text-yellow-700 dark:text-yellow-400';
+    return color === 'cosmic' ? 'text-yellow-400' : 'text-yellow-700 dark:text-yellow-400';
   }
-  return 'text-green-700 dark:text-green-400';
+  return color === 'cosmic' ? 'text-green-400' : 'text-green-700 dark:text-green-400';
 };
 
 interface MenuItemProps {
@@ -281,13 +340,15 @@ interface MenuItemProps {
   isDisabled: (path: string | undefined) => boolean;
   showLabels: boolean;
   isOpen: boolean;
+  color: string;
 }
 
-const MenuItem = ({
+const MenuItem = memo(({
   item,
   isDisabled,
   showLabels,
-  isOpen
+  isOpen,
+  color
 }: MenuItemProps) => {
   const { toggle, toggleMenu, close } = useSidebar();
   const isDesktop = useMemo(() => window.innerWidth >= 1920, []);
@@ -298,11 +359,13 @@ const MenuItem = ({
         <button
           onClick={() => !isDisabled(item.path) && toggleMenu(item.title as string)}
           className={twMerge(
-            'flex items-center justify-between w-full p-3 rounded-lg transition-all duration-200 hover:bg-orange-50 dark:hover:bg-gray-800 group',
-            showLabels ? 'gap-3' : 'flex-col gap-2 justify-center',
+            'flex items-center justify-between w-full p-3  transition-all duration-200 group',
+            showLabels ? 'gap-3 rounded-l-lg' : 'flex-col gap-2 justify-center rounded-lg',
             isDisabled(item.path)
               ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-60'
-              : 'text-gray-600 dark:text-white hover:text-orange-600'
+              : color === 'cosmic'
+                ? 'text-cyan-200 hover:bg-cyan-50 dark:hover:bg-cyan-900/20 hover:text-cyan-600'
+                : 'text-gray-600 dark:text-white hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-gray-800'
           )}
           disabled={isDisabled(item.path)}
           aria-expanded={isOpen}
@@ -321,7 +384,9 @@ const MenuItem = ({
                   showLabels ? 'w-5 h-5' : 'w-6 h-6',
                   isDisabled(item.path)
                     ? 'text-gray-400 dark:text-gray-500'
-                    : 'text-gray-500 dark:text-gray-400 group-hover:text-orange-500'
+                    : color === 'cosmic'
+                      ? 'text-gray-500 dark:text-gray-400 group-hover:text-cyan-500'
+                      : 'text-gray-500 dark:text-gray-400 group-hover:text-orange-500'
                 )} />
               </Tooltip>
             )}
@@ -350,13 +415,17 @@ const MenuItem = ({
                   to={isDisabled(sub.path) ? '#' : sub.path!}
                   onClick={() => !isDisabled(sub.path) && !isDesktop && close()}
                   className={({ isActive }) => twMerge(
-                    'block p-2 rounded-md transition-all duration-200 text-sm',
+                    'block p-2 rounded-l-md transition-all duration-200 text-sm',
                     showLabels ? 'pl-6' : 'text-center',
                     isDisabled(sub.path)
                       ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-60'
                       : isActive
-                        ? 'bg-orange-100 text-orange-600 font-semibold dark:bg-orange-900 dark:text-orange-300'
-                        : 'text-gray-600 dark:text-gray-300 hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-gray-800'
+                        ? color === 'cosmic'
+                          ? 'bg-cyan-100 text-cyan-600 font-semibold dark:bg-cyan-900 dark:text-cyan-300'
+                          : 'bg-orange-100 text-orange-600 font-semibold dark:bg-orange-900 dark:text-orange-300'
+                        : color === 'cosmic'
+                          ? 'text-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 dark:bg-gray-800 hover:dark:bg-cyan-900/20'
+                          : 'text-gray-600 dark:text-gray-300 hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-gray-800'
                   )}
                   aria-disabled={isDisabled(sub.path)}
                   tabIndex={isDisabled(sub.path) ? -1 : undefined}
@@ -377,13 +446,17 @@ const MenuItem = ({
       to={isDisabled(item.path) ? '#' : item.path!}
       onClick={() => !isDisabled(item.path) && !isDesktop && toggle()}
       className={({ isActive }) => twMerge(
-        'flex items-center p-3 rounded-lg transition-all duration-200 group relative',
-        showLabels ? 'gap-3' : 'flex-col gap-2 justify-center',
+        'flex items-center p-3 transition-all duration-200 group relative',
+        showLabels ? 'gap-3 rounded-l-lg' : 'flex-col gap-2 justify-center rounded-lg',
         isDisabled(item.path)
           ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-60'
           : isActive
-            ? 'bg-orange-100 text-orange-600 font-semibold dark:bg-orange-900 dark:text-orange-300'
-            : 'text-gray-600 dark:text-white hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-gray-800'
+            ? color === 'cosmic'
+              ? 'bg-cyan-100 text-cyan-600 font-semibold dark:bg-cyan-900 dark:text-cyan-300'
+              : 'bg-orange-100 text-orange-600 font-semibold dark:bg-orange-900 dark:text-orange-300'
+            : color === 'cosmic'
+              ? 'text-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 dark:hover:bg-cyan-900/20'
+              : 'text-gray-600 dark:text-white hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-gray-800'
       )}
       aria-disabled={isDisabled(item.path)}
       tabIndex={isDisabled(item.path) ? -1 : undefined}
@@ -397,11 +470,13 @@ const MenuItem = ({
             showLabels ? 'w-5 h-5' : 'w-6 h-6',
             isDisabled(item.path)
               ? 'text-gray-400 dark:text-gray-500'
-              : 'text-gray-500 dark:text-gray-400 group-hover:text-orange-500'
+              : color === 'cosmic'
+                ? 'text-gray-500 dark:text-gray-400 group-hover:text-cyan-500'
+                : 'text-gray-500 dark:text-gray-400 group-hover:text-orange-500'
           )} />
         </Tooltip>
       )}
       {showLabels && <span className="font-medium">{item.title}</span>}
     </NavLink>
   );
-};
+});
