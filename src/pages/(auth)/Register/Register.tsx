@@ -180,6 +180,7 @@ const Register = () => {
 
           <form onSubmit={onSubmit} className="space-y-4" noValidate>
             <InputField
+              variant='cosmic'
               label='Full Name'
               type='text'
               id='name'
@@ -195,6 +196,7 @@ const Register = () => {
             />
 
             <InputField
+              variant='cosmic'
               label='Email Address'
               type='email'
               id='email'
@@ -211,6 +213,7 @@ const Register = () => {
             />
 
             <InputField
+              variant='cosmic'
               type={showPassword ? 'text' : 'password'}
               id='password'
               label='Password'
@@ -239,6 +242,7 @@ const Register = () => {
             />
 
             <InputField
+              variant='cosmic'
               type={showConfirmPassword ? 'text' : 'password'}
               id='confirmPassword'
               label='Confirm Password'

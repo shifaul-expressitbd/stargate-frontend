@@ -102,3 +102,14 @@ export const EmailExample: Story = {
         onChange: () => { },
     },
 };
+
+export const CosmicVariant: Story = {
+    args: {
+        label: 'Username',
+        id: 'cosmic-username',
+        variant: 'cosmic',
+        icon: FiUser,
+        placeholder: 'Enter galactic username',
+        onChange: () => { },
+    },
+};

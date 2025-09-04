@@ -269,7 +269,7 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            <InputField
+            <InputField variant='cosmic'
               required
               label="Email Address"
               type="email"
@@ -285,7 +285,7 @@ const Login = () => {
               inputMode="email"
             />
 
-            <InputField
+            <InputField variant='cosmic'
               required
               type={showPassword ? 'text' : 'password'}
               id="password"

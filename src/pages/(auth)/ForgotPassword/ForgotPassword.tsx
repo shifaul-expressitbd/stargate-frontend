@@ -124,7 +124,7 @@ const ForgotPassword = () => {
           </div>
 
           <form onSubmit={onSubmit} className="space-y-4" noValidate>
-            <InputField
+            <InputField variant='cosmic'
               label="Quantum Identifier"
               type="text"
               id="credential"

@@ -3,6 +3,8 @@ import type { IconType } from 'react-icons'
 import { twMerge } from 'tailwind-merge'
 import { FormFieldWrapper } from './FormFieldWrapper'
 
+export type InputFieldVariant = 'default' | 'cosmic'
+
 export interface InputFieldProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   id: string
@@ -20,6 +22,7 @@ export interface InputFieldProps
   ref?: React.RefObject<HTMLInputElement | null>
   error?: string
   warning?: string
+  variant?: InputFieldVariant
 }
 
 export const InputField = ({
@@ -37,6 +40,7 @@ export const InputField = ({
   showError = true,
   error,
   warning,
+  variant = 'default',
   ...props
 }: InputFieldProps) => {
   const leftRef = useRef<HTMLDivElement>(null)
@@ -70,10 +74,10 @@ export const InputField = ({
               <div
                 className={twMerge(
                   error
-                    ? 'text-accent'
+                    ? variant === 'cosmic' ? 'text-red-400 dark:text-red-300' : 'text-accent'
                     : typeof value === 'string' && value.length
-                      ? 'text-green-500'
-                      : 'text-gray-400 dark:text-gray-500'
+                      ? variant === 'cosmic' ? 'text-cyan-400 dark:text-cyan-300' : 'text-green-500'
+                      : variant === 'cosmic' ? 'text-cyan-500/70 dark:text-cyan-600/70' : 'text-gray-400 dark:text-gray-500'
                 )}
               >
                 {React.createElement(icon, { className: 'w-4 h-4' })}
@@ -89,14 +93,21 @@ export const InputField = ({
           className={twMerge(
             'w-full h-10 py-2 px-3 rounded border text-sm',
             'focus:outline-none focus:ring-2 focus:border-transparent',
-            'bg-white dark:bg-black text-gray-800 dark:text-white',
+            variant === 'cosmic'
+              ? 'bg-gray-900/80 border-cyan-400/50 text-cyan-100 placeholder-cyan-300/50'
+              + ' hover:border-cyan-300 dark:hover:border-cyan-200'
+              + ' focus:ring-cyan-200/50 dark:focus:ring-cyan-300/30'
+              + ' dark:bg-slate-900 dark:border-cyan-500/50 dark:placeholder-cyan-400/70'
+              : 'bg-white dark:bg-black text-gray-800 dark:text-white',
             'placeholder-gray-400 dark:placeholder-gray-400',
             'disabled:bg-gray-50 dark:disabled:bg-gray-800/50 disabled:opacity-75 disabled:cursor-not-allowed',
             error
               ? 'border-red-500 focus:ring-red-200 dark:focus:ring-red-500/30'
               : warning
                 ? 'border-yellow-500 focus:ring-yellow-200 dark:focus:ring-yellow-500/30'
-                : 'border-gray-300 dark:border-gray-600 hover:border-secondary  dark:hover:border-secondary  focus:ring-orange-200 dark:focus:ring-secondary ',
+                : variant === 'cosmic'
+                  ? ''
+                  : 'border-gray-300 dark:border-gray-600 hover:border-secondary dark:hover:border-secondary focus:ring-orange-200 dark:focus:ring-secondary',
             rightElement ? 'pr-10' : 'pr-3',
             inputClassName
           )}

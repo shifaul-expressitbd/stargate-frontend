@@ -230,7 +230,7 @@ const ResetPassword = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            <InputField
+            <InputField variant='cosmic'
               type={showPassword ? 'text' : 'password'}
               id="newPassword"
               label="New Quantum Code"
@@ -255,7 +255,7 @@ const ResetPassword = () => {
               }
             />
 
-            <InputField
+            <InputField variant='cosmic'
               type={showConfirmPassword ? 'text' : 'password'}
               id="confirmPassword"
               label="Confirm Quantum Code"

@@ -11,7 +11,7 @@ import { sidebarRef } from '@/lib/refs';
 import { shouldShowLabels } from '@/utils/sidebarUtils';
 import { motion } from 'motion/react';
 import { memo, useCallback, useEffect, useMemo } from 'react';
-import { FaCaretDown, FaCaretUp, FaTimes } from 'react-icons/fa';
+import { FaCaretDown, FaCaretUp } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
@@ -152,7 +152,7 @@ export const Sidebar = memo(({ }: SidebarProps) => {
         ref={el => { sidebarRef.current = el; }}
         data-testid="sidebar"
         className={twMerge(
-          "min-h-dvh max-h-dvh backdrop-blur-md relative overflow-hidden",
+          "min-h-dvh max-h-dvh w-fit backdrop-blur-md relative overflow-hidden",
           color === 'cosmic'
             ? "bg-black/60 border-r border-cyan-400/30"
             : "bg-white dark:bg-primary-dark",
@@ -169,7 +169,7 @@ export const Sidebar = memo(({ }: SidebarProps) => {
             color === 'cosmic'
               ? 'border-b border-cyan-400/30'
               : 'border-b border-gray-200 dark:border-gray-700',
-            isCollapsed ? 'p-4' : 'px-5 py-4'
+            isCollapsed ? 'p-4' : 'pl-5 py-4'
           )}>
             {/* User Info */}
             {showLabels ? (
@@ -218,34 +218,13 @@ export const Sidebar = memo(({ }: SidebarProps) => {
                 </Tooltip>
               </div>
             )}
-
-            {/* Mobile Close Button */}
-            {isMobile && isSidebarOpen && (
-              <button
-                onClick={() => {
-                  console.log('sidebar: Mobile close button clicked');
-                  closeSidebar();
-                }}
-                className={twMerge(
-                  "fixed top-4 right-4 p-2 rounded-md transition-colors",
-                  color === 'cosmic'
-                    ? "hover:bg-cyan-500/20 dark:hover:bg-gray-800"
-                    : "hover:bg-gray-100 dark:hover:bg-gray-800"
-                )}
-                aria-label="Close sidebar"
-              >
-                <FaTimes className={twMerge(
-                  color === 'cosmic' ? "text-cyan-400" : "text-gray-600 dark:text-gray-400"
-                )} />
-              </button>
-            )}
           </div>
 
           {/* Menu */}
           <nav
             className={twMerge(
               'flex-1 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-400/20 scrollbar-track-gray-100/0 hover:scrollbar-thumb-gray-400 hover:scrollbar-track-gray-100 dark:scrollbar-track-gray-700 py-4 space-y-2',
-              showLabels ? 'px-5' : 'px-2'
+              showLabels ? 'pl-5' : 'px-2'
             )}
             role="navigation"
             aria-label="Main navigation"
@@ -327,6 +306,7 @@ export const Sidebar = memo(({ }: SidebarProps) => {
         {/* Cosmic Background Decorations */}
         {cosmicDecorations}
       </aside>
+
       <div className={twMerge('w-screen h-screen', (currentMode === 'mobile-overlay' && isSidebarOpen) ? "fixed inset-y-0 left-0 top-0 z-40" : "relative hidden",)} onClick={() => { closeSidebar() }} />
     </>
   );

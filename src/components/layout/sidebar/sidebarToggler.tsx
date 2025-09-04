@@ -87,7 +87,7 @@ export const SidebarToggler = ({
       aria-label={tooltip}
       onClick={handleClick}
       className={twMerge(
-        'relative flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50',
+        'relative flex items-center justify-center aspect-square rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50',
         sizeClasses[size],
         variantClasses[variant],
         className

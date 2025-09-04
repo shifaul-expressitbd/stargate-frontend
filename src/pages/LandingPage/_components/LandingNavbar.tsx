@@ -72,7 +72,7 @@ const LandingNavbar = () => {
                             title="Get Started"
                             onClick={closeMenu}
                         >
-                            <Link to="/register" className="block w-full h-full text-center no-underline">
+                            <Link to="/register" className="block w-full h-full text-center no-underline text-nowrap">
                                 Get Started
                             </Link>
                         </Button>

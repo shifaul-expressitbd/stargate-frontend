@@ -1,6 +1,11 @@
+import { InputField } from '@/components/shared/forms/input-field';
+import Select from '@/components/shared/forms/select';
 import Modal from '@/components/shared/modals/modal';
-import { FaGoogle, FaPlus } from 'react-icons/fa';
-
+import { useCreateContainerMutation, useGetAllContainersWithSyncQuery } from '@/lib/features/sgtm-container/sgtmContainerApi';
+import { useGetAllRegionsQuery } from '@/lib/features/sgtm-region/sgtmRegionApi';
+import { useState } from 'react';
+import { FaCog, FaGlobe, FaGoogle, FaPlus, FaServer } from 'react-icons/fa';
+import { toast } from 'sonner';
 interface AddContainerModalProps {
     isModalOpen: boolean;
     onClose: () => void;
@@ -8,15 +13,121 @@ interface AddContainerModalProps {
     setModalStep: (step: 'select' | 'manual') => void;
 }
 
+interface FormData {
+    name: string
+    subdomain: string
+    config: string
+    region?: string
+}
+
 const AddContainerModal = ({ isModalOpen, onClose, modalStep, setModalStep }: AddContainerModalProps) => {
+    const [formData, setFormData] = useState<FormData>({
+        name: '',
+        subdomain: '',
+        config: '',
+        region: ''
+    })
+
+    const [errors, setErrors] = useState<Record<string, string>>({})
+    // const [warnings, setWarnings] = useState<Record<string, string>>({})
+    const [loading, setLoading] = useState(false)
+
+    const [createContainer] = useCreateContainerMutation()
+    const { refetch: refetchContainers } = useGetAllContainersWithSyncQuery()
+    const { data: regionsData } = useGetAllRegionsQuery()
+
+    const regions = regionsData || []
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target
+        setFormData(prev => ({ ...prev, [name]: value }))
+
+        // Clear error for this field
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: '' }))
+        }
+    }
+
+    const handleRegionChange = (selected: { label: string; value: string | number }[]) => {
+        const value = selected.length > 0 ? selected[0].value.toString() : ''
+        setFormData(prev => ({ ...prev, region: value }))
+
+        if (errors.region) {
+            setErrors(prev => ({ ...prev, region: '' }))
+        }
+    }
+
+    const validateForm = (): boolean => {
+        const newErrors: Record<string, string> = {}
+        const requiredFields: (keyof FormData)[] = ['name', 'subdomain', 'config']
+
+        requiredFields.forEach(field => {
+            if (!formData[field]?.trim()) {
+                newErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required`
+            }
+        })
+
+        // Validate subdomain format (basic domain format check)
+        if (formData.subdomain && !/^[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9]*$/.test(formData.subdomain)) {
+            newErrors.subdomain = 'Subdomain must contain only letters, numbers, and hyphens'
+        }
+
+        setErrors(newErrors)
+        return Object.keys(newErrors).length === 0
+    }
+
+    const onSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+
+        if (!validateForm()) return
+
+        setLoading(true)
+        const toastId = toast.loading('Creating container...', { id: 'create-container' })
+
+        try {
+            const payload = {
+                name: formData.name.trim(),
+                subdomain: formData.subdomain.trim(),
+                config: formData.config.trim(),
+                region: formData.region || undefined
+            }
+
+            await createContainer(payload).unwrap()
+            toast.success('Container created successfully!', { id: toastId })
+
+            // Refresh containers list
+            refetchContainers()
+
+            // Reset form and close modal
+            setFormData({ name: '', subdomain: '', config: '', region: '' })
+            onClose()
+        } catch (error: any) {
+            toast.dismiss(toastId)
+            const errorMessage = error?.data?.message || 'Failed to create container'
+            toast.error(errorMessage)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const regionOptions = regions.map((region: any) => ({
+        label: region.name,
+        value: region.key
+    }))
+
+    const selectedRegion = regionOptions.filter((option: any) => option.value === formData.region)
+
     return (
         <Modal
             isModalOpen={isModalOpen}
             onClose={onClose}
             variant="themed"
             title={modalStep === 'select' ? 'Choose Setup Method' : 'Manual Setup'}
+            showHeader={false}
             showFooter={modalStep === 'manual'}
-            confirmText="Add Container"
+            // onConfirm={modalStep === 'manual' ? onSubmit : undefined}
+            confirmText={loading ? "Creating..." : "Add Container"}
+            isConfirming={loading}
         >
             {modalStep === 'select' ? (
                 <div className="space-y-4">
@@ -46,34 +157,57 @@ const AddContainerModal = ({ isModalOpen, onClose, modalStep, setModalStep }: Ad
                     </button>
                 </div>
             ) : (
-                <div className="space-y-4">
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-orbitron text-primary dark:text-primary-foreground mb-2">Container Name</label>
-                            <input
-                                type="text"
-                                placeholder="Enter container name"
-                                className="w-full p-3 bg-base dark:bg-primary-dark border border-primary/30 dark:border-primary-foreground/30 rounded-lg text-primary dark:text-primary-foreground placeholder-primary/50 focus:outline-none focus:ring-2 focus:ring-primary"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-orbitron text-primary dark:text-primary-foreground mb-2">Container ID</label>
-                            <input
-                                type="text"
-                                placeholder="GTM-XXXXXXX"
-                                className="w-full p-3 bg-base dark:bg-primary-dark border border-primary/30 dark:border-primary-foreground/30 rounded-lg text-primary dark:text-primary-foreground placeholder-primary/50 focus:outline-none focus:ring-2 focus:ring-primary"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-orbitron text-primary dark:text-primary-foreground mb-2">Domain</label>
-                            <input
-                                type="text"
-                                placeholder="yourdomain.com"
-                                className="w-full p-3 bg-base dark:bg-primary-dark border border-primary/30 dark:border-primary-foreground/30 rounded-lg text-primary dark:text-primary-foreground placeholder-primary/50 focus:outline-none focus:ring-2 focus:ring-primary"
-                            />
-                        </div>
-                    </div>
-                </div>
+                <form onSubmit={onSubmit} className="space-y-4">
+                    <InputField variant='cosmic'
+                        id="name"
+                        name="name"
+                        label="Container Name"
+                        type="text"
+                        placeholder="Enter container name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        error={errors.name}
+                        icon={FaServer}
+                        required
+                    />
+
+                    <InputField variant='cosmic'
+                        id="subdomain"
+                        name="subdomain"
+                        label="Subdomain"
+                        type="text"
+                        placeholder="yoursubdomain"
+                        value={formData.subdomain}
+                        onChange={handleChange}
+                        error={errors.subdomain}
+                        icon={FaGlobe}
+                        required
+                    />
+
+                    <InputField variant='cosmic'
+                        id="config"
+                        name="config"
+                        label="Configuration"
+                        placeholder="Enter container configuration (JSON or text)"
+                        value={formData.config}
+                        onChange={handleChange}
+                        error={errors.config}
+                        icon={FaCog}
+                        required
+
+                    />
+
+                    <Select
+                        id="region"
+                        label="Region"
+                        value={selectedRegion}
+                        onChange={handleRegionChange}
+                        options={regionOptions}
+                        placeholder="Select region (optional)"
+                        error={errors.region}
+                        mode="single"
+                    />
+                </form>
             )}
         </Modal>
     );
