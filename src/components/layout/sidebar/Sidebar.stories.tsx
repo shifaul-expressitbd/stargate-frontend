@@ -1,3 +1,4 @@
+import type { SidebarMode } from '@/lib/features/sidebar/sidebarSlice';
 import { ThemeProvider } from '@/lib/providers/theme-provider';
 import { store, type RootState } from '@/lib/store';
 import { expect } from '@storybook/jest';
@@ -34,7 +35,7 @@ const createMockStore = (overrides: Partial<RootState>) => {
                     mockState.sidebar.isCollapsed = action.payload as boolean;
                     break;
                 case 'sidebar/setSidebarMode':
-                    mockState.sidebar.currentMode = action.payload as "mobile-overlay" | "tablet-icon-only" | "laptop-compact" | "desktop-full";
+                    mockState.sidebar.currentMode = action.payload as SidebarMode;
                     break;
                 case 'sidebar/toggleOpenMenu': {
                     const title = action.payload as string;
@@ -184,7 +185,7 @@ const defaultMockState: Partial<RootState> = {
     sidebar: {
         isOpen: true,
         isCollapsed: false,
-        currentMode: 'desktop-full',
+        currentMode: 'desktop-expandable',
         openMenus: [],
     },
 };
@@ -325,7 +326,7 @@ export const ClosedSidebar: Story = {
             sidebar: {
                 isOpen: false,
                 isCollapsed: false,
-                currentMode: 'desktop-full',
+                currentMode: 'desktop-expandable',
                 openMenus: [],
             }
         },
@@ -364,7 +365,7 @@ export const CollapsedSidebar: Story = {
             sidebar: {
                 isOpen: true,
                 isCollapsed: true,
-                currentMode: 'desktop-full',
+                currentMode: 'desktop-expandable',
                 openMenus: [],
             }
         },
@@ -488,7 +489,7 @@ export const ToggleInteraction: Story = {
             sidebar: {
                 isOpen: true,
                 isCollapsed: false,
-                currentMode: 'desktop-full',
+                currentMode: 'desktop-expandable',
                 openMenus: ['Products'],
             }
         },

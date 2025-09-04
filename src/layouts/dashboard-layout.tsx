@@ -1,34 +1,29 @@
-import { useAuth } from '@/hooks/useAuth';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { Navbar } from '@/components/layout/navbar';
 import { Sidebar } from '@/components/layout/sidebar';
 import Modal from '@/components/shared/modals/modal';
+import { useResponsive } from '@/hooks/useResponsive';
 import { useSidebar } from '@/hooks/useSidebar';
 import { logout, selectSubscriptionExpired } from '@/lib/features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { getSidebarWidth } from '@/utils/sidebarUtils';
 import { createPortal } from 'react-dom';
-import { useMediaQuery } from 'react-responsive';
 
 
 export const DashboardLayout = memo(() => {
-  const { } = useAuth()
   const subscriptionExpired = useAppSelector(selectSubscriptionExpired)
   const { isSidebarOpen } = useSidebar()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
 
-  // COMPUTE RESPONSIVE VALUES LOCALLY - BALANCE OF PERFORMANCE AND ACCURACY
-  const mediaQueryOptions = { debounceMs: 100 };
-  const isMobile = useMediaQuery({ query: "(max-width: 767px)", ...mediaQueryOptions });
-  const isTablet = useMediaQuery({ query: "(min-width: 768px) and (max-width: 1279px)", ...mediaQueryOptions });
+  // Use centralized responsive context
+  const { isMobile, isTablet } = useResponsive();
 
   // Memoize sidebar margin to prevent dynamic Tailwind class recreation
   const sidebarMargin = useMemo(() =>
-    (isMobile || (isTablet && !isSidebarOpen)) ? 0 : getSidebarWidth(isMobile, isTablet, false, false, false),
+    (isMobile || (isTablet && !isSidebarOpen)) ? 0 : 250,
     [isMobile, isTablet, isSidebarOpen]
   );
 

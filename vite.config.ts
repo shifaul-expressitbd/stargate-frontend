@@ -47,6 +47,7 @@ export default defineConfig({
         drop_debugger: true,
       },
     },
+    cssMinify: false, // Disable CSS minification to avoid Media Query syntax errors
   },
   test: {
     projects: [

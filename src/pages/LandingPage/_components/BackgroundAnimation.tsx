@@ -199,6 +199,25 @@ const BackgroundAnimation = () => {
         return { patternType, params, startX, startY };
     };
 
+    // Calculate perspective scaling based on distance to center/portal
+    const calculatePerspectiveScale = (shipX: number, shipY: number, centerX: number, centerY: number) => {
+        // Calculate Euclidean distance from spaceship to center/portal
+        const dx = shipX - centerX;
+        const dy = shipY - centerY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        // Perspective scaling formula: smaller when farther away
+        // scale = maxScale - (distance * scaleFactor)
+        // Clamp between min and max scale values
+        const maxScale = 1.2;      // Maximum scale when very close to center
+        const minScale = 0.5;      // Minimum scale when very far from center
+        const scaleFactor = 0.15;  // How quickly scale decreases with distance
+
+        // Calculate scale and clamp to valid range
+        const scale = maxScale - (distance * scaleFactor);
+        return Math.max(minScale, Math.min(maxScale, scale));
+    };
+
     // Calculate position for pattern at given progress (0-1)
     const getPatternPosition = (patternType: string, params: PatternParams, progress: number) => {
         switch (patternType) {
@@ -643,7 +662,7 @@ const BackgroundAnimation = () => {
                 style={{
                     left: `${spaceship.x}%`,
                     top: `${spaceship.y}%`,
-                    transform: `translate(-50%, -50%) ${spaceship.isActive ? 'scale(1)' : 'scale(0.8)'} rotate(${spaceship.rotation}deg)`,
+                    transform: `translate(-50%, -50%) ${spaceship.isActive ? `scale(${calculatePerspectiveScale(spaceship.x, spaceship.y, 50, 50)})` : 'scale(0.8)'} rotate(${spaceship.rotation}deg)`,
                     transition: spaceship.isActive ? 'transform 0.1s linear' : 'none',
                 }}
             >

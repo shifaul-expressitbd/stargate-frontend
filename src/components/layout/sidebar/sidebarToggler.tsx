@@ -1,3 +1,4 @@
+import { useResponsive } from '@/hooks/useResponsive';
 import { useSidebar } from '@/hooks/useSidebar';
 import { getTogglerTooltip } from '@/utils/sidebarUtils';
 import { AnimatePresence, motion } from 'motion/react';
@@ -8,7 +9,6 @@ import {
   HiMiniBars3CenterLeft,
   HiXMark
 } from 'react-icons/hi2';
-import { useMediaQuery } from 'react-responsive';
 import { twMerge } from 'tailwind-merge';
 
 interface SidebarTogglerProps {
@@ -22,12 +22,8 @@ export const SidebarToggler = ({
   variant = 'default',
   className
 }: SidebarTogglerProps) => {
-  const { isSidebarOpen, toggle, isCollapsed, toggleCollapse } = useSidebar();
-
-  // Internal media queries for component logic - following the pattern from useSidebar
-  const mediaQueryOptions = { debounceMs: 100 };
-  const isMobile = useMediaQuery({ query: "(max-width: 767px)", ...mediaQueryOptions });
-  const isDesktop = useMediaQuery({ query: "(min-width: 1920px)", ...mediaQueryOptions });
+  const { isSidebarOpen, isCollapsed, toggle, toggleCollapse } = useSidebar();
+  const { isMobile, isDesktop } = useResponsive();
 
   const sizeClasses = {
     sm: 'w-8 h-8',
@@ -57,7 +53,10 @@ export const SidebarToggler = ({
     return isSidebarOpen ? HiMiniBars3CenterLeft : HiBars3;
   };
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+
     if (isMobile) {
       toggle();
       return;
@@ -72,7 +71,12 @@ export const SidebarToggler = ({
       return;
     }
 
-    toggle();
+    // Tablet behavior
+    if (isSidebarOpen) {
+      toggleCollapse();
+    } else {
+      toggle();
+    }
   };
 
   const IconComponent = getIcon();

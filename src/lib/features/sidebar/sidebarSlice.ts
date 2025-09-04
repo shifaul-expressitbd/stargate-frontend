@@ -1,21 +1,41 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export type SidebarMode = "mobile-overlay" | "tablet-icon-only" | "laptop-compact" | "desktop-full";
+/**
+ * Available sidebar modes based on device type and user preference
+ * - `mobile-overlay`: Full overlay mode for mobile/tablet devices
+ * - `laptop-compact`: Narrow collapsed mode optimized for laptop screens
+ * - `desktop-expandable`: Wide expanded mode for desktop screens (> 1920px)
+ */
+export type SidebarMode = "mobile-overlay" | "laptop-compact" | "desktop-expandable";
 
+/**
+ * Redux state structure for the sidebar feature
+ */
 interface SidebarState {
+  /** Whether the sidebar is currently visible on screen */
   isOpen: boolean;
-  isCollapsed: boolean; // For desktop collapse mode
+  /** Whether the sidebar is in collapsed (narrow) state - desktop/laptop only */
+  isCollapsed: boolean;
+  /** Current responsive mode of the sidebar */
   currentMode: SidebarMode;
-  openMenus: string[]; // Menu items that are expanded
+  /** Array of menu item titles that are currently expanded */
+  openMenus: string[];
 }
 
+/**
+ * Default initial state for the sidebar redux slice
+ */
 const initialState: SidebarState = {
-  isOpen: true,
-  isCollapsed: false,
-  currentMode: "desktop-full",
-  openMenus: [],
+  isOpen: true,                    // Desktop/laptop default to open
+  isCollapsed: false,             // Desktop/laptop default to expanded
+  currentMode: "desktop-expandable", // Default mode for most development environments
+  openMenus: [],                  // No menus expanded by default
 };
 
+/**
+ * Redux slice for managing sidebar state and behavior across all devices
+ * Handles responsive behavior, collapse state, and menu expansions
+ */
 const sidebarSlice = createSlice({
   name: "sidebar",
   initialState,

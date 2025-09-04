@@ -74,7 +74,7 @@ const mockInitialState = {
     sidebar: {
         isOpen: true,
         isCollapsed: false,
-        currentMode: 'desktop-full',
+        currentMode: 'desktop-expandable',
         openMenus: [],
     },
 }
