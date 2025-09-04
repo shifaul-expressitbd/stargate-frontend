@@ -16,6 +16,8 @@ type ModalSize =
   | '5xl'
   | '6xl'
 
+type ModalVariant = 'default' | 'themed' | 'glass'
+
 interface ModalProps {
   isModalOpen: boolean
   onClose: () => void
@@ -29,6 +31,7 @@ interface ModalProps {
   size?: ModalSize
   disableClickOutside?: boolean
   isConfirming?: boolean
+  variant?: ModalVariant
   "aria-label"?: string
 }
 
@@ -56,6 +59,7 @@ const Modal: React.FC<ModalProps> = ({
   size = 'md',
   disableClickOutside = false,
   isConfirming = false,
+  variant = 'default',
   "aria-label": ariaLabel,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null)
@@ -143,6 +147,12 @@ const Modal: React.FC<ModalProps> = ({
     }
   }
 
+  // Prepare classes based on variant
+  const overlayClasses = variant === 'glass' ? 'backdrop-blur-md bg-black/40 dark:bg-black/40' : 'bg-black/80 dark:bg-black/60'
+  const modalBgClasses = variant === 'themed' ? 'bg-base dark:bg-primary-dark' : variant === 'glass' ? 'backdrop-blur-xl bg-white/70 dark:bg-primary-dark/70 border border-gray-300/50 dark:border-gray-600/50' : 'bg-white dark:bg-primary-dark'
+  const headerClasses = variant === 'glass' ? 'bg-base/60 rounded-t-lg' : 'bg-primary rounded-t-lg'
+  const footerClasses = variant === 'themed' ? 'bg-main dark:bg-primary-dark' : variant === 'glass' ? 'bg-base/80 dark:bg-primary-dark/90' : 'bg-gray-50 dark:bg-primary-dark'
+
   if (!portalElement) return null
 
   return ReactDOM.createPortal(
@@ -152,7 +162,7 @@ const Modal: React.FC<ModalProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 dark:bg-black/60"
+          className={twMerge("fixed inset-0 z-[9999] flex items-center justify-center p-4", overlayClasses)}
         >
           <motion.div
             ref={modalRef}
@@ -165,7 +175,7 @@ const Modal: React.FC<ModalProps> = ({
             aria-labelledby={showHeader ? "modal-title" : undefined}
             aria-label={!showHeader ? ariaLabel : undefined}
             className={twMerge(
-              'relative bg-white dark:bg-primary-dark rounded-lg shadow-xl w-full max-h-[90vh] flex flex-col',
+              'relative rounded-lg shadow-xl w-full max-h-[90vh] flex flex-col ' + modalBgClasses,
               sizeClasses[size],
               className
             )}
@@ -173,7 +183,7 @@ const Modal: React.FC<ModalProps> = ({
           >
             {/* Header */}
             {showHeader && (
-              <div className="flex items-center justify-between p-4 bg-primary rounded-t-lg">
+              <div className={twMerge("flex items-center justify-between p-4", headerClasses)}>
                 <h2
                   id="modal-title"
                   className="text-xl font-semibold text-white"
@@ -199,7 +209,7 @@ const Modal: React.FC<ModalProps> = ({
 
             {/* Footer */}
             {showFooter && (
-              <div className="flex justify-end gap-3 p-2 bg-gray-50 dark:bg-primary-dark text-black dark:text-primary rounded-b-lg">
+              <div className={twMerge("flex justify-end gap-3 p-2 text-black dark:text-primary rounded-b-lg " + footerClasses)}>
                 <Button
                   title="Cancel"
                   variant="outline"
