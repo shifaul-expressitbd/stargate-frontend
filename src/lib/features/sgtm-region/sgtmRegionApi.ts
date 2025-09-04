@@ -47,6 +47,7 @@ export const sgtmRegionApi = baseApi.injectEndpoints({
         url: "/sgtm-regions",
         method: "GET",
       }),
+      transformResponse: (response: { data?: SgtmRegion[] }) => response.data || [],
       providesTags: ["sgtmRegions"],
     }),
 

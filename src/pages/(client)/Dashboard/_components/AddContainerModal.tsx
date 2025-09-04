@@ -34,9 +34,7 @@ const AddContainerModal = ({ isModalOpen, onClose, modalStep, setModalStep }: Ad
 
     const [createContainer] = useCreateContainerMutation()
     const { refetch: refetchContainers } = useGetAllContainersWithSyncQuery()
-    const { data: regionsData } = useGetAllRegionsQuery()
-
-    const regions = regionsData || []
+    const { data: regions } = useGetAllRegionsQuery()
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
@@ -68,17 +66,19 @@ const AddContainerModal = ({ isModalOpen, onClose, modalStep, setModalStep }: Ad
         })
 
         // Validate subdomain format (basic domain format check)
-        if (formData.subdomain && !/^[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9]*$/.test(formData.subdomain)) {
-            newErrors.subdomain = 'Subdomain must contain only letters, numbers, and hyphens'
+        if (
+            formData.subdomain &&
+            !/^(?!:\/\/)([a-zA-Z0-9-]{1,63}\.)+[a-zA-Z]{2,}$/.test(formData.subdomain)
+        ) {
+            newErrors.subdomain = 'Enter a valid domain (e.g., tags.bikobazaar.xyz), without http:// or https://';
         }
+
 
         setErrors(newErrors)
         return Object.keys(newErrors).length === 0
     }
 
-    const onSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-
+    const submitForm = async () => {
         if (!validateForm()) return
 
         setLoading(true)
@@ -110,12 +110,17 @@ const AddContainerModal = ({ isModalOpen, onClose, modalStep, setModalStep }: Ad
         }
     }
 
-    const regionOptions = regions.map((region: any) => ({
+    const onSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        await submitForm()
+    }
+
+    const regionOptions = (regions || []).map((region: any) => ({
         label: region.name,
         value: region.key
     }))
 
-    const selectedRegion = regionOptions.filter((option: any) => option.value === formData.region)
+    const selectedRegion = (regionOptions || []).filter((option: any) => option.value === formData.region)
 
     return (
         <Modal
@@ -125,7 +130,7 @@ const AddContainerModal = ({ isModalOpen, onClose, modalStep, setModalStep }: Ad
             title={modalStep === 'select' ? 'Choose Setup Method' : 'Manual Setup'}
             showHeader={false}
             showFooter={modalStep === 'manual'}
-            // onConfirm={modalStep === 'manual' ? onSubmit : undefined}
+            onConfirm={modalStep === 'manual' ? submitForm : undefined}
             confirmText={loading ? "Creating..." : "Add Container"}
             isConfirming={loading}
         >
@@ -194,7 +199,6 @@ const AddContainerModal = ({ isModalOpen, onClose, modalStep, setModalStep }: Ad
                         error={errors.config}
                         icon={FaCog}
                         required
-
                     />
 
                     <Select
