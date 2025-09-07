@@ -52,6 +52,11 @@ export const InputField = ({
     }
   }, [leftElement, icon])
 
+  // Styles for autofilled inputs to maintain theme consistency
+  const autofillStyles = variant === 'cosmic'
+    ? '[&:-webkit-autofill]:text-cyan-100 [&:-webkit-autofill]:bg-transparent [&:-webkit-autofill]:shadow-none [&:-webkit-autofill]:focus:box-shadow-0'
+    : '[&:-webkit-autofill]:text-gray-800 [&:-webkit-autofill]:dark:text-white [&:-webkit-autofill]:bg-transparent [&:-webkit-autofill]:shadow-none [&:-webkit-autofill]:focus:box-shadow-0'
+
   return (
     <FormFieldWrapper
       id={id}
@@ -93,12 +98,19 @@ export const InputField = ({
           className={twMerge(
             'w-full h-10 py-2 px-3 rounded border text-sm',
             'focus:outline-none focus:ring-2 focus:border-transparent',
-            variant === 'cosmic'
-              ? 'bg-gray-900/80 border-cyan-400/50 text-cyan-100 placeholder-cyan-300/50'
-              + ' hover:border-cyan-300 dark:hover:border-cyan-200'
-              + ' focus:ring-cyan-200/50 dark:focus:ring-cyan-300/30'
-              + ' dark:bg-slate-900 dark:border-cyan-500/50 dark:placeholder-cyan-400/70'
-              : 'bg-white dark:bg-black text-gray-800 dark:text-white',
+            typeof value === 'string' && value.length
+              ? variant === 'cosmic'
+                ? 'bg-gray-900/80 border-cyan-400/50 text-cyan-100 placeholder-cyan-300/50'
+                + ' hover:border-cyan-300 dark:hover:border-cyan-200'
+                + ' focus:ring-cyan-200/50 dark:focus:ring-cyan-300/30'
+                + ' dark:bg-slate-900 dark:border-cyan-500/50 dark:placeholder-cyan-400/70'
+                : 'bg-white dark:bg-black text-gray-800 dark:text-white'
+              : variant === 'cosmic'
+                ? 'bg-gray-900/80 border-cyan-400/50 text-cyan-300/70 placeholder-cyan-300/50'
+                + ' hover:border-cyan-300 dark:hover:border-cyan-200'
+                + ' focus:ring-cyan-200/50 dark:focus:ring-cyan-300/30'
+                + ' dark:bg-slate-900 dark:border-cyan-500/50 dark:placeholder-cyan-400/70'
+                : 'bg-white dark:bg-black text-gray-400 dark:text-gray-500',
             'placeholder-gray-400 dark:placeholder-gray-400',
             'disabled:bg-gray-50 dark:disabled:bg-gray-800/50 disabled:opacity-75 disabled:cursor-not-allowed',
             error
@@ -109,7 +121,8 @@ export const InputField = ({
                   ? ''
                   : 'border-gray-300 dark:border-gray-600 hover:border-secondary dark:hover:border-secondary focus:ring-orange-200 dark:focus:ring-secondary',
             rightElement ? 'pr-10' : 'pr-3',
-            inputClassName
+            inputClassName,
+            autofillStyles
           )}
           style={{
             paddingLeft: leftWidth ? leftWidth + 16 : undefined // 16px = left-3 (0.75rem) gap

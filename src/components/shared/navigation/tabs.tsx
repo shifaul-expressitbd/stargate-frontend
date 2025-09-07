@@ -15,6 +15,7 @@ interface TabsContextType {
   setActiveTab: (value: string, direction?: number) => void
   direction: number
   isLoading: boolean
+  variant?: 'default' | 'cosmic' | 'toolbox' | 'red' | 'green' | 'blue' | 'sage' | 'orange'
 }
 
 const TabsContext = createContext<TabsContextType | undefined>(undefined)
@@ -24,9 +25,10 @@ interface TabsProps {
   children: ReactNode
   className?: string
   onTabChange?: (value: string) => Promise<void> | void
+  variant?: 'default' | 'cosmic' | 'toolbox' | 'red' | 'green' | 'blue' | 'sage' | 'orange'
 }
 
-const Tabs = ({ defaultValue, children, className, onTabChange }: TabsProps) => {
+const Tabs = ({ defaultValue, children, className, onTabChange, variant = 'default' }: TabsProps) => {
   const [activeTab, setActiveTabState] = useState<string>(defaultValue)
   const [direction, setDirection] = useState<number>(1)
   const [isLoading, setIsLoading] = useState(false)
@@ -53,7 +55,7 @@ const Tabs = ({ defaultValue, children, className, onTabChange }: TabsProps) => 
 
   return (
     <TabsContext.Provider
-      value={{ activeTab, setActiveTab, direction, isLoading }}
+      value={{ activeTab, setActiveTab, direction, isLoading, variant }}
     >
       <div className={twMerge('flex flex-col w-full gap-2', className)}>
         {children}
@@ -70,16 +72,28 @@ interface TabsListProps {
 const TabsList = React.memo(({ children, className }: TabsListProps) => {
   const context = useContext(TabsContext)
   if (!context) throw new Error('TabsList must be used within a Tabs component')
-  const { activeTab } = context
+  const { activeTab, variant = 'default' } = context
+
+  const baseClasses = twMerge(
+    'inline-flex h-12 items-center justify-start rounded shadow-sm',
+    className
+  )
+
+  const variantClasses = {
+    default: 'bg-white dark:bg-primary-dark border border-gray-200 dark:border-gray-700',
+    cosmic: 'bg-transparent text-white backdrop-blur-md border border-cyan-400/50',
+    toolbox: 'bg-gray-900/40 backdrop-blur-sm border border-slate-500/30',
+    red: 'bg-black/40 backdrop-blur-sm border border-red-500/30',
+    green: 'bg-black/40 backdrop-blur-sm border border-green-500/30',
+    blue: 'bg-black/40 backdrop-blur-sm border border-blue-500/30',
+    sage: 'bg-black/40 backdrop-blur-sm border border-green-600/30',
+    orange: 'bg-black/40 backdrop-blur-sm border border-orange-500/30',
+  }
 
   return (
     <div
       role="tablist"
-      className={twMerge(
-        'inline-flex h-12 items-center justify-start rounded bg-white dark:bg-primary-dark',
-        'border border-gray-200 dark:border-gray-700 shadow-sm',
-        className
-      )}
+      className={twMerge(baseClasses, variantClasses[variant])}
     >
       {React.Children.map(children, (child) => {
         if (React.isValidElement<TabsTriggerProps>(child)) {
@@ -114,7 +128,16 @@ const TabsTrigger = React.memo(
     if (!context) {
       throw new Error('TabsTrigger must be used within a Tabs component')
     }
-    const { setActiveTab, isLoading, activeTab: currentActiveTab } = context
+    const { setActiveTab, isLoading, activeTab: currentActiveTab, variant } = context
+
+    const textClasses = (() => {
+      if (variant === 'cosmic') {
+        return isActive ? 'text-white' : 'text-white hover:text-cyan-200'
+      }
+      return isActive
+        ? 'text-gray-900 dark:text-white'
+        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-200'
+    })()
 
     return (
       <motion.button
@@ -129,9 +152,7 @@ const TabsTrigger = React.memo(
           'relative inline-flex items-center justify-center whitespace-nowrap rounded px-4 py-2 text-sm font-medium',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2',
           'disabled:pointer-events-none disabled:opacity-50',
-          isActive
-            ? 'text-gray-900 dark:text-white'
-            : 'text-gray-600 dark:text-white hover:text-gray-900 dark:hover:text-gray-200',
+          textClasses,
           className
         )}
         whileHover={
@@ -156,7 +177,23 @@ const TabsTrigger = React.memo(
         {isActive && (
           <motion.div
             layoutId="activeTabIndicator"
-            className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary dark:bg-secondary"
+            className={twMerge(
+              'absolute bottom-0 left-0 right-0 h-0.5',
+              (() => {
+                const { variant = 'default' } = context
+                const indicatorClasses = {
+                  default: 'bg-primary dark:bg-secondary',
+                  cosmic: 'bg-cyan-400',
+                  toolbox: 'bg-slate-400',
+                  red: 'bg-red-400',
+                  green: 'bg-green-400',
+                  blue: 'bg-blue-400',
+                  sage: 'bg-green-500',
+                  orange: 'bg-orange-400',
+                }
+                return indicatorClasses[variant]
+              })()
+            )}
             transition={{
               type: 'spring',
               stiffness: 500,
@@ -201,8 +238,21 @@ const TabsContent = React.memo(
       >
         <div
           className={twMerge(
-            'p-4 rounded bg-white dark:bg-black border border-gray-200 dark:border-gray-700 shadow-sm',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+            'rounded shadow-sm focus-visible:outline-none focus-visible:ring-2',
+            (() => {
+              const { variant = 'default' } = context
+              const contentClasses = {
+                default: 'bg-white dark:bg-black border-gray-200 dark:border-gray-700 focus-visible:ring-primary/50',
+                cosmic: 'bg-transparent backdrop-blur-md border-cyan-400/40 focus-visible:ring-cyan-400/70',
+                toolbox: 'bg-gray-900/40 backdrop-blur-sm border-slate-500/30 focus-visible:ring-slate-500/50',
+                red: 'bg-black/40 backdrop-blur-sm border-red-500/30 focus-visible:ring-red-500/50',
+                green: 'bg-black/40 backdrop-blur-sm border-green-500/30 focus-visible:ring-green-500/50',
+                blue: 'bg-black/40 backdrop-blur-sm border-blue-500/30 focus-visible:ring-blue-500/50',
+                sage: 'bg-black/40 backdrop-blur-sm border-green-600/30 focus-visible:ring-green-600/50',
+                orange: 'bg-black/40 backdrop-blur-sm border-orange-500/30 focus-visible:ring-orange-500/50',
+              }
+              return contentClasses[variant]
+            })(),
             className
           )}
         >

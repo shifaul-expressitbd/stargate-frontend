@@ -21,6 +21,7 @@ interface TableContextProps {
   sortConfig?: SortConfigType[]
   onSort?: (key: string) => void
   variant?: 'default' | 'print' | 'bordered' | 'compact'
+  | 'cosmic' | 'toolbox' | 'red' | 'green' | 'blue' | 'sage' | 'orange'
   draggableX?: boolean
 }
 
@@ -176,9 +177,24 @@ export const Table = memo(
     const baseClasses = twMerge(
       'w-full',
       showBorder &&
-      variant === 'default' &&
-      'border border-gray-200 dark:border-gray-700',
+      (variant === 'default' || variant === 'cosmic' || variant === 'toolbox' || variant === 'red' || variant === 'green' || variant === 'blue' || variant === 'sage' || variant === 'orange') &&
+      (variant === 'default' ? 'border border-gray-200 dark:border-gray-700' :
+        variant === 'cosmic' ? 'border border-cyan-400/60' :
+          variant === 'toolbox' ? 'border border-slate-500/30' :
+            variant === 'red' ? 'border border-red-500/30' :
+              variant === 'green' ? 'border border-green-600/30' :
+                variant === 'blue' ? 'border border-blue-600/30' :
+                  variant === 'sage' ? 'border border-green-600/30' :
+                    variant === 'orange' ? 'border border-orange-500/30' :
+                      ''),
       showBorder && variant === 'print' && 'border border-gray-400',
+      showBorder && variant === 'cosmic' && 'border border-cyan-400/60',
+      showBorder && variant === 'toolbox' && 'border border-slate-500/30',
+      showBorder && variant === 'red' && 'border border-red-500/30',
+      showBorder && variant === 'green' && 'border border-green-600/30',
+      showBorder && variant === 'blue' && 'border border-blue-600/30',
+      showBorder && variant === 'sage' && 'border border-green-600/30',
+      showBorder && variant === 'orange' && 'border border-orange-500/30',
       variant === 'bordered' && 'border-separate border-spacing-0',
       variant === 'compact' && '[&_td]:py-1 [&_th]:py-1',
       className
@@ -219,9 +235,26 @@ export const Table = memo(
           <div
             ref={scrollContainerRef}
             className={twMerge(
-              'relative rounded bg-white overflow-auto scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400',
-              variant !== 'print' &&
-              'dark:bg-black dark:scrollbar-track-gray-800 dark:scrollbar-thumb-gray-600 dark:hover:scrollbar-thumb-gray-500',
+              'relative rounded overflow-auto scrollbar-thin',
+              variant === 'default' && 'bg-white dark:bg-black',
+              variant === 'print' && 'bg-white',
+              variant === 'cosmic' && 'bg-gradient-to-br from-black/95 to-black/80 backdrop-blur-md shadow-lg shadow-cyan-500/30',
+              variant === 'toolbox' && 'bg-gray-900/80 backdrop-blur-md',
+              variant === 'red' && 'bg-black/80 backdrop-blur-md',
+              variant === 'green' && 'bg-black/80 backdrop-blur-md',
+              variant === 'blue' && 'bg-black/80 backdrop-blur-md',
+              variant === 'sage' && 'bg-black/80 backdrop-blur-md',
+              variant === 'orange' && 'bg-black/80 backdrop-blur-md',
+              variant === 'toolbox' && 'bg-gray-900/80 backdrop-blur-md',
+              variant === 'red' && 'bg-black/80 backdrop-blur-md',
+              variant === 'green' && 'bg-black/80 backdrop-blur-md',
+              variant === 'blue' && 'bg-black/80 backdrop-blur-md',
+              variant === 'sage' && 'bg-black/80 backdrop-blur-md',
+              variant === 'orange' && 'bg-black/80 backdrop-blur-md',
+              // Scrollbar styles
+              variant !== 'print' && variant === 'default' && 'scrollbar-track-gray-100 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 dark:scrollbar-track-gray-800 dark:scrollbar-thumb-gray-600 dark:hover:scrollbar-thumb-gray-500',
+              variant !== 'print' && variant === 'cosmic' && 'scrollbar-track-cyan-900/20 scrollbar-thumb-cyan-500/40 hover:scrollbar-thumb-cyan-400/60',
+              variant !== 'print' && (variant === 'toolbox' || variant === 'red' || variant === 'green' || variant === 'blue' || variant === 'sage' || variant === 'orange') && 'scrollbar-track-cyan-900/20 scrollbar-thumb-cyan-500/40 hover:scrollbar-thumb-cyan-400/60',
               draggableX && 'cursor-grab'
             )}
             style={{ height }}
@@ -294,10 +327,26 @@ export const TableHeader = memo(
           variant === 'print'
             ? 'bg-white text-black border-b border-gray-400'
             : variant === 'bordered'
-              ? 'bg-gray-50 text-gray-800 dark:bg-primary-dark  dark:text-white border-b border-gray-200 dark:border-gray-600'
+              ? 'bg-gray-50 text-gray-800 dark:bg-primary-dark dark:text-white border-b border-gray-200 dark:border-gray-600'
               : variant === 'compact'
-                ? 'bg-gray-50 text-gray-800 dark:bg-primary-dark  dark:text-white py-1'
-                : 'bg-gray-50 text-gray-800 dark:bg-primary-dark  dark:text-white',
+                ? 'bg-gray-50 text-gray-800 dark:bg-primary-dark dark:text-white py-1'
+                : variant === 'default'
+                  ? 'bg-gray-50 text-gray-800 dark:bg-primary-dark dark:text-white'
+                  : variant === 'cosmic'
+                    ? 'bg-black/60 text-cyan-200 border-b border-cyan-400/60 backdrop-blur-md'
+                    : variant === 'toolbox'
+                      ? 'bg-black/60 text-slate-200 border-b border-slate-500/60 backdrop-blur-md'
+                      : variant === 'red'
+                        ? 'bg-black/60 text-red-200 border-b border-red-500/60 backdrop-blur-md'
+                        : variant === 'green'
+                          ? 'bg-black/60 text-green-200 border-b border-green-500/60 backdrop-blur-md'
+                          : variant === 'blue'
+                            ? 'bg-black/60 text-blue-200 border-b border-blue-500/60 backdrop-blur-md'
+                            : variant === 'sage'
+                              ? 'bg-black/60 text-green-200 border-b border-green-600/60 backdrop-blur-md'
+                              : variant === 'orange'
+                                ? 'bg-black/60 text-orange-200 border-b border-orange-500/60 backdrop-blur-md'
+                                : 'bg-gray-50 text-gray-800 dark:bg-primary-dark dark:text-white',
           className
         )}
       >
@@ -340,11 +389,21 @@ export const TableHead = memo(
       <th
         className={twMerge(
           'px-2 py-4 font-medium select-none text-nowrap min-w-fit max-w-min mx-0',
-          sortable
-            ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600'
-            : '',
-          variant === 'bordered' &&
-          'border-b border-gray-200 dark:border-gray-600',
+          sortable &&
+          (
+            variant === 'default'
+              ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600'
+              : variant === 'cosmic'
+                ? 'cursor-pointer hover:bg-cyan-900/20 hover:shadow-md hover:shadow-cyan-500/20'
+                : (variant === 'toolbox' || variant === 'red' || variant === 'green' || variant === 'blue' || variant === 'sage' || variant === 'orange')
+                  ? 'cursor-pointer hover:bg-cyan-900/20'
+                  : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600'
+          ),
+          variant === 'bordered'
+            ? 'border-b border-gray-200 dark:border-gray-600'
+            : variant === 'cosmic'
+              ? 'border-b border-cyan-400/20'
+              : variant === 'default' ? 'border-b border-gray-200 dark:border-gray-600' : '',
           alignmentClasses[align],
           className
         )}
@@ -384,10 +443,32 @@ export const TableBody = memo(
               ? 'text-gray-700 dark:text-gray-100 divide-y divide-gray-200 dark:divide-gray-600'
               : variant === 'compact'
                 ? 'text-gray-700 dark:text-gray-100 [&_td]:py-1'
-                : 'text-gray-700 dark:text-gray-100',
+                : variant === 'default'
+                  ? 'text-gray-700 dark:text-gray-100'
+                  : variant === 'cosmic'
+                    ? 'text-cyan-100 divide-y divide-cyan-400/20'
+                    : variant === 'toolbox'
+                      ? 'text-slate-100 divide-y divide-slate-500/20'
+                      : variant === 'red'
+                        ? 'text-red-100 divide-y divide-red-500/20'
+                        : variant === 'green'
+                          ? 'text-green-100 divide-y divide-green-500/20'
+                          : variant === 'blue'
+                            ? 'text-blue-100 divide-y divide-blue-500/20'
+                            : variant === 'sage'
+                              ? 'text-green-100 divide-y divide-green-600/20'
+                              : variant === 'orange'
+                                ? 'text-orange-100 divide-y divide-orange-500/20'
+                                : 'text-gray-700 dark:text-gray-100',
           striped && variant === 'print'
             ? 'even:bg-gray-100'
-            : striped && 'even:bg-gray-50 dark:even:bg-gray-700/50',
+            : striped && variant === 'default'
+              ? 'even:bg-gray-50 dark:even:bg-gray-700/50'
+              : variant === 'cosmic'
+                ? striped && 'even:bg-cyan-900/10'
+                : (variant === 'toolbox' || variant === 'red' || variant === 'green' || variant === 'blue' || variant === 'sage' || variant === 'orange')
+                  ? striped && 'even:bg-cyan-900/10'
+                  : striped && 'even:bg-gray-50 dark:even:bg-gray-700/50',
           className
         )}
       >
@@ -410,14 +491,28 @@ export const TableRow = memo(
           'relative',
           variant !== 'print' &&
           hoverable &&
-          'hover:bg-gray-50 dark:hover:bg-primary-dark ',
+          (
+            variant === 'default'
+              ? 'hover:bg-gray-50 dark:hover:bg-primary-dark'
+              : variant === 'cosmic'
+                ? 'hover:bg-cyan-900/20 hover:shadow-md hover:shadow-cyan-500/20'
+                : (variant === 'toolbox' || variant === 'red' || variant === 'green' || variant === 'blue' || variant === 'sage' || variant === 'orange')
+                  ? 'hover:bg-cyan-900/20'
+                  : 'hover:bg-gray-50 dark:hover:bg-primary-dark'
+          ),
           variant === 'print'
             ? 'border-b border-gray-400'
             : variant === 'bordered'
               ? 'border-b border-gray-200 dark:border-gray-600'
               : variant === 'compact'
                 ? '[&_td]:py-1'
-                : 'border-b border-gray-200 dark:border-gray-600',
+                : variant === 'default'
+                  ? 'border-b border-gray-200 dark:border-gray-600'
+                  : variant === 'cosmic'
+                    ? 'border-b border-cyan-400/20'
+                    : (variant === 'toolbox' || variant === 'red' || variant === 'green' || variant === 'blue' || variant === 'sage' || variant === 'orange')
+                      ? 'border-b border-cyan-400/20'
+                      : 'border-b border-gray-200 dark:border-gray-600',
           className
         )}
         {...props}
@@ -467,7 +562,13 @@ export const TableCell = memo(
               ? 'border-b border-gray-200 dark:border-gray-600'
               : variant === 'compact'
                 ? 'py-1'
-                : 'border-b border-gray-200 dark:border-gray-600',
+                : variant === 'default'
+                  ? 'border-b border-gray-200 dark:border-gray-600'
+                  : variant === 'cosmic'
+                    ? 'border-b border-cyan-400/20'
+                    : (variant === 'toolbox' || variant === 'red' || variant === 'green' || variant === 'blue' || variant === 'sage' || variant === 'orange')
+                      ? 'border-b border-cyan-400/20'
+                      : 'border-b border-gray-200 dark:border-gray-600',
           alignmentClasses[align],
           paddingClasses[size || 'md'],
           align === 'center'
@@ -509,10 +610,26 @@ export const TableFooter = memo(
           variant === 'print'
             ? 'bg-white border-t border-gray-400'
             : variant === 'bordered'
-              ? 'bg-gray-50 border-t border-gray-200 dark:border-gray-600 dark:bg-primary-dark '
+              ? 'bg-gray-50 border-t border-gray-200 dark:border-gray-600 dark:bg-primary-dark'
               : variant === 'compact'
-                ? 'bg-gray-50 dark:bg-primary-dark  [&_td]:py-1'
-                : 'bg-gray-50 border-t border-gray-200 dark:border-gray-600 dark:bg-primary-dark ',
+                ? 'bg-gray-50 dark:bg-primary-dark [&_td]:py-1'
+                : variant === 'default'
+                  ? 'bg-gray-50 border-t border-gray-200 dark:border-gray-600 dark:bg-primary-dark'
+                  : variant === 'cosmic'
+                    ? 'bg-gradient-to-t from-cyan-500/10 to-black/20 border-t border-cyan-400/40 backdrop-blur-sm'
+                    : variant === 'toolbox'
+                      ? 'bg-slate-600/10 border-t border-slate-500/30 backdrop-blur-sm'
+                      : variant === 'red'
+                        ? 'bg-red-500/10 border-t border-red-500/30 backdrop-blur-sm'
+                        : variant === 'green'
+                          ? 'bg-green-500/10 border-t border-green-500/30 backdrop-blur-sm'
+                          : variant === 'blue'
+                            ? 'bg-blue-500/10 border-t border-blue-500/30 backdrop-blur-sm'
+                            : variant === 'sage'
+                              ? 'bg-green-600/10 border-t border-green-600/30 backdrop-blur-sm'
+                              : variant === 'orange'
+                                ? 'bg-orange-500/10 border-t border-orange-500/30 backdrop-blur-sm'
+                                : 'bg-gray-50 border-t border-gray-200 dark:border-gray-600 dark:bg-primary-dark',
           className
         )}
       >

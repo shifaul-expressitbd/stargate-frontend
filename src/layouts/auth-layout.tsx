@@ -43,7 +43,7 @@ export const AuthLayout = () => {
   }
 
   return (
-    <>
+    <div className='relative overflow-hidden'>
       <HologramStyle />
       <BackgroundAnimation />
       <div className='min-h-screen w-full flex relative bg-black'>
@@ -90,6 +90,6 @@ export const AuthLayout = () => {
         </motion.div>
 
       </div>
-    </>
+    </div>
   )
 }

@@ -11,6 +11,7 @@ import Register from '@/pages/(auth)/Register/Register'
 import ResetPassword from '@/pages/(auth)/ResetPassword/ResetPassword'
 import VerifyNewUser from '@/pages/(auth)/VerifyNewUser/VerifyNewUser'
 import ClientDashboard from '@/pages/(client)/Dashboard/ClientDashboard'
+import ContainerDetails from '@/pages/(client)/sGTMContainer/ContainerDetails'
 import NotFoundPage from '@/pages/NotFoundPage'
 import React, { createElement, Fragment } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -75,6 +76,14 @@ const AppRouter: React.FC = () => {
             element={
               // <ProtectedRoute roles={['user']}>
               <ClientDashboard />
+              // </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/containers/:id"
+            element={
+              // <ProtectedRoute roles={['user', 'developer']}>
+              <ContainerDetails />
               // </ProtectedRoute>
             }
           />

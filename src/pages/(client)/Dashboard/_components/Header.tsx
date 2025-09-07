@@ -9,13 +9,13 @@ const Header = ({ user }: HeaderProps) => {
         <div className="space-y-4">
             <div className="flex items-center gap-2">
                 <motion.h1
-                    className="text-2xl md:text-4xl font-bold text-white animate-hologram font-asimovian text-shadow-white-strong tracking-[0.2em] capitalize flex gap-2"
+                    className="text-2xl md:text-4xl font-bold text-white animate-hologram font-asimovian text-shadow-white-strong tracking-[0.2em] capitalize"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                 >
-                    Welcome to the Infinite Gateway
-                    <span className="block text-2xl md:text-3xl text-cyan-300 font-orbitron capitalize tracking-normal">
+                    Welcome to the Infinite Gateway{' '}
+                    <span className="text-2xl md:text-3xl text-cyan-300 font-orbitron capitalize tracking-normal whitespace-nowrap">
                         {user?.name?.split(' ')[0] || 'Commander'}!
                     </span>
                 </motion.h1>

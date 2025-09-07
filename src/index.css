@@ -179,21 +179,6 @@ body {
   input[type="number"] {
     appearance: textfield;
   }
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus,
-  input:-webkit-autofill:active {
-    transition: background-color 9999s ease-in-out 0s, color 9999s ease-in-out 0s;
-  }
-
-  input:-webkit-autofill {
-    -webkit-text-fill-color: rgb(31 41 55) !important; /* gray-800 */
-  }
-
-  .dark input:-webkit-autofill {
-    -webkit-text-fill-color: rgb(243 244 246) !important; /* gray-100 */
-    -webkit-box-shadow: 0 0 0px 1000px rgb(31 41 55) inset !important; /* gray-800 */
-  }
 
   .text-shadow-hologram {
     text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(255, 255, 255, 0.3);

@@ -174,10 +174,10 @@ const Login = () => {
       // Use replace: true to prevent going back to login page
       if (jwtPayload.roles?.includes('developer') || jwtPayload.roles?.includes('admin')) {
         navigate(destination, { replace: true })
-      } else if (jwtPayload.roles?.includes('user')) {
-        navigate(res.data.hasBusiness ? destination : '/onboarding', {
-          replace: true,
-        })
+        // } else if (jwtPayload.roles?.includes('user')) {
+        //   navigate(res.data.hasBusiness ? destination : '/onboarding', {
+        //     replace: true,
+        //   })
       } else {
         // Default to dashboard if roles are unclear
         navigate(destination, { replace: true })

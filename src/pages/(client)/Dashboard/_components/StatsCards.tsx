@@ -6,7 +6,7 @@ import { GiPortal } from 'react-icons/gi';
 const StatsCards = () => {
     return (
         <motion.div
-            className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+            className="grid gap-4 grid-cols-1 lg:grid-cols-3"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}

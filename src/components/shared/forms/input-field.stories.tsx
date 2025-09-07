@@ -113,3 +113,24 @@ export const CosmicVariant: Story = {
         onChange: () => { },
     },
 };
+
+export const PrefilledValue: Story = {
+    args: {
+        label: 'Prefilled Email',
+        id: 'prefilled-email',
+        value: 'user@example.com',
+        icon: FiMail,
+        onChange: () => { },
+    },
+};
+
+export const CosmicPrefilled: Story = {
+    args: {
+        label: 'Prefilled Username',
+        id: 'cosmic-prefilled',
+        variant: 'cosmic',
+        value: 'cosmic-traveler',
+        icon: FiUser,
+        onChange: () => { },
+    },
+};

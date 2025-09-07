@@ -137,14 +137,15 @@ export const DashboardLayout = memo(() => {
       {/* Main Content */}
       <main
         className={`
-          w-full max-h-dvh transition-all duration-300 ease-in-out
+          w-full max-h-svh transition-all duration-300 ease-in-out
           ml-[${sidebarMargin}px]
           scrollbar-none overflow-hidden
         `}
       >
-
         <Navbar />
-        <Outlet />
+        <div className='h-[calc(100vh-4rem)] overflow-hidden scrollbar-none'>
+          <Outlet />
+        </div>
       </main>
 
       {/* Subscription Expired Modal (Portal) */}

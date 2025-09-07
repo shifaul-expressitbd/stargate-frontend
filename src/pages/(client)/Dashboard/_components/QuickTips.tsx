@@ -150,10 +150,7 @@ const QuickTips = () => {
     ];
 
     return (
-        <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-xl border border-purple-400/30 p-6 relative overflow-hidden">
-            {/* Glowing Borders */}
-            <div className="absolute inset-4 border border-purple-400/20 rounded-xl animate-pulse" style={{ animationDuration: '3s' }} />
-            <div className="absolute inset-2 border border-cyan-400/15 rounded-xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '2s' }} />
+        <div className="bg-transparent backdrop-blur-md shadow-2xl rounded-xl border border-purple-400/30 p-6 relative overflow-hidden">
 
             <div className="flex items-center gap-3 mb-6">
                 <div className="rounded-full bg-purple-500/20 p-2 border border-purple-400/40 flex items-center justify-center">

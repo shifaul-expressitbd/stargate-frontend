@@ -14,6 +14,10 @@ interface BadgeProps {
   | 'yellow'
   | 'gray'
   | 'golden'
+  | 'cosmic'
+  | 'toolbox'
+  | 'cosmic-red'
+  | 'cosmic-green'
   className?: string
 }
 
@@ -40,6 +44,11 @@ export const Badge = ({
       'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
     golden:
       'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+    // Theme-specific variants (Dark-optimized)
+    cosmic: 'bg-cyan-500/60 text-cyan-200 border border-cyan-400/70 backdrop-blur-md',
+    toolbox: 'bg-slate-600/60 text-slate-200 border border-slate-500/70 backdrop-blur-md',
+    'cosmic-red': 'bg-red-500/60 text-red-200 border border-red-400/70 backdrop-blur-md',
+    'cosmic-green': 'bg-green-500/60 text-green-200 border border-green-400/70 backdrop-blur-md',
   }
 
   return (

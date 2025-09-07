@@ -5,14 +5,11 @@ import { GiPolarStar } from 'react-icons/gi';
 const LatestUpdates = () => {
     return (
         <motion.div
-            className="bg-black/60 backdrop-blur-md shadow-2xl rounded-xl border border-cyan-400/30 p-6 relative overflow-hidden"
+            className="bg-transparent backdrop-blur-md shadow-2xl rounded-xl border border-cyan-400/30 p-6 relative overflow-hidden"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.8 }}
         >
-            {/* Glowing Borders */}
-            <div className="absolute inset-4 border border-cyan-400/20 rounded-xl animate-pulse" style={{ animationDuration: '4s' }} />
-            <div className="absolute inset-2 border border-purple-400/15 rounded-xl animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }} />
 
             <div className="flex items-center gap-3 mb-6">
                 <div className="rounded-full bg-cyan-500/20 p-2 border border-cyan-400/40">

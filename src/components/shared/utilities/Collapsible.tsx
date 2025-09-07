@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react';
 import React, { createContext, useContext, useState } from 'react';
 import { FaChevronRight } from 'react-icons/fa';
+import { twMerge } from 'tailwind-merge';
 
 // Context for managing accordion behavior
 const CollapsibleContext = createContext<{
@@ -71,7 +72,9 @@ export const Collapsible: React.FC<CollapsibleProps> = ({
             <button
                 type="button"
                 onClick={toggleOpen}
-                className="flex w-full items-center justify-between rounded-t-lg rounded-b-lg hover:bg-black/40 dark:bg-black/60 dark:hover:bg-black/40 hover:shadow-lg hover:shadow-purple-400/20 transition-all duration-300 text-white font-orbitron text-left border border-white/10 backdrop-blur-sm animate-hologram p-4"
+                className={twMerge("flex w-full items-center justify-between rounded-t-lg rounded-b-lg hover:bg-black/40 dark:bg-black/60 dark:hover:bg-black/40 hover:shadow-lg hover:shadow-purple-400/20 transition-all duration-300 text-white font-orbitron text-left border border-white/10 backdrop-blur-sm animate-hologram p-4",
+                    isOpen && 'rounded-b-none'
+                )}
                 aria-expanded={isOpen}
             >
                 <div className="flex items-center justify-between flex-1">
@@ -96,7 +99,7 @@ export const Collapsible: React.FC<CollapsibleProps> = ({
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
                         className="overflow-hidden"
                     >
-                        <div className="p-4 bg-black/40 dark:bg-black/60 rounded-b-lg backdrop-blur-sm border-t border-white/10">
+                        <div className={twMerge("p-4 bg-black/40 dark:bg-black/60 rounded-b-lg backdrop-blur-sm border border-white/10", isOpen && 'rounded-t-none')}>
                             {children}
                         </div>
                     </motion.div>
