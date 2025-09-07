@@ -1,4 +1,5 @@
 import type {
+  BaseQueryApi,
   BaseQueryFn,
   FetchArgs,
   FetchBaseQueryError,
@@ -50,6 +51,85 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
+// Helper function to refresh token
+const refreshToken = async (api: BaseQueryApi): Promise<string | null> => {
+  let refreshTokenValue = (api.getState() as RootState).auth.refreshToken;
+
+  // If no token in Redux state, try storage
+  if (!refreshTokenValue) {
+    try {
+      refreshTokenValue = localStorage.getItem("refreshToken") || sessionStorage.getItem("refreshToken");
+    } catch (error) {
+      console.warn("Error accessing token from storage:", error);
+      return null;
+    }
+  }
+
+  if (!refreshTokenValue) {
+    console.log("No refresh token available");
+    return null;
+  }
+
+  try {
+    console.log("Attempting to refresh token...");
+
+    const refreshResult = await baseQuery(
+      {
+        url: `/auth/refresh?rememberMe=true`,
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${refreshTokenValue}`,
+        },
+      },
+      api,
+      {}
+    );
+
+    if (refreshResult.error) {
+      console.log("Refresh token request failed:", refreshResult.error);
+      return null;
+    }
+
+    if (refreshResult.data) {
+      const response = refreshResult.data as {
+        accessToken: string;
+        refreshToken: string;
+        user: TUser;
+      };
+
+      console.log("Token refreshed successfully");
+
+      // Update Redux store first
+      api.dispatch(
+        setUser({
+          token: response.accessToken,
+          refreshToken: response.refreshToken,
+          user: response.user,
+        })
+      );
+
+      // Then update localStorage and sessionStorage
+      try {
+        localStorage.setItem("accessToken", response.accessToken);
+        localStorage.setItem("refreshToken", response.refreshToken);
+        sessionStorage.setItem("accessToken", response.accessToken);
+        sessionStorage.setItem("refreshToken", response.refreshToken);
+        localStorage.setItem("lastTokenRefresh", Date.now().toString());
+      } catch (error) {
+        console.warn("Error saving refreshed tokens to storage:", error);
+      }
+
+      return response.accessToken;
+    }
+  } catch (error) {
+    console.error("Exception during token refresh:", error);
+  }
+
+  console.log("Token refresh failed");
+  return null;
+};
+
 const baseQueryWithRefreshToken: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
   args,
   api,
@@ -70,41 +150,13 @@ const baseQueryWithRefreshToken: BaseQueryFn<string | FetchArgs, unknown, FetchB
 
     switch (status) {
       case 401: {
-        const refreshToken = (api.getState() as RootState).auth.refreshToken;
-        if (!refreshToken) {
-          showError("No refresh token available.");
-          api.dispatch(logout());
-          return result;
-        }
-        const refreshResult = await baseQuery(
-          {
-            url: `/auth/refresh?rememberMe=true`,
-            method: "GET",
-            credentials: "include",
-            headers: {
-              Authorization: `Bearer ${refreshToken}`,
-            },
-          },
-          api,
-          extraOptions
-        );
-
-        if (refreshResult.data) {
-          const response = refreshResult.data as {
-            accessToken: string;
-            refreshToken: string;
-            user: TUser;
-          };
-          api.dispatch(
-            setUser({
-              token: response.accessToken,
-              refreshToken: response.refreshToken,
-              user: response.user,
-            })
-          );
-
+        const newToken = await refreshToken(api);
+        if (newToken) {
+          console.log("Token refreshed successfully, retrying original request...");
+          // Retry the original request with new token
           result = await baseQuery(args, api, extraOptions);
         } else {
+          console.log("Token refresh failed, logging out user...");
           showError("Your session has expired. Please log in again.");
           api.dispatch(logout());
         }

@@ -1,5 +1,8 @@
 import { baseApi } from "../../api/baseApi";
 
+// Define tag type for consistency
+const sgtmContainersTagType = "sgtmContainers" as const;
+
 // Define types based on OpenAPI spec
 interface SgtmContainer {
   id: string;
@@ -49,7 +52,7 @@ export const sgtmContainerApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["sgtmContainers"],
+      invalidatesTags: [{ type: sgtmContainersTagType, id: "LIST" }],
     }),
 
     // Get all containers
@@ -58,7 +61,7 @@ export const sgtmContainerApi = baseApi.injectEndpoints({
         url: "/sgtm-containers",
         method: "GET",
       }),
-      providesTags: ["sgtmContainers"],
+      providesTags: [{ type: sgtmContainersTagType, id: "LIST" }],
     }),
 
     // Get all containers with sync
@@ -67,7 +70,7 @@ export const sgtmContainerApi = baseApi.injectEndpoints({
         url: "/sgtm-containers/sync",
         method: "GET",
       }),
-      providesTags: ["sgtmContainers"],
+      providesTags: [{ type: sgtmContainersTagType, id: "LIST" }],
     }),
 
     // Get single container
@@ -76,7 +79,7 @@ export const sgtmContainerApi = baseApi.injectEndpoints({
         url: `/sgtm-containers/${id}`,
         method: "GET",
       }),
-      providesTags: (_result, _error, id) => [{ type: "sgtmContainers" as const, id }],
+      providesTags: (_result, _error, id) => [{ type: sgtmContainersTagType, id }],
     }),
 
     // Get single container with sync
@@ -85,7 +88,7 @@ export const sgtmContainerApi = baseApi.injectEndpoints({
         url: `/sgtm-containers/${id}/sync`,
         method: "GET",
       }),
-      providesTags: (_result, _error, id) => [{ type: "sgtmContainers" as const, id }],
+      providesTags: (_result, _error, id) => [{ type: sgtmContainersTagType, id }],
     }),
 
     // Delete container
@@ -101,7 +104,10 @@ export const sgtmContainerApi = baseApi.injectEndpoints({
         url: `/sgtm-containers/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: [{ type: "sgtmContainers", id: "LIST" }],
+      invalidatesTags: (_result, _error, id) => [
+        { type: sgtmContainersTagType, id: "LIST" },
+        { type: sgtmContainersTagType, id },
+      ],
     }),
 
     // Get container config
@@ -126,7 +132,10 @@ export const sgtmContainerApi = baseApi.injectEndpoints({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: [{ type: "sgtmContainers", id: "LIST" }],
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: sgtmContainersTagType, id: "LIST" },
+        { type: sgtmContainersTagType, id },
+      ],
     }),
 
     // Stop container
@@ -142,7 +151,10 @@ export const sgtmContainerApi = baseApi.injectEndpoints({
         url: `/sgtm-containers/${id}/stop`,
         method: "POST",
       }),
-      invalidatesTags: [{ type: "sgtmContainers", id: "LIST" }],
+      invalidatesTags: (_result, _error, id) => [
+        { type: sgtmContainersTagType, id: "LIST" },
+        { type: sgtmContainersTagType, id },
+      ],
     }),
 
     // Restart container
@@ -158,7 +170,10 @@ export const sgtmContainerApi = baseApi.injectEndpoints({
         url: `/sgtm-containers/${id}/restart`,
         method: "POST",
       }),
-      invalidatesTags: [{ type: "sgtmContainers", id: "LIST" }],
+      invalidatesTags: (_result, _error, id) => [
+        { type: sgtmContainersTagType, id: "LIST" },
+        { type: sgtmContainersTagType, id },
+      ],
     }),
 
     // Hard delete container
@@ -170,7 +185,10 @@ export const sgtmContainerApi = baseApi.injectEndpoints({
         url: `/sgtm-containers/${id}/hard`,
         method: "DELETE",
       }),
-      invalidatesTags: [{ type: "sgtmContainers", id: "LIST" }],
+      invalidatesTags: (_result, _error, id) => [
+        { type: sgtmContainersTagType, id: "LIST" },
+        { type: sgtmContainersTagType, id },
+      ],
     }),
   }),
 });

@@ -3,6 +3,7 @@ import { useGetContainerQuery, useHardDeleteContainerMutation, useRestartContain
 import { motion } from 'motion/react';
 import { FaExclamationTriangle } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import { BackNavigation } from './_components/BackNavigation';
 import { ContainerHeader } from './_components/ContainerHeader';
 import { ErrorState } from './_components/ErrorState';
@@ -14,13 +15,11 @@ const ContainerDetails = () => {
     const navigate = useNavigate();
     console.log('ContainerDetails rendered with id:', id);
     const { data, isLoading, error, refetch } = useGetContainerQuery(id!);
-    console.log('API result:', { data, isLoading, error });
 
     const container = data?.success ? data.data : null;
 
     // Additional check for malformed API response
     if (data && data.success === true && !data.data) {
-        console.log('API returned success but data is null:', data);
         return (
             <motion.div
                 initial={{ opacity: 1, y: 0 }}
@@ -53,8 +52,11 @@ const ContainerDetails = () => {
     const handleStopContainer = async () => {
         try {
             await stopContainer(id!).unwrap();
+            toast.success('Container stopped successfully.');
             refetch(); // Refresh to show new status
-        } catch (error) {
+        } catch (error: any) {
+            const message = error?.data?.message || error.message || 'Failed to stop container.';
+            toast.error(message);
             console.error('Failed to stop container:', error);
         }
     };
@@ -62,8 +64,11 @@ const ContainerDetails = () => {
     const handleRestartContainer = async () => {
         try {
             await restartContainer(id!).unwrap();
+            toast.success('Container restarted successfully.');
             refetch(); // Refresh to show new status
-        } catch (error) {
+        } catch (error: any) {
+            const message = error?.data?.message || error.message || 'Failed to restart container.';
+            toast.error(message);
             console.error('Failed to restart container:', error);
         }
     };
@@ -72,15 +77,17 @@ const ContainerDetails = () => {
         if (!confirm('Are you sure you want to permanently delete this container?')) return;
         try {
             await deleteContainer(id!).unwrap();
+            toast.success('Container deleted successfully.');
             navigate('/dashboard'); // Redirect to dashboard after deletion
-        } catch (error) {
+        } catch (error: any) {
+            const message = error?.data?.message || error.message || 'Failed to delete container.';
+            toast.error(message);
             console.error('Failed to delete container:', error);
         }
     };
 
     // Loading skeleton state
     if (isLoading) {
-        console.log('Showing loading skeleton');
         return (
             <LoadingSkeleton
                 formatDate={formatDate}
@@ -97,16 +104,12 @@ const ContainerDetails = () => {
 
     // Error state
     if (error || !data?.success) {
-        console.log('Showing error state, error:', !!error, 'success:', data?.success);
         return <ErrorState refetch={refetch} />;
     }
 
     if (!container) {
-        console.log('Returning null because no container, data.success:', data?.success, 'data.data:', data?.data);
         return null;
     }
-
-    console.log('Rendering main component');
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}

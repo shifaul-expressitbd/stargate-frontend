@@ -2,6 +2,7 @@ import { Button } from '@/components/shared/buttons/button';
 import { Card, CardContent } from '@/components/shared/cards/card';
 import { Badge } from '@/components/shared/data-display/badge';
 import { Tooltip } from '@/components/shared/data-display/tooltip';
+import { useHardDeleteContainerMutation, useRestartContainerMutation, useStopContainerMutation } from '@/lib/features/sgtm-container/sgtmContainerApi';
 import { FaInfoCircle, FaPause, FaPlay, FaRedo, FaRocket, FaSatellite, FaTrashAlt } from 'react-icons/fa';
 
 interface Container {
@@ -18,6 +19,9 @@ interface ContainerHeaderProps {
 }
 
 export const ContainerHeader = ({ container }: ContainerHeaderProps) => {
+    const [deleteContainer] = useHardDeleteContainerMutation();
+    const [stopContainer] = useStopContainerMutation();
+    const [restartContainer] = useRestartContainerMutation();
     return (
         <Card variant="cosmic" className={`${container.status !== 'RUNNING' ? 'border-red-500/20 bg-red-950/10' : 'border-cyan-400/30 bg-transparent'}`}>
             <CardContent className='pt-6'>
@@ -35,22 +39,24 @@ export const ContainerHeader = ({ container }: ContainerHeaderProps) => {
                         </div>
 
                         <div className="flex items-center gap-3">
-                            <Button variant="alien-primary" className="flex items-center justify-center p-1" title="Launch container upgrade">
+                            <Button variant="alien-primary" className="flex items-center justify-center p-1" title="Launch container upgrade" onClick={() => restartContainer(container.id)}>
                                 <FaRocket className="mr-2" />
                                 Upgrade
                             </Button>
-                            <Button variant="red-outline" size="sm" title="Delete Container" className="flex items-center justify-center p-1">
+                            <Button variant="red-outline" size="sm" title="Delete Container" className="flex items-center justify-center p-1" onClick={() => deleteContainer(container.id)}>
                                 <FaTrashAlt className="mr-2" />
                                 Delete Container
                             </Button>
-                            <Button variant="blue-outline" size="sm" title="Restart Container" className="flex items-center justify-center p-1">
+                            <Button variant="blue-outline" size="sm" title="Restart Container" className="flex items-center justify-center p-1" onClick={() => restartContainer(container.id)}>
                                 <FaRedo className="mr-2" />
                                 Restart Container
                             </Button>
                             <Button
                                 variant={container.status === 'STOPPED' ? 'green-outline' : 'orange-outline'}
                                 size="sm"
-                                title={container.status === 'STOPPED' ? 'Start Container' : 'Stop Container'} className="flex items-center justify-center p-1"
+                                title={container.status === 'STOPPED' ? 'Start Container' : 'Stop Container'}
+                                className="flex items-center justify-center p-1"
+                                onClick={() => container.status === 'STOPPED' ? restartContainer(container.id) : stopContainer(container.id)}
                             >
                                 {container.status === 'STOPPED' ? (
                                     <>
