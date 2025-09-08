@@ -126,7 +126,8 @@ const AddContainerModal = ({ isModalOpen, onClose, modalStep, setModalStep }: Ad
         <Modal
             isModalOpen={isModalOpen}
             onClose={onClose}
-            variant="themed"
+            variant="cosmic"
+            size='xl'
             title={modalStep === 'select' ? 'Choose Setup Method' : 'Manual Setup'}
             showHeader={false}
             showFooter={modalStep === 'manual'}
@@ -203,6 +204,7 @@ const AddContainerModal = ({ isModalOpen, onClose, modalStep, setModalStep }: Ad
 
                     <Select
                         id="region"
+                        variant='cosmic'
                         label="Region"
                         value={selectedRegion}
                         onChange={handleRegionChange}

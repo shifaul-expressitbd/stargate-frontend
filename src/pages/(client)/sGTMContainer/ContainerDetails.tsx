@@ -4,7 +4,6 @@ import { motion } from 'motion/react';
 import { FaExclamationTriangle } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { BackNavigation } from './_components/BackNavigation';
 import { ContainerHeader } from './_components/ContainerHeader';
 import { ErrorState } from './_components/ErrorState';
 import { LoadingSkeleton } from './_components/LoadingSkeleton';
@@ -118,9 +117,6 @@ const ContainerDetails = () => {
             className="w-full h-full relative custom-scroll overflow-y-scroll p-6 pb-8"
         >
             <div className="relative z-10 space-y-6">
-                {/* Back Navigation */}
-                <BackNavigation />
-
                 {/* Warning/Alert Card */}
                 <WarningCard containerStatus={container.status} />
 

@@ -127,11 +127,6 @@ export const devUserMenuItems: MenuItem[] = [
     ],
   },
   {
-    title: "Profile",
-    path: "/profile",
-    icon: FaUser,
-  },
-  {
     title: "Support",
     path: "/support",
     icon: MdSupportAgent,

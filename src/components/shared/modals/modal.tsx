@@ -16,7 +16,7 @@ type ModalSize =
   | '5xl'
   | '6xl'
 
-type ModalVariant = 'default' | 'themed' | 'glass'
+type ModalVariant = 'default' | 'cosmic' | 'glass'
 
 interface ModalProps {
   isModalOpen: boolean
@@ -149,9 +149,9 @@ const Modal: React.FC<ModalProps> = ({
 
   // Prepare classes based on variant
   const overlayClasses = variant === 'glass' ? 'backdrop-blur-md bg-black/40 dark:bg-black/40' : 'bg-black/80 dark:bg-black/60'
-  const modalBgClasses = variant === 'themed' ? 'bg-base dark:bg-primary-dark' : variant === 'glass' ? 'backdrop-blur-xl bg-white/70 dark:bg-primary-dark/70 border border-gray-300/50 dark:border-gray-600/50' : 'bg-white dark:bg-primary-dark'
+  const modalBgClasses = variant === 'cosmic' ? 'bg-base dark:bg-primary-dark' : variant === 'glass' ? 'backdrop-blur-xl bg-white/70 dark:bg-primary-dark/70 border border-gray-300/50 dark:border-gray-600/50' : 'bg-white dark:bg-primary-dark'
   const headerClasses = variant === 'glass' ? 'bg-base/60 rounded-t-lg' : 'bg-primary rounded-t-lg'
-  const footerClasses = variant === 'themed' ? 'bg-main dark:bg-primary-dark' : variant === 'glass' ? 'bg-base/80 dark:bg-primary-dark/90' : 'bg-gray-50 dark:bg-primary-dark'
+  const footerClasses = variant === 'cosmic' ? 'bg-main dark:bg-primary-dark' : variant === 'glass' ? 'bg-base/80 dark:bg-primary-dark/90' : 'bg-gray-50 dark:bg-primary-dark'
 
   if (!portalElement) return null
 

@@ -171,13 +171,21 @@ const Login = () => {
         duration: 2000
       })
 
+      // Navigate based on user roles (this should be consistent with AuthRoute.tsx)
       // Use replace: true to prevent going back to login page
-      if (jwtPayload.roles?.includes('developer') || jwtPayload.roles?.includes('admin')) {
-        navigate(destination, { replace: true })
-        // } else if (jwtPayload.roles?.includes('user')) {
-        //   navigate(res.data.hasBusiness ? destination : '/onboarding', {
-        //     replace: true,
-        //   })
+      const userRoles = jwtPayload.roles || []
+      if (userRoles.includes('developer')) {
+        navigate('/admin/dashboard', { replace: true })
+      } else if (userRoles.includes('user')) {
+        // Check if user has business, if not redirect to onboarding
+        if (!res.data.hasBusiness) {
+          navigate('/onboarding', {
+            replace: true,
+            state: { destination }
+          })
+        } else {
+          navigate(destination, { replace: true })
+        }
       } else {
         // Default to dashboard if roles are unclear
         navigate(destination, { replace: true })

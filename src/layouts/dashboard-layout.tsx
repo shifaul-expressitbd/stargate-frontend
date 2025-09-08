@@ -1,22 +1,20 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 import { Navbar } from '@/components/layout/navbar';
 import { Sidebar } from '@/components/layout/sidebar';
-import Modal from '@/components/shared/modals/modal';
 import { useResponsive } from '@/hooks/useResponsive';
 import { useSidebar } from '@/hooks/useSidebar';
-import { logout, selectSubscriptionExpired } from '@/lib/features/auth/authSlice';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { createPortal } from 'react-dom';
+import { logout } from '@/lib/features/auth/authSlice';
+import { useAppDispatch } from '@/lib/hooks';
 
 
 export const DashboardLayout = memo(() => {
-  const subscriptionExpired = useAppSelector(selectSubscriptionExpired)
+  // const subscriptionExpired = useAppSelector(selectSubscriptionExpired)
   const { isSidebarOpen } = useSidebar()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const location = useLocation()
+  // const location = useLocation()
 
   // Use centralized responsive context
   const { isMobile, isTablet } = useResponsive();
@@ -28,15 +26,15 @@ export const DashboardLayout = memo(() => {
   );
 
   // Modal logic for expired subscription
-  const [showModal, setShowModal] = useState(false)
+  // const [showModal, setShowModal] = useState(false)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const shouldShowReminder = useMemo(() =>
-    ['/profile', '/payment', '/siteStore'].some((path) =>
-      location.pathname.startsWith(path)
-    ),
-    [location.pathname]
-  )
+  // const shouldShowReminder = useMemo(() =>
+  //   ['/profile', '/payment', '/siteStore'].some((path) =>
+  //     location.pathname.startsWith(path)
+  //   ),
+  //   [location.pathname]
+  // )
 
   // Memoize event handlers
   const handleLogout = useCallback(() => {
@@ -44,26 +42,26 @@ export const DashboardLayout = memo(() => {
     navigate('/login', { replace: true })
   }, [dispatch, navigate])
 
-  const handleCloseModal = useCallback(() => {
-    setShowModal(false)
-    if (subscriptionExpired && shouldShowReminder) {
-      timeoutRef.current = setTimeout(() => {
-        setShowModal(true)
-      }, 30_000)
-    }
-  }, [subscriptionExpired, shouldShowReminder])
+  // const handleCloseModal = useCallback(() => {
+  //   setShowModal(false)
+  //   if (subscriptionExpired && shouldShowReminder) {
+  //     timeoutRef.current = setTimeout(() => {
+  //       setShowModal(true)
+  //     }, 30_000)
+  //   }
+  // }, [subscriptionExpired, shouldShowReminder])
 
-  useEffect(() => {
-    if (subscriptionExpired && shouldShowReminder) {
-      setShowModal(true)
-    } else {
-      setShowModal(false)
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [subscriptionExpired, shouldShowReminder, location.pathname])
+  // useEffect(() => {
+  //   if (subscriptionExpired && shouldShowReminder) {
+  //     setShowModal(true)
+  //   } else {
+  //     setShowModal(false)
+  //     if (timeoutRef.current) {
+  //       clearTimeout(timeoutRef.current)
+  //       timeoutRef.current = null
+  //     }
+  //   }
+  // }, [subscriptionExpired, shouldShowReminder, location.pathname])
 
   // handleCloseModal is now memoized above
 
@@ -108,7 +106,7 @@ export const DashboardLayout = memo(() => {
   };
 
   return (
-    <div className="relative flex w-full min-h-dvh bg-main dark:bg-black overflow-hidden">
+    <div className="relative flex w-full min-h-dvh overflow-hidden">
       {/* Cosmic Background with Particles */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         {/* Background Pattern */}
@@ -138,7 +136,7 @@ export const DashboardLayout = memo(() => {
       <main
         className={`
           w-full max-h-svh transition-all duration-300 ease-in-out
-          ml-[${sidebarMargin}px]
+          ml-[${sidebarMargin}px] bg-transparent
           scrollbar-none overflow-hidden
         `}
       >
@@ -149,7 +147,7 @@ export const DashboardLayout = memo(() => {
       </main>
 
       {/* Subscription Expired Modal (Portal) */}
-      {subscriptionExpired &&
+      {/* {subscriptionExpired &&
         createPortal(
           <Modal
             isModalOpen={showModal}
@@ -173,7 +171,7 @@ export const DashboardLayout = memo(() => {
             </div>
           </Modal>,
           document.body
-        )}
+        )} */}
     </div>
   )
-}); // Close memo wrapper
+});

@@ -2,7 +2,9 @@ import type { Sidebar } from '@/config/routes.config';
 import { authApi } from '@/lib/features/auth/authApi';
 import type { JWTPayload, TUser } from '@/lib/features/auth/authSlice';
 import { logout, setUser } from '@/lib/features/auth/authSlice';
+import profileApi from '@/lib/features/profile/profileApi';
 import { useAppDispatch } from '@/lib/hooks';
+import type { UserProfile } from '@/types/TUserProfile.type';
 import { clearTokens, validateStoredTokens, type TokenData } from '@/utils/tokenUtils';
 import { jwtDecode } from 'jwt-decode';
 import { useEffect } from 'react';
@@ -24,6 +26,23 @@ interface LoginResponse {
         sideBar?: Sidebar[][];
     };
 }
+
+/**
+ * Helper function to map UserProfile to TUser
+ */
+const mapUserProfileToTUser = (userProfile: UserProfile): TUser => {
+    return {
+        id: userProfile._id,
+        email: userProfile.email,
+        name: userProfile.name,
+        avatar: userProfile.picture?.optimizeUrl || null,
+        provider: "local", // Default value since not provided in profile
+        isEmailVerified: true, // Default value since not provided in profile
+        isTwoFactorEnabled: false, // Default value since not provided in profile
+        role: userProfile.role,
+        warning_date: "", // Default empty value since not provided in profile
+    };
+};
 
 /**
  * AuthInitializer component - handles token validation and auth state restoration on app load
@@ -117,11 +136,16 @@ export const AuthInitializer = () => {
                 } else {
                     // Token is still valid, try to fetch current user data
                     try {
-                        const profileResult = await dispatch(authApi.endpoints.getProfile.initiate({}));
+                        const profileResult = await dispatch(profileApi.endpoints.getProfile.initiate());
 
                         if (profileResult.data && !profileResult.error) {
-                            // Use profile data for user info, keep JWT payload for roles/expiry
-                            const userProfile = profileResult.data as TUser;
+                            // Map UserProfile to TUser
+                            const userProfile = mapUserProfileToTUser(profileResult.data);
+                            const actualUserProfile = {
+                                public_id: profileResult.data.picture?.public_id || null,
+                                optimizeUrl: profileResult.data.picture?.optimizeUrl || null,
+                                secure_url: profileResult.data.picture?.secure_url || null,
+                            };
 
                             dispatch(setUser({
                                 user: userProfile,
@@ -129,6 +153,8 @@ export const AuthInitializer = () => {
                                 token: tokens.accessToken,
                                 refreshToken: tokens.refreshToken,
                                 hasBusiness: true, // Assume has business if profile is available
+                                userProfile: actualUserProfile,
+                                dashboardDesign: undefined,
                             }));
 
                             console.info('Auth state restored from valid tokens');

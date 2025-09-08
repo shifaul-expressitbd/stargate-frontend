@@ -13,6 +13,8 @@ import VerifyNewUser from '@/pages/(auth)/VerifyNewUser/VerifyNewUser'
 import ClientDashboard from '@/pages/(client)/Dashboard/ClientDashboard'
 import ContainerDetails from '@/pages/(client)/sGTMContainer/ContainerDetails'
 import NotFoundPage from '@/pages/NotFoundPage'
+import ProfilePage from '@/pages/Profile'
+import UnauthorizedPage from '@/pages/UnauthorizedPage'
 import React, { createElement, Fragment } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import AuthRoute from './AuthRoute'
@@ -74,17 +76,25 @@ const AppRouter: React.FC = () => {
           <Route
             path="/dashboard"
             element={
-              // <ProtectedRoute roles={['user']}>
-              <ClientDashboard />
-              // </ProtectedRoute>
+              <ProtectedRoute roles={['user']}>
+                <ClientDashboard />
+              </ProtectedRoute>
             }
           />
           <Route
             path="/containers/:id"
             element={
-              // <ProtectedRoute roles={['user', 'developer']}>
-              <ContainerDetails />
-              // </ProtectedRoute>
+              <ProtectedRoute roles={['user', 'developer']}>
+                <ContainerDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute roles={['user', 'developer']}>
+                <ProfilePage />
+              </ProtectedRoute>
             }
           />
         </Route>
@@ -94,9 +104,9 @@ const AppRouter: React.FC = () => {
           <Route
             path="/admin/dashboard"
             element={
-              // <ProtectedRoute roles={['developer']}>
-              <AdminDashboard />
-              // </ProtectedRoute>
+              <ProtectedRoute roles={['developer']}>
+                <AdminDashboard />
+              </ProtectedRoute>
             }
           />
         </Route>
@@ -132,6 +142,9 @@ const AppRouter: React.FC = () => {
             </Fragment>
           ))}
         </Route>
+
+        {/* Unauthorized Route */}
+        <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
         {/* Fallback Route for Unknown Paths */}
         <Route path="*" element={<NotFoundPage />} />

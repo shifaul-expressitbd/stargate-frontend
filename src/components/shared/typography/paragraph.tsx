@@ -2,7 +2,7 @@ import React from 'react'
 import { twMerge } from 'tailwind-merge'
 
 export interface ParagraphProps extends React.HTMLAttributes<HTMLParagraphElement> {
-  variant?: 'default' | 'subtle' | 'muted'
+  variant?: 'default' | 'subtle' | 'muted' | 'cosmic'
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 }
 
@@ -17,6 +17,7 @@ export const Paragraph = ({
     default: 'text-foreground',
     subtle: 'text-muted-foreground',
     muted: 'text-muted-foreground/80',
+    cosmic: 'text-cyan-200/90 font-orbitron text-shadow-cyan-glow',
   }
 
   const sizeStyles = {

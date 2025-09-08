@@ -15,7 +15,7 @@ import { FaCaretDown, FaCaretUp } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
-import avatar from '/images/avatar/avatar1.png';
+import { UserBox } from '../navbar/user-box';
 
 
 const ALWAYS_ACTIVE_PATHS = [
@@ -152,7 +152,7 @@ export const Sidebar = memo(({ }: SidebarProps) => {
         ref={el => { sidebarRef.current = el; }}
         data-testid="sidebar"
         className={twMerge(
-          "min-h-dvh max-h-dvh w-fit backdrop-blur-md relative overflow-hidden",
+          "min-h-dvh max-h-dvh w-fit backdrop-blur-md relative overflow-visible",
           color === 'cosmic'
             ? "bg-black/60 border-r border-cyan-400/30"
             : "bg-white dark:bg-primary-dark",
@@ -171,13 +171,13 @@ export const Sidebar = memo(({ }: SidebarProps) => {
               : 'border-b border-gray-200 dark:border-gray-700',
             isCollapsed ? 'p-4' : 'pl-5 py-4'
           )}>
-            {/* User Info */}
+            {/* LOGO */}
             {showLabels ? (
               <div className={twMerge(
                 'w-full dark:text-white flex gap-3 items-center',
                 color === 'cosmic' ? 'text-cyan-200' : 'text-gray-500'
               )}>
-                <Link to='/profile' className='min-w-fit'>
+                <Link to='/' className='min-w-fit'>
                   <img
                     src='/images/logo/logo.png'
                     alt="StarGate"
@@ -203,7 +203,7 @@ export const Sidebar = memo(({ }: SidebarProps) => {
                   delay={600}
                   showArrow={true}
                 >
-                  <Link to='/profile' className='block'>
+                  <Link to='/' className='block'>
                     <img
                       src='/images/logo/logo.png'
                       alt="StarGate"
@@ -249,57 +249,16 @@ export const Sidebar = memo(({ }: SidebarProps) => {
 
           {/* Footer */}
           <div className={twMerge(
-            color === 'cosmic'
-              ? 'border-t border-cyan-400/30'
-              : 'border-t border-gray-200 dark:border-gray-700',
+
             showLabels ? 'p-3' : 'p-2'
           )}>
-            {showLabels ? (
-              <div className={twMerge(
-                'w-full dark:text-white flex gap-3 items-center',
-                color === 'cosmic' ? 'text-cyan-200' : 'text-gray-500'
-              )}>
-                <Link to='/profile' className='min-w-fit'>
-                  <img
-                    src={avatar}
-                    alt={`${user?.name || 'User'} profile picture`}
-                    className='w-10 h-10 rounded-full aspect-square object-cover'
-                  />
-                </Link>
-                <div className='max-w-[75%] min-w-0'>
-                  <p className='text-lg leading-6 font-semibold capitalize truncate'>
-                    {user?.name}
-                  </p>
-                  {!isExpired && remainingTime.text && (
-                    <p className={twMerge(getStatusColor(remainingTime, color), 'text-sm')}>
-                      {remainingTime.text}
-                    </p>
-                  )}
-                  {isExpired && (
-                    <p className={color === 'cosmic' ? 'text-red-400 text-sm' : 'text-red-500 text-sm'}>
-                      Expired
-                    </p>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className='w-full flex justify-center'>
-                <Tooltip
-                  content={user?.name || 'Profile'}
-                  position="right"
-                  delay={600}
-                  showArrow={true}
-                >
-                  <Link to='/profile' className='block'>
-                    <img
-                      src={avatar}
-                      alt={`${user?.name || 'User'} profile picture`}
-                      className='w-8 h-8 rounded-full aspect-square object-cover transition-transform duration-200 hover:scale-110'
-                    />
-                  </Link>
-                </Tooltip>
-              </div>
-            )}
+            {/* User Info */}
+            <UserBox
+              showLabels={showLabels}
+              color={color}
+              isExpired={isExpired}
+              remainingTime={remainingTime}
+            />
           </div>
         </div>
 
@@ -307,23 +266,22 @@ export const Sidebar = memo(({ }: SidebarProps) => {
         {cosmicDecorations}
       </aside>
 
-      <div className={twMerge('w-screen h-screen', (currentMode === 'mobile-overlay' && isSidebarOpen) ? "fixed inset-y-0 left-0 top-0 z-40" : "relative hidden",)} onClick={() => { closeSidebar() }} />
+      <div
+        className={twMerge(
+          "w-screen h-screen backdrop-blur-sm",
+          currentMode === "mobile-overlay" && isSidebarOpen
+            ? "fixed inset-y-0 left-0 top-0 z-40 bg-black/30"
+            : "relative hidden"
+        )}
+        onClick={() => {
+          closeSidebar();
+        }}
+      />
+
     </>
   );
 });
 
-// Helper Functions
-const getStatusColor = (remainingTime: { unit: string; value: number }, color?: string) => {
-  const { unit, value } = remainingTime;
-
-  if ((unit === 'days' && value <= 1) || unit === 'hours' || unit === 'minutes') {
-    return color === 'cosmic' ? 'text-red-400' : 'text-red-700 dark:text-red-400';
-  }
-  if (unit === 'days' && value <= 3) {
-    return color === 'cosmic' ? 'text-yellow-400' : 'text-yellow-700 dark:text-yellow-400';
-  }
-  return color === 'cosmic' ? 'text-green-400' : 'text-green-700 dark:text-green-400';
-};
 
 interface MenuItemProps {
   item: MenuItem;

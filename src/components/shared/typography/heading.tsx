@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge'
 export interface HeadingProps
   extends React.HTMLAttributes<HTMLHeadingElement> {
   as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-  variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+  variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'cosmic'
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl'
 }
 
@@ -25,6 +25,7 @@ export const Heading = ({
     h4: 'text-xl font-semibold tracking-tight',
     h5: 'text-lg font-semibold',
     h6: 'text-base font-semibold',
+    cosmic: 'text-cyan-200 font-bold tracking-tight font-orbitron text-shadow-cyan-glow',
   }
 
   const sizeStyles = {

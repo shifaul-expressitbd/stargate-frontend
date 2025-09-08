@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge'
 
 export interface TextProps extends React.HTMLAttributes<HTMLSpanElement> {
   as?: 'p' | 'span' | 'div' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-  variant?: 'default' | 'subtle' | 'muted'
+  variant?: 'default' | 'subtle' | 'muted' | 'cosmic'
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 }
 
@@ -21,6 +21,7 @@ export const Text = ({
     default: 'text-foreground',
     subtle: 'text-muted-foreground',
     muted: 'text-muted-foreground/80',
+    cosmic: 'text-cyan-200/80 font-orbitron text-shadow-cyan-glow',
   }
 
   const sizeStyles = {

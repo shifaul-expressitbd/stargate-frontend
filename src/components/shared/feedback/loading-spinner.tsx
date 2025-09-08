@@ -10,7 +10,8 @@ type Color =
   | "blue"
   | "red"
   | "green"
-  | "gray";
+  | "gray"
+  | "cosmic";
 
 const sizeClasses: Record<Size, string> = {
   xs: "h-3 w-3 border",
@@ -28,6 +29,7 @@ const colorClasses: Record<Color, string> = {
   red: "border-red-500",
   green: "border-green-500",
   gray: "border-gray-500",
+  cosmic: "border-cyan-400",
 };
 
 // BaseSpinner.tsx
@@ -122,24 +124,31 @@ export const LoadingSpinnerBounce = ({
   dotColor?: string;
   className?: string;
   "aria-label"?: string;
-}) => (
-  <div
-    role="status"
-    aria-label={ariaLabel}
-    className={twMerge("flex space-x-1", className)}
-  >
-    {[...Array(3)].map((_, i) => (
-      <div
-        key={i}
-        className={twMerge(
-          "h-2 w-2 rounded-full motion-safe:animate-bounce",
-          dotColor
-        )}
-        style={{ animationDelay: `${i * 200}ms` }}
-      />
-    ))}
-  </div>
-);
+}) => {
+  const getDotColor = (color: string) => {
+    if (color === "cosmic") return "bg-cyan-400";
+    return color;
+  };
+
+  return (
+    <div
+      role="status"
+      aria-label={ariaLabel}
+      className={twMerge("flex space-x-1", className)}
+    >
+      {[...Array(3)].map((_, i) => (
+        <div
+          key={i}
+          className={twMerge(
+            "h-2 w-2 rounded-full motion-safe:animate-bounce",
+            getDotColor(dotColor)
+          )}
+          style={{ animationDelay: `${i * 200}ms` }}
+        />
+      ))}
+    </div>
+  );
+};
 
 // Ping/pulse animation loader
 export const LoadingSpinnerPulse = ({
@@ -167,18 +176,26 @@ export const LoadingSpinnerTyping = ({
   dotColor?: string;
   className?: string;
   "aria-label"?: string;
-}) => (
-  <div
-    role="status"
-    aria-label={ariaLabel}
-    className={twMerge("flex space-x-1", className)}
-  >
-    {[...Array(3)].map((_, i) => (
-      <div
-        key={i}
-        className={`h-2 w-2 rounded-full animate-pulse bg-${dotColor}`}
-        style={{ animationDelay: `${i * 200}ms` }}
-      />
-    ))}
-  </div>
-);
+}) => {
+  const getTypingDotColor = (color: string) => {
+    if (color === "cosmic") return "gray-900";
+    if (color === "cosmic-dark") return "cyan-400";
+    return color;
+  };
+
+  return (
+    <div
+      role="status"
+      aria-label={ariaLabel}
+      className={twMerge("flex space-x-1", className)}
+    >
+      {[...Array(3)].map((_, i) => (
+        <div
+          key={i}
+          className={`h-2 w-2 rounded-full animate-pulse bg-${getTypingDotColor(dotColor)}`}
+          style={{ animationDelay: `${i * 200}ms` }}
+        />
+      ))}
+    </div>
+  );
+};

@@ -112,7 +112,9 @@ export const InputField = ({
                 + ' dark:bg-slate-900 dark:border-cyan-500/50 dark:placeholder-cyan-400/70'
                 : 'bg-white dark:bg-black text-gray-400 dark:text-gray-500',
             'placeholder-gray-400 dark:placeholder-gray-400',
-            'disabled:bg-gray-50 dark:disabled:bg-gray-800/50 disabled:opacity-75 disabled:cursor-not-allowed',
+            variant === 'cosmic'
+              ? 'disabled:bg-black/60 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-cyan-400/30'
+              : 'disabled:bg-gray-50 dark:disabled:bg-gray-800/50 disabled:opacity-75 disabled:cursor-not-allowed',
             error
               ? 'border-red-500 focus:ring-red-200 dark:focus:ring-red-500/30'
               : warning

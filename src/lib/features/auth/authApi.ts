@@ -81,13 +81,6 @@ export const authApi = baseApi.injectEndpoints({
         },
       }),
     }),
-    getProfile: builder.query({
-      query: () => ({
-        url: "/users/profile",
-        method: "GET",
-      }),
-      providesTags: ["profile"],
-    }),
   }),
 });
 
@@ -103,5 +96,4 @@ export const {
   useRefreshTokenQuery,
   useForgotPasswordMutation,
   useResetPasswordMutation,
-  useGetProfileQuery,
 } = authApi;

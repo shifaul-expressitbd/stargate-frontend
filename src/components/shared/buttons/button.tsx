@@ -55,7 +55,7 @@ export const Button = ({
 }: ButtonProps) => {
   // Base styles for all buttons
   const baseStyles =
-    'font-semibold transition-all duration-200 w-fit cursor-pointer disabled:cursor-not-allowed disabled:opacity-60'
+    'font-semibold transition-all duration-200 w-fit cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 p-0.5'
 
   // Variant-specific styles
   const variantStyles = {

@@ -41,6 +41,7 @@ interface SelectProps {
   showSelectAll?: boolean
   selectAllLabel?: string
   animation?: boolean
+  variant?: 'default' | 'cosmic'
 }
 
 const DROPDOWN_MARGIN = 5
@@ -52,7 +53,8 @@ const OptionItem: React.FC<{
   onClick: () => void
   mode: 'single' | 'multi'
   disabled?: boolean
-}> = ({ option, isSelected, onClick, mode }) => (
+  variant?: 'default' | 'cosmic'
+}> = ({ option, isSelected, onClick, mode, variant = 'default' }) => (
   <div
     role="option"
     aria-selected={isSelected}
@@ -60,16 +62,30 @@ const OptionItem: React.FC<{
     onClick={onClick}
     className={twMerge(
       'px-3 py-2 cursor-pointer flex items-center text-nowrap',
-      isSelected
-        ? 'bg-orange-100 dark:bg-orange-700 text-orange-700 dark:text-white'
-        : 'hover:bg-gray-100 dark:hover:bg-gray-700',
+      variant === 'cosmic'
+        ? isSelected
+          ? 'bg-cyan-900/40 text-cyan-300 border border-cyan-400/30'
+          : 'hover:bg-purple-900/20 hover:text-cyan-200 text-cyan-100'
+        : isSelected
+          ? 'bg-orange-100 dark:bg-orange-700 text-orange-700 dark:text-white'
+          : 'hover:bg-gray-100 dark:hover:bg-gray-700',
       option.disabled && 'opacity-50 cursor-not-allowed'
     )}
     tabIndex={-1}
   >
     {mode === 'multi' && (
-      <div className="w-4 h-4 mr-2 flex items-center justify-center border border-gray-300 dark:border-gray-500 rounded">
-        {isSelected && <FiCheck className="w-3 h-3 text-orange-600" />}
+      <div className={twMerge(
+        'w-4 h-4 mr-2 flex items-center justify-center border rounded',
+        variant === 'cosmic'
+          ? 'border-cyan-400/30 bg-black/60 backdrop-blur-sm'
+          : 'border-gray-300 dark:border-gray-500'
+      )}>
+        {isSelected && (
+          <FiCheck className={twMerge(
+            'w-3 h-3',
+            variant === 'cosmic' ? 'text-cyan-300' : 'text-orange-600'
+          )} />
+        )}
       </div>
     )}
     {option.label}
@@ -104,6 +120,7 @@ const Select: React.FC<SelectProps> = ({
   showSelectAll = false,
   selectAllLabel = 'Select All',
   animation = true,
+  variant = 'default',
 }: SelectProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -491,12 +508,17 @@ const Select: React.FC<SelectProps> = ({
           aria-controls={id ? `${id}-dropdown` : undefined}
           tabIndex={disabled ? -1 : 0}
           className={twMerge(
-            'w-full flex items-center p-2 h-10 rounded border bg-white dark:bg-black text-gray-900 dark:text-white',
+            variant === 'cosmic'
+              ? 'text-cyan-300 border border-cyan-400/50 hover:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300 backdrop-blur-sm'
+              : 'bg-white dark:bg-black text-gray-900 dark:text-white border-gray-300 dark:border-gray-600',
+            'w-full flex items-center p-2 h-10 rounded',
             'cursor-pointer select-none',
-            'border-gray-300 dark:border-gray-600 hover:border-secondary  dark:hover:border-secondary  focus:outline-none focus:ring-2 focus:ring-orange-300',
-            isOpen && 'ring-2 ring-orange-200 dark:ring-orange-600',
+            variant === 'default' && 'hover:border-secondary dark:hover:border-secondary focus:ring-2 focus:ring-orange-300',
+            isOpen && (variant === 'cosmic' ? 'ring-2 ring-cyan-300' : 'ring-2 ring-orange-200 dark:ring-orange-600'),
             error && 'border-red-500',
-            disabled && 'opacity-50 cursor-not-allowed',
+            disabled && (variant === 'cosmic'
+              ? 'bg-black/60 border-cyan-400/30 opacity-60 cursor-not-allowed'
+              : 'opacity-50 cursor-not-allowed'),
             className
           )}
         >
@@ -508,12 +530,20 @@ const Select: React.FC<SelectProps> = ({
                     {value.map((v) => (
                       <span
                         key={v.value}
-                        className="inline-flex items-center px-2 py-0.5 bg-orange-50 text-orange-700 text-xs rounded text-nowrap"
+                        className={twMerge(
+                          'inline-flex items-center px-2 py-0.5 text-xs rounded text-nowrap',
+                          variant === 'cosmic'
+                            ? 'bg-cyan-900/30 text-cyan-300 border border-cyan-400/20'
+                            : 'bg-orange-50 text-orange-700'
+                        )}
                       >
                         {v.label}
                         {!disabled && (
                           <FiX
-                            className="ml-1 w-3 h-3 cursor-pointer"
+                            className={twMerge(
+                              'ml-1 w-3 h-3 cursor-pointer',
+                              variant === 'cosmic' ? 'text-cyan-300 hover:text-cyan-200' : ''
+                            )}
                             onClick={(e) => {
                               e.stopPropagation()
                               handleRemove(v)
@@ -529,12 +559,20 @@ const Select: React.FC<SelectProps> = ({
                     {value.map((v) => (
                       <span
                         key={v.value}
-                        className="inline-flex items-center px-2 py-0.5 bg-orange-50 text-orange-700 text-xs rounded text-nowrap"
+                        className={twMerge(
+                          'inline-flex items-center px-2 py-0.5 text-xs rounded text-nowrap',
+                          variant === 'cosmic'
+                            ? 'bg-cyan-900/30 text-cyan-300 border border-cyan-400/20'
+                            : 'bg-orange-50 text-orange-700'
+                        )}
                       >
                         {v.label}
                         {!disabled && (
                           <FiX
-                            className="ml-1 w-3 h-3 cursor-pointer"
+                            className={twMerge(
+                              'ml-1 w-3 h-3 cursor-pointer',
+                              variant === 'cosmic' ? 'text-cyan-300 hover:text-cyan-200' : ''
+                            )}
                             onClick={(e) => {
                               e.stopPropagation()
                               handleRemove(v)
@@ -555,7 +593,10 @@ const Select: React.FC<SelectProps> = ({
                     if (!isOpen) openDropdown()
                   }}
                   onFocus={openDropdown}
-                  className="flex-1 min-w-[50px] bg-transparent outline-none text-sm placeholder-gray-700"
+                  className={twMerge(
+                    'flex-1 min-w-[50px] bg-transparent outline-none text-sm',
+                    variant === 'cosmic' ? 'placeholder-cyan-300/50' : 'placeholder-gray-700'
+                  )}
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
@@ -563,12 +604,20 @@ const Select: React.FC<SelectProps> = ({
               value.map((v) => (
                 <span
                   key={v.value}
-                  className="inline-flex items-center px-2 py-0.5 bg-orange-50 text-orange-700 text-xs rounded"
+                  className={twMerge(
+                    'inline-flex items-center px-2 py-0.5 text-xs rounded',
+                    variant === 'cosmic'
+                      ? 'bg-cyan-900/30 text-cyan-300 border border-cyan-400/20'
+                      : 'bg-orange-50 text-orange-700'
+                  )}
                 >
                   {v.label}
                   {!disabled && (
                     <FiX
-                      className="ml-1 w-3 h-3 cursor-pointer"
+                      className={twMerge(
+                        'ml-1 w-3 h-3 cursor-pointer',
+                        variant === 'cosmic' ? 'text-cyan-300 hover:text-cyan-200' : ''
+                      )}
                       onClick={(e) => {
                         e.stopPropagation()
                         handleRemove(v)
@@ -581,22 +630,30 @@ const Select: React.FC<SelectProps> = ({
               <span>{value[0].label as string}</span>
             ) : (
               <span
-                className={disabled ? "text-gray-600" : "text-gray-600"}
-                style={disabled ? { color: 'black !important' } : undefined}
+                className={twMerge(
+                  variant === 'cosmic'
+                    ? 'text-cyan-300/70'
+                    : 'text-gray-600'
+                )}
               >
                 {placeholder}
-                {/* Debug: Disabled state uses text-black for 21:1 contrast */}
               </span>
             )}
           </div>
 
           {mode === 'multi' && value.length > 0 && !disabled && (
             <FiX
-              className="ml-2 w-4 h-4 text-gray-400 hover:text-red-500 cursor-pointer"
+              className={twMerge(
+                'ml-2 w-4 h-4 cursor-pointer',
+                variant === 'cosmic' ? 'text-cyan-400/70 hover:text-red-400' : 'text-gray-400 hover:text-red-500'
+              )}
               onClick={handleClearAll}
             />
           )}
-          <DropdownIndicator className="ml-2 w-4 h-4 text-gray-400" />
+          <DropdownIndicator className={twMerge(
+            'ml-2 w-4 h-4',
+            variant === 'cosmic' ? 'text-cyan-400' : 'text-gray-400'
+          )} />
         </div>
 
         {/* Dropdown */}
@@ -606,7 +663,11 @@ const Select: React.FC<SelectProps> = ({
               ref={dropdownRef}
               id={id ? `${id}-dropdown` : undefined}
               className={twMerge(
-                'fixed z-[99999] bg-white dark:bg-black border border-gray-300 dark:border-gray-600 shadow-lg rounded overflow-auto dark:text-white custom-select-dropdown capitalize',
+                variant === 'cosmic'
+                  ? 'bg-black/90 backdrop-blur-md border border-cyan-400/50 text-cyan-300'
+                  : 'bg-white dark:bg-black border-gray-300 dark:border-gray-600',
+                'fixed z-[99999] shadow-lg rounded overflow-auto custom-select-dropdown capitalize',
+                variant === 'cosmic' ? 'shadow-cyan-500/20' : 'dark:text-white',
                 dropdownSizeStyles[dropdownSize],
                 dropdownWidthStyles[dropdownWidth] || dropdownWidth,
                 getAnimationClasses()
@@ -628,14 +689,19 @@ const Select: React.FC<SelectProps> = ({
               }}
             >
               {searchable && searchPosition === 'dropdown' && (
-                <div className="p-2 border-b dark:border-gray-600">
+                <div className="p-2 border-b border-cyan-400/30">
                   <input
                     ref={inputRef}
                     type="text"
                     value={searchTerm}
                     placeholder={searchPlaceholder}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full h-8 px-2 rounded border border-gray-300 dark:bg-black dark:border-gray-600 focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-600"
+                    className={twMerge(
+                      'w-full h-8 px-2 rounded',
+                      variant === 'cosmic'
+                        ? 'bg-black/60 text-cyan-300 placeholder-cyan-300/50 border border-cyan-400/40 focus:ring-2 focus:ring-cyan-300 backdrop-blur-sm'
+                        : 'border-gray-300 dark:bg-black dark:border-gray-600 focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-600'
+                    )}
                     autoFocus
                   />
                 </div>
@@ -643,7 +709,12 @@ const Select: React.FC<SelectProps> = ({
               {showSelectAll && mode === 'multi' && (
                 <div
                   onClick={handleSelectAll}
-                  className="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className={twMerge(
+                    'px-3 py-2 cursor-pointer',
+                    variant === 'cosmic'
+                      ? 'hover:bg-purple-900/20 text-cyan-100'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                  )}
                 >
                   {isAllSelected() ? 'Deselect All' : selectAllLabel}
                 </div>
@@ -657,10 +728,14 @@ const Select: React.FC<SelectProps> = ({
                     onClick={() => handleOptionClick(option)}
                     mode={mode}
                     disabled={option.disabled}
+                    variant={variant}
                   />
                 ))
               ) : (
-                <div className="px-2 py-2 text-gray-400">
+                <div className={twMerge(
+                  'px-2 py-2',
+                  variant === 'cosmic' ? 'text-cyan-300/70' : 'text-gray-400'
+                )}>
                   {typeof noOptionsMessage === 'function'
                     ? noOptionsMessage(searchTerm)
                     : noOptionsMessage}

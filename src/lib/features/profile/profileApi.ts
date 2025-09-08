@@ -5,8 +5,8 @@ import { baseApi } from "../../api/baseApi";
 const profileApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Fetch user's profile
-    getProfile: builder.query({
-      query: () => "/profile",
+    getProfile: builder.query<UserProfile, void>({
+      query: () => "/users/profile",
       transformResponse: (response: { data: UserProfile }) => response.data,
       providesTags: ["profile"],
     }),
@@ -14,7 +14,7 @@ const profileApi = baseApi.injectEndpoints({
     // Update user's profile
     updateProfile: builder.mutation<UserProfile, FormData>({
       query: (formData) => ({
-        url: "/profile/update",
+        url: "/users/profile/update",
         method: "PUT",
         body: formData,
       }),
@@ -23,4 +23,5 @@ const profileApi = baseApi.injectEndpoints({
   }),
 });
 
+export default profileApi;
 export const { useGetProfileQuery, useUpdateProfileMutation } = profileApi;

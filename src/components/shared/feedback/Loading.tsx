@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/layout/skeleton'
+import useTheme from '@/hooks/useTheme'
 import React from 'react'
 
 interface SectionConfig {
@@ -22,9 +23,18 @@ export const Loading: React.FC<LoadingProps> = ({
   sections,
   className = ''
 }) => {
+  const { color, mode } = useTheme();
+
+  const getBackgroundStyles = () => {
+    if (color === 'cosmic') {
+      return 'bg-black/80 backdrop-blur-md';
+    }
+    return mode === 'dark' ? 'bg-black/50' : 'bg-white/50';
+  };
+
   const content = (
     <div
-      className={`space-y-4 p-4 ${className} fixed inset-0 overflow-hidden scrollbar-none bg-white/50`}
+      className={`space-y-4 p-4 ${className} fixed inset-0 overflow-hidden scrollbar-none ${getBackgroundStyles()}`}
     >
       {headerHeight && <Skeleton className={headerHeight} />}
 
