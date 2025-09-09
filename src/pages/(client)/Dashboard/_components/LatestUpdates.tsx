@@ -16,8 +16,8 @@ const LatestUpdates = () => {
                     <GiPolarStar className="h-5 w-5 text-cyan-400" />
                 </div>
                 <div>
-                    <h3 className="font-semibold text-lg text-white font-asimovian animate-hologram">Latest Dimensional Updates</h3>
-                    <p className="text-cyan-200 text-sm font-orbitron">Interdimensional upgrades and enhancements</p>
+                    <h3 className="font-semibold text-lg text-white font-orbitron animate-hologram">Latest Dimensional Updates</h3>
+                    <p className="text-cyan-200 text-sm font-poppins">Interdimensional upgrades and enhancements</p>
                 </div>
             </div>
 
@@ -28,13 +28,13 @@ const LatestUpdates = () => {
                     date="Phase 9.19"
                 >
                     <div className="space-y-2">
-                        <p className="text-purple-200 text-sm font-orbitron leading-relaxed">
+                        <p className="text-purple-200 text-sm font-poppins leading-relaxed">
                             We've improved wormhole connection stability with advanced quantum entanglement protocols.
                             This reduces temporal drift and ensures your data streams travel faster than planetary light speed.
                         </p>
                         <a
                             href="/documentation/getting-started"
-                            className="text-cyan-300 hover:text-purple-300 font-orbitron text-shadow-cyan-glow hover:underline text-sm transition-all duration-200"
+                            className="text-cyan-300 hover:text-purple-300 font-poppins text-shadow-cyan-glow hover:underline text-sm transition-all duration-200"
                         >
                             Quantum connectivity guide →
                         </a>
@@ -47,13 +47,13 @@ const LatestUpdates = () => {
                     date="Phase 8.43"
                 >
                     <div className="space-y-2">
-                        <p className="text-purple-200 text-sm font-orbitron leading-relaxed">
+                        <p className="text-purple-200 text-sm font-poppins leading-relaxed">
                             We're excited to announce Stargate Nova with multidimensional data processing,
                             enhanced quantum security layers, and real-time interdimensional analytics. All existing gateways remain compatible.
                         </p>
                         <a
                             href="/documentation/tracking-templates"
-                            className="text-cyan-300 hover:text-purple-300 font-orbitron text-shadow-cyan-glow hover:underline text-sm transition-all duration-200"
+                            className="text-cyan-300 hover:text-purple-300 font-poppins text-shadow-cyan-glow hover:underline text-sm transition-all duration-200"
                         >
                             Explore infinite dimensions →
                         </a>

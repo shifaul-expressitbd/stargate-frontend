@@ -9,7 +9,7 @@ export const BackNavigation = () => {
                 className="flex items-center gap-2 px-3 py-2 text-cyan-300 hover:text-white bg-transparent"
             >
                 <FaArrowLeft />
-                <span className="font-orbitron">Back to Dashboard</span>
+                <span className="font-poppins">Back to Dashboard</span>
             </Link>
         </div>
     );

@@ -62,7 +62,7 @@ export const TabsSection = ({ container }: TabsSectionProps) => {
                                 </div>
                             </div>
                             <div className="flex-grow">
-                                <h3 className="font-orbitron text-2xl bg-gradient-to-r from-magenta-400 to-cyan-400 bg-clip-text text-transparent mb-2 animate-pulse text-white">Interstellar Support</h3>
+                                <h3 className="font-poppins text-2xl bg-gradient-to-r from-magenta-400 to-cyan-400 bg-clip-text text-transparent mb-2 animate-pulse text-white">Interstellar Support</h3>
                                 <p className="text-gray-300 mb-4">Navigate the cosmos of data with expert guidance. Our engineers pilot through any technological challenges.</p>
                                 <div className="flex gap-4">
                                     <Button variant="cosmic-primary" className="bg-gradient-to-r from-magenta-600 to-cyan-600 hover:from-magenta-500 hover:to-cyan-500 shadow-lg shadow-magenta-500/25 animate-pulse p-1" title="Launch Interstellar Support">
@@ -89,38 +89,38 @@ export const TabsSection = ({ container }: TabsSectionProps) => {
                         {/* Container Name */}
                         <div className="p-4 bg-black/20 rounded-lg border border-gray-600/50">
                             <div className="flex items-center gap-3">
-                                <span className="text-gray-400 font-orbitron uppercase text-xs tracking-wider">Name:</span>
+                                <span className="text-gray-400 font-poppins uppercase text-xs tracking-wider">Name:</span>
                                 <span className="text-white font-mono">{container.name}</span>
                             </div>
 
                             <div className="flex items-center gap-3">
-                                <span className="text-gray-400 font-orbitron uppercase text-xs tracking-wider">Container config:</span>
+                                <span className="text-gray-400 font-poppins uppercase text-xs tracking-wider">Container config:</span>
                                 <span className="text-cyan-300 font-mono text-sm">{container.config?.slice(0, 50)}...</span>
                             </div>
 
 
                             <div className="flex items-center gap-3">
-                                <span className="text-gray-400 font-orbitron uppercase text-xs tracking-wider">sGTM container ID:</span>
+                                <span className="text-gray-400 font-poppins uppercase text-xs tracking-wider">sGTM container ID:</span>
                                 <span className="text-cyan-300 font-mono">GTM-{container.id?.slice(-7)}</span>
                             </div>
 
 
 
                             <div className="flex items-center gap-3">
-                                <span className="text-gray-400 font-orbitron uppercase text-xs tracking-wider">Container identifier:</span>
+                                <span className="text-gray-400 font-poppins uppercase text-xs tracking-wider">Container identifier:</span>
                                 <span className="text-cyan-300 font-mono">{container.id}</span>
                             </div>
 
 
                             <div className="flex items-center gap-3">
-                                <span className="text-gray-400 font-orbitron uppercase text-xs tracking-wider">Container API Key:</span>
+                                <span className="text-gray-400 font-poppins uppercase text-xs tracking-wider">Container API Key:</span>
                                 <span className="text-cyan-300 font-mono">apd:{container.id}:4d4c237339924a2600e83fe84988e744ef5948edfbnjnfqx</span>
                             </div>
 
                             {/* Server Location */}
 
                             <div className="flex items-center gap-3">
-                                <span className="text-gray-400 font-orbitron uppercase text-xs tracking-wider">Server location:</span>
+                                <span className="text-gray-400 font-poppins uppercase text-xs tracking-wider">Server location:</span>
                                 <span className="text-cyan-300 font-mono">{container.region || 'AP East (Singapore)'}</span>
                             </div>
                         </div>
@@ -148,13 +148,13 @@ export const TabsSection = ({ container }: TabsSectionProps) => {
                         </div>
 
                         <div className="mb-4">
-                            <h4 className="text-white font-orbitron uppercase text-sm tracking-wider mb-2">Navigation Records</h4>
+                            <h4 className="text-white font-poppins uppercase text-sm tracking-wider mb-2">Navigation Records</h4>
                             <Table variant='cosmic' className='cosmic'>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="w-1/4 font-orbitron">Protocol</TableHead>
-                                        <TableHead className="w-1/3 font-orbitron">Launch Pad</TableHead>
-                                        <TableHead className="w-1/3 font-orbitron">Valid Destination</TableHead>
+                                        <TableHead className="w-1/4 font-poppins">Protocol</TableHead>
+                                        <TableHead className="w-1/3 font-poppins">Launch Pad</TableHead>
+                                        <TableHead className="w-1/3 font-poppins">Valid Destination</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -171,7 +171,7 @@ export const TabsSection = ({ container }: TabsSectionProps) => {
                             <Button variant="cosmic-primary" className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 p-1" title="Upgrade to add another domain">
                                 Upgrade to add another domain
                             </Button>
-                            <p className="text-gray-400 text-sm mt-2 font-orbitron">
+                            <p className="text-gray-400 text-sm mt-2 font-poppins">
                                 With Elite and Quantum plans you can unlock multiple launch pads
                             </p>
                             <p className="text-gray-400 text-xs mt-2">

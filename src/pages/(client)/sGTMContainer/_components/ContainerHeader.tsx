@@ -35,7 +35,7 @@ export const ContainerHeader = ({ container }: ContainerHeaderProps) => {
                             <div className="flex items-center gap-2 text-white">
                                 <FaRocket className=" w-5 h-5" />
                             </div>
-                            <h1 className="text-3xl font-orbitron bg-gradient-to-r from-magenta-400 to-cyan-400 bg-clip-text text-white">{container.name}</h1>
+                            <h1 className="text-3xl font-poppins bg-gradient-to-r from-magenta-400 to-cyan-400 bg-clip-text text-white">{container.name}</h1>
                         </div>
 
                         <div className="flex items-center gap-3">
@@ -76,14 +76,14 @@ export const ContainerHeader = ({ container }: ContainerHeaderProps) => {
                         {/* Usage Progress */}
                         <div className="col-span-2 bg-gradient-to-r from-slate-800/40 to-purple-900/40 rounded-lg p-4 border border-magenta-500/30">
                             <div className="flex items-center justify-between mb-2">
-                                <h3 className="text-white font-orbitron">120 of 10,000 quantum requests sent</h3>
-                                <span className="text-fuchsia-300 font-orbitron">1% used</span>
+                                <h3 className="text-white font-poppins">120 of 10,000 quantum requests sent</h3>
+                                <span className="text-fuchsia-300 font-poppins">1% used</span>
                             </div>
                             <div className="w-full bg-slate-700/50 rounded-full h-3 mb-2 border border-cyan-500/30">
                                 <div className="bg-gradient-to-r from-magenta-400 to-cyan-400 h-3 rounded-full shadow-inner animate-pulse" style={{ width: '1%' }}></div>
                             </div>
                             <div className="flex items-center justify-between text-sm">
-                                <span className="text-gray-300 font-orbitron">Refuels in 7 cycles</span>
+                                <span className="text-gray-300 font-poppins">Refuels in 7 cycles</span>
                                 <Tooltip content="Each lunar cycle, you receive 10,000 quantum requests for free. If your container surpasses this limit, it will enter hibernation mode">
                                     <FaSatellite className="text-gray-400 hover:text-magenta-300 cursor-pointer animate-spin" style={{ animationDuration: '10s' }} />
                                 </Tooltip>
@@ -97,7 +97,7 @@ export const ContainerHeader = ({ container }: ContainerHeaderProps) => {
                                         <div className="text-green-400">
                                             <FaInfoCircle />
                                         </div>
-                                        <span className="text-green-300 font-orbitron text-sm">46 (38.33%) Affected by tracking prevention</span>
+                                        <span className="text-green-300 font-poppins text-sm">46 (38.33%) Affected by tracking prevention</span>
                                     </div>
                                 </Tooltip>
                             </div>
@@ -105,11 +105,11 @@ export const ContainerHeader = ({ container }: ContainerHeaderProps) => {
                             {/* Subscription Info */}
                             <div className="flex gap-4 pt-4 border-t border-gray-700">
                                 <div className="bg-gray-800/50 rounded-lg px-4 py-3 border">
-                                    <h4 className="text-gray-400 text-xs uppercase font-orbitron tracking-wider">Free</h4>
+                                    <h4 className="text-gray-400 text-xs uppercase font-poppins tracking-wider">Free</h4>
                                     <p className="text-white font-mono text-sm">Monthly plan</p>
                                 </div>
                                 <div className="bg-gray-800/50 rounded-lg px-4 py-3 border">
-                                    <h4 className="text-gray-400 text-xs uppercase font-orbitron tracking-wider">Valid till</h4>
+                                    <h4 className="text-gray-400 text-xs uppercase font-poppins tracking-wider">Valid till</h4>
                                     <p className="text-white font-mono text-sm">{new Date().getFullYear() + 1}-09-14</p>
                                 </div>
                             </div>

@@ -293,13 +293,21 @@ export const useSidebar = (): UseSidebarReturn => {
 
   /**
    * Toggles the expansion state of a specific menu item
+   * Automatically expands the sidebar if collapsed to show submenus
    * @param title - The title of the menu item to toggle
    */
   const handleToggleMenu = useCallback(
     (title: string) => {
+      // If sidebar is collapsed and we're trying to toggle a menu, expand it first
+      if (isCollapsed && (currentMode === 'laptop-compact' || currentMode === 'desktop-expandable')) {
+        dispatch(setCollapsed(false));
+        localStorage.setItem("sidebar-collapsed", JSON.stringify(false));
+      }
+
+      // Then toggle the menu
       dispatch(toggleOpenMenu(title));
     },
-    [dispatch]
+    [dispatch, isCollapsed, currentMode]
   );
 
   return {

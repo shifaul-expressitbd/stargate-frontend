@@ -177,15 +177,7 @@ const Login = () => {
       if (userRoles.includes('developer')) {
         navigate('/admin/dashboard', { replace: true })
       } else if (userRoles.includes('user')) {
-        // Check if user has business, if not redirect to onboarding
-        if (!res.data.hasBusiness) {
-          navigate('/onboarding', {
-            replace: true,
-            state: { destination }
-          })
-        } else {
-          navigate(destination, { replace: true })
-        }
+        navigate(destination, { replace: true })
       } else {
         // Default to dashboard if roles are unclear
         navigate(destination, { replace: true })
@@ -268,10 +260,10 @@ const Login = () => {
       <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-cyan-400/30 relative overflow-hidden">
         <div className="space-y-6">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-white animate-hologram font-asimovian text-shadow-white-strong tracking-[0.1em] uppercase">
+            <h1 className="text-3xl font-bold text-white animate-hologram font-orbitron text-shadow-white-strong tracking-[0.1em] uppercase">
               Sign In
             </h1>
-            <p className="mt-2 text-lg text-blue-100 font-orbitron text-shadow-blue-glow">
+            <p className="mt-2 text-lg text-blue-100 font-poppins text-shadow-blue-glow">
               Access your account to continue
             </p>
           </div>
@@ -302,7 +294,7 @@ const Login = () => {
               labelRightElement={
                 <Link
                   to="/forgot-password"
-                  className="text-cyan-300 hover:text-blue-300 font-orbitron text-shadow-cyan-glow hover:underline text-sm transition-all duration-200"
+                  className="text-cyan-300 hover:text-blue-300 font-poppins text-shadow-cyan-glow hover:underline text-sm transition-all duration-200"
                   style={{
                     textShadow: '0 0 5px rgba(34, 211, 238, 0.5)'
                   }}
@@ -370,12 +362,12 @@ const Login = () => {
           <SocialLogin />
 
           <div className="text-center space-y-2">
-            <p className="text-purple-200 font-orbitron text-shadow-purple-glow">
+            <p className="text-purple-200 font-poppins text-shadow-purple-glow">
               Portal Access Required?
             </p>
             <Link
               to="/register"
-              className="text-cyan-300 hover:text-blue-300 font-orbitron text-shadow-cyan-glow hover:underline font-bold transition-all duration-200"
+              className="text-cyan-300 hover:text-blue-300 font-poppins text-shadow-cyan-glow hover:underline font-bold transition-all duration-200"
               style={{
                 textShadow: '0 0 5px rgba(34, 211, 238, 0.5)'
               }}

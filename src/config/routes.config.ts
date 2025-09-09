@@ -1,4 +1,11 @@
 import AdminDashboard from "@/pages/(admin)/AdminDashboard";
+import ClientDashboard from "@/pages/(client)/Dashboard/ClientDashboard";
+import GettingStarted from "@/pages/(client)/Documentation/GettingStarted";
+import GTMTemplates from "@/pages/(client)/Documentation/GTMTemplates";
+import TrustAndSafety from "@/pages/(client)/Documentation/TrustAndSafety";
+import Products from "@/pages/(client)/Products";
+import CreateSupportTicket from "@/pages/(client)/Support/CreateSupportTicket";
+import SupportTickets from "@/pages/(client)/Support/SupportTickets";
 import type { IconType } from "react-icons";
 import {
   FaBlender,
@@ -9,12 +16,14 @@ import {
   FaCogs,
   FaCreditCard,
   FaDatabase,
+  FaEye,
   FaList,
+  FaPlus,
   FaRegEnvelope,
   FaShoppingCart,
   FaTachometerAlt,
   FaUser,
-  FaUsers,
+  FaUsers
 } from "react-icons/fa";
 import { MdLocalGroceryStore, MdOutlinePayments, MdSupportAgent } from "react-icons/md";
 
@@ -23,7 +32,7 @@ export type SubMenuItem = {
   title: string;
   path: string;
   icon?: string | IconType;
-  element?: string;
+  element?: React.ElementType;
 };
 
 export type MenuItem = {
@@ -55,6 +64,8 @@ const iconMap: Record<string, IconType> = {
   FaBookOpen: FaBookOpen,
   FaDatabase: FaDatabase,
   FaList: FaList,
+  FaPlus: FaPlus,
+  FaEye: FaEye,
 };
 
 // Default admin menu items
@@ -97,12 +108,14 @@ export const devUserMenuItems: MenuItem[] = [
   {
     title: "Dashboard",
     path: "/dashboard",
-    icon: FaTachometerAlt, // Using existing icon for panels-top-left equivalent
+    icon: FaTachometerAlt,
+    element: ClientDashboard,
   },
   {
     title: "Products",
     path: "/products",
     icon: FaDatabase,
+    element: Products,
   },
   {
     title: "Documentation",
@@ -113,16 +126,19 @@ export const devUserMenuItems: MenuItem[] = [
         title: "Getting Started",
         path: "/documentation/getting-started",
         icon: FaList,
+        element: GettingStarted,
       },
       {
         title: "GTM Templates",
         path: "/documentation/tracking-templates",
         icon: FaBox,
+        element: GTMTemplates,
       },
       {
         title: "Trust & Safety",
         path: "/documentation/transparency-center",
         icon: FaCheckCircle,
+        element: TrustAndSafety,
       },
     ],
   },
@@ -130,6 +146,20 @@ export const devUserMenuItems: MenuItem[] = [
     title: "Support",
     path: "/support",
     icon: MdSupportAgent,
+    submenu: [
+      {
+        title: "My Support Tickets",
+        path: "/support/tickets",
+        icon: FaEye,
+        element: SupportTickets,
+      },
+      {
+        title: "Create Support Ticket",
+        path: "/support/create-ticket",
+        icon: FaPlus,
+        element: CreateSupportTicket,
+      },
+    ],
   },
 ];
 

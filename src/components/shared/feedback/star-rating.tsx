@@ -40,19 +40,17 @@ const StarRating = ({
             onClick={() => handleClick(star)}
             onMouseEnter={() => !disabled && setHover(star)}
             onMouseLeave={() => !disabled && setHover(0)}
-            className={`focus:outline-none transition-colors ${
-              disabled ? 'cursor-default' : 'cursor-pointer'
-            }`}
+            className={`focus:outline-none transition-colors ${disabled ? 'cursor-default' : 'cursor-pointer'
+              }`}
             disabled={disabled}
             aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
             type="button"
           >
             <FaStar
-              className={`${sizeClasses[size]} ${
-                star <= (hover || rating)
+              className={`${sizeClasses[size]} ${star <= (hover || rating)
                   ? 'text-yellow-400'
                   : 'text-gray-300 dark:text-gray-500'
-              }`}
+                }`}
             />
           </button>
         ))}

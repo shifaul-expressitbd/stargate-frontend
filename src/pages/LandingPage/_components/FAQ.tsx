@@ -34,7 +34,7 @@ const FAQ = () => {
                     <Heading
                         as="h2"
                         variant="h2"
-                        className="mb-4 text-white animate-hologram font-asimovian"
+                        className="mb-4 text-white animate-hologram font-orbitron"
                         style={{
                             textShadow: '0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.4)',
                             letterSpacing: '0.15em',
@@ -45,7 +45,7 @@ const FAQ = () => {
                     </Heading>
                     <Paragraph
                         size="lg"
-                        className="max-w-2xl mx-auto text-purple-200 font-orbitron"
+                        className="max-w-2xl mx-auto text-purple-200 font-poppins"
                         style={{
                             textShadow: '0 0 10px rgba(147, 51, 234, 0.6)'
                         }}
@@ -59,12 +59,12 @@ const FAQ = () => {
                         <Accordion
                             key={index}
                             trigger={
-                                <Text size="lg" className="font-medium font-asimovian text-purple-200">
+                                <Text size="lg" className="font-medium font-orbitron text-purple-200">
                                     {faq.question}
                                 </Text>
                             }
                         >
-                            <Text className="leading-relaxed font-orbitron text-white">
+                            <Text className="leading-relaxed font-poppins text-white">
                                 {faq.answer}
                             </Text>
                         </Accordion>

@@ -21,7 +21,7 @@ export const Text = ({
     default: 'text-foreground',
     subtle: 'text-muted-foreground',
     muted: 'text-muted-foreground/80',
-    cosmic: 'text-cyan-200/80 font-orbitron text-shadow-cyan-glow',
+    cosmic: 'text-cyan-200/80 font-poppins text-shadow-cyan-glow',
   }
 
   const sizeStyles = {

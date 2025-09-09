@@ -27,7 +27,7 @@ const AddBtn = ({
   const baseClasses = "flex items-center rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 whitespace-nowrap h-10 gap-2"
   const variantClasses = {
     default: "bg-primary text-gray-900 hover:bg-orange-600 hover:text-white",
-    gradient: "bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-orbitron shadow-lg hover:opacity-90 transition-opacity"
+    gradient: "bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-poppins shadow-lg hover:opacity-90 transition-opacity"
   }
 
   // If onClick is provided, render a button instead of a Link

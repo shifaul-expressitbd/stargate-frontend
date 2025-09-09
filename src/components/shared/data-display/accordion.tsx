@@ -29,7 +29,7 @@ export const AccordionTrigger = ({
   isOpen,
 }: AccordionTriggerProps) => {
   const triggerClass = twMerge(
-    "flex justify-between items-center cursor-pointer p-4 bg-black/20 rounded-t-lg hover:bg-black/40 dark:bg-black/60 dark:hover:bg-black/40 hover:shadow-lg hover:shadow-blue-500/25 hover:shadow-cyan-400/20 transition-all duration-300 text-white font-orbitron border border-white/10 backdrop-blur-sm animate-hologram",
+    "flex justify-between items-center cursor-pointer p-4 bg-black/20 rounded-t-lg hover:bg-black/40 dark:bg-black/60 dark:hover:bg-black/40 hover:shadow-lg hover:shadow-blue-500/25 hover:shadow-cyan-400/20 transition-all duration-300 text-white font-poppins border border-white/10 backdrop-blur-sm animate-hologram",
     isOpen ? "" : "rounded-b-lg"
   );
 
@@ -54,7 +54,7 @@ export const CollapsibleTrigger = ({
   isOpen,
 }: CollapsibleTriggerProps) => {
   const triggerClass = twMerge(
-    "flex justify-between items-center cursor-pointer p-4 bg-black/20 rounded-t-lg hover:bg-black/40 dark:bg-black/60 dark:hover:bg-black/40 hover:shadow-lg hover:shadow-blue-500/25 hover:shadow-cyan-400/20 transition-all duration-300 text-white font-orbitron border border-white/10 backdrop-blur-sm animate-hologram",
+    "flex justify-between items-center cursor-pointer p-4 bg-black/20 rounded-t-lg hover:bg-black/40 dark:bg-black/60 dark:hover:bg-black/40 hover:shadow-lg hover:shadow-blue-500/25 hover:shadow-cyan-400/20 transition-all duration-300 text-white font-poppins border border-white/10 backdrop-blur-sm animate-hologram",
     isOpen ? "" : "rounded-b-lg"
   );
 

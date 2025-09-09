@@ -43,7 +43,7 @@ const LandingNavbar = () => {
                                 <button
                                     key={item.name}
                                     onClick={() => scrollToSection(item.href)}
-                                    className="text-cyan-300 hover:text-blue-400 hover:bg-blue-500/20 px-3 py-2 rounded-md text-sm font-medium font-orbitron transition-all duration-200"
+                                    className="text-cyan-300 hover:text-blue-400 hover:bg-blue-500/20 px-3 py-2 rounded-md text-sm font-medium font-poppins transition-all duration-200"
                                     style={{
                                         textShadow: '0 0 5px rgba(34, 211, 238, 0.5)'
                                     }}
@@ -102,7 +102,7 @@ const LandingNavbar = () => {
                             <button
                                 key={item.name}
                                 onClick={() => scrollToSection(item.href)}
-                                className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary block px-3 py-2 rounded-md text-base font-medium w-full text-left transition-colors duration-200 font-orbitron"
+                                className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary block px-3 py-2 rounded-md text-base font-medium w-full text-left transition-colors duration-200 font-poppins"
                             >
                                 {item.name}
                             </button>

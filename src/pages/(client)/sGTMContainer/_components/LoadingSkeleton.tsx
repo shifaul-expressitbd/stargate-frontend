@@ -100,23 +100,23 @@ export const LoadingSkeleton = ({
 
                     <TabsContent value="config-loader" className="mt-6">
                         <div className="space-y-4">
-                            <h3 className="text-lg font-asimovian text-white">Configuration Management</h3>
+                            <h3 className="text-lg font-orbitron text-white">Configuration Management</h3>
                             <div className="bg-black/40 rounded-lg p-4 border border-cyan-400/20">
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-cyan-300 font-orbitron">Current Config Version</span>
+                                        <span className="text-cyan-300 font-poppins">Current Config Version</span>
                                         <span className="text-cyan-100 bg-cyan-500/20 px-3 py-1 rounded-full text-sm">
                                             v1.0.0
                                         </span>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-cyan-300 font-orbitron">Config Status</span>
+                                        <span className="text-cyan-300 font-poppins">Config Status</span>
                                         <span className="text-green-400 bg-green-500/20 px-3 py-1 rounded-full text-sm">
                                             Active
                                         </span>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-cyan-300 font-orbitron">Last Deployed</span>
+                                        <span className="text-cyan-300 font-poppins">Last Deployed</span>
                                         <span className="text-cyan-100 text-sm">
                                             {formatDate(container?.updatedAt as string)}
                                         </span>
@@ -128,7 +128,7 @@ export const LoadingSkeleton = ({
 
                     <TabsContent value="access-log" className="mt-6">
                         <div className="space-y-4">
-                            <h3 className="text-lg font-asimovian text-white">Access Log</h3>
+                            <h3 className="text-lg font-orbitron text-white">Access Log</h3>
                             <div className="bg-black/40 rounded-lg p-4 border border-cyan-400/20 max-h-64 overflow-y-auto">
                                 <div className="space-y-3 text-xs font-mono">
                                     <div className="text-green-400">[INFO] Container started successfully</div>
@@ -143,19 +143,19 @@ export const LoadingSkeleton = ({
 
                     <TabsContent value="performance" className="mt-6">
                         <div className="space-y-4">
-                            <h3 className="text-lg font-asimovian text-white">Performance Metrics</h3>
+                            <h3 className="text-lg font-orbitron text-white">Performance Metrics</h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="bg-black/40 rounded-lg p-4 border border-cyan-400/20 text-center">
-                                    <div className="text-2xl text-cyan-300 font-asimovian">2.1s</div>
-                                    <div className="text-xs text-cyan-400 font-orbitron">Response Time</div>
+                                    <div className="text-2xl text-cyan-300 font-orbitron">2.1s</div>
+                                    <div className="text-xs text-cyan-400 font-poppins">Response Time</div>
                                 </div>
                                 <div className="bg-black/40 rounded-lg p-4 border border-cyan-400/20 text-center">
-                                    <div className="text-2xl text-green-300 font-asimovian">99.8%</div>
-                                    <div className="text-xs text-cyan-400 font-orbitron">Uptime</div>
+                                    <div className="text-2xl text-green-300 font-orbitron">99.8%</div>
+                                    <div className="text-xs text-cyan-400 font-poppins">Uptime</div>
                                 </div>
                                 <div className="bg-black/40 rounded-lg p-4 border border-cyan-400/20 text-center">
-                                    <div className="text-2xl text-yellow-300 font-asimovian">1.2K</div>
-                                    <div className="text-xs text-cyan-400 font-orbitron">Requests/Min</div>
+                                    <div className="text-2xl text-yellow-300 font-orbitron">1.2K</div>
+                                    <div className="text-xs text-cyan-400 font-poppins">Requests/Min</div>
                                 </div>
                             </div>
                         </div>

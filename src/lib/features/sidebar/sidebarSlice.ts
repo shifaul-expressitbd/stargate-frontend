@@ -62,11 +62,8 @@ const sidebarSlice = createSlice({
     },
     toggleOpenMenu: (state, action) => {
       const title = action.payload;
-      if (state.openMenus.includes(title)) {
-        state.openMenus = state.openMenus.filter((t) => t !== title);
-      } else {
-        state.openMenus = [title]; // Only one open at a time
-      }
+      // Always replace with the clicked menu item, but keep it open if clicked again
+      state.openMenus = [title];
     },
     setOpenMenus: (state, action) => {
       state.openMenus = action.payload;

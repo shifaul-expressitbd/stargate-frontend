@@ -298,7 +298,7 @@ const MenuItem = memo(({
   isOpen,
   color
 }: MenuItemProps) => {
-  const { toggle, toggleMenu, close } = useSidebar();
+  const { toggle, toggleMenu, close, isCollapsed } = useSidebar();
   const isDesktop = useMemo(() => window.innerWidth >= 1920, []);
 
   if (item.submenu) {
@@ -346,50 +346,75 @@ const MenuItem = memo(({
           )}
         </button>
 
-        <motion.div
-          initial={false}
-          animate={{
-            height: isOpen ? 'auto' : 0,
-            opacity: isOpen ? 1 : 0,
-            marginTop: isOpen ? '0.5rem' : 0
-          }}
-          className='overflow-hidden'
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
-        >
-          <ul className={twMerge('space-y-1', showLabels ? 'pl-8' : 'pl-4')} role="group">
-            {item.submenu?.map((sub: MenuItem, i: number) => (
-              <li key={i}>
-                <NavLink
-                  to={isDisabled(sub.path) ? '#' : sub.path!}
-                  onClick={() => {
-                    if (!isDisabled(sub.path) && !isDesktop) {
-                      console.log('sidebar: Submenu NavLink clicked, calling close()');
-                      close();
-                    }
-                  }}
-                  className={({ isActive }) => twMerge(
-                    'block p-2 rounded-l-md transition-all duration-200 text-sm',
-                    showLabels ? 'pl-6' : 'text-center',
-                    isDisabled(sub.path)
-                      ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-60'
-                      : isActive
-                        ? color === 'cosmic'
-                          ? 'bg-cyan-100 text-cyan-600 font-semibold dark:bg-cyan-900 dark:text-cyan-300'
-                          : 'bg-orange-100 text-orange-600 font-semibold dark:bg-orange-900 dark:text-orange-300'
-                        : color === 'cosmic'
-                          ? 'text-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 dark:bg-gray-800 hover:dark:bg-cyan-900/20'
-                          : 'text-gray-600 dark:text-gray-300 hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-gray-800'
-                  )}
-                  aria-disabled={isDisabled(sub.path)}
-                  tabIndex={isDisabled(sub.path) ? -1 : undefined}
-                  aria-label={!showLabels ? (sub.title || 'Menu Item') : undefined}
-                >
-                  {showLabels && sub.title}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        </motion.div>
+        {showLabels && !isCollapsed && (
+          <motion.div
+            initial={false}
+            animate={{
+              height: isOpen ? 'auto' : 0,
+              opacity: isOpen ? 1 : 0,
+              marginTop: isOpen ? '0.5rem' : 0
+            }}
+            className='overflow-hidden'
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+          >
+            <ul className={twMerge('space-y-1', showLabels ? 'pl-8' : 'px-2')} role="group">
+              {item.submenu?.map((sub: MenuItem, i: number) => (
+                <li key={i}>
+                  <NavLink
+                    to={isDisabled(sub.path) ? '#' : sub.path!}
+                    onClick={() => {
+                      if (!isDisabled(sub.path) && !isDesktop) {
+                        console.log('sidebar: Submenu NavLink clicked, calling close()');
+                        close();
+                      }
+                    }}
+                    className={({ isActive }) => twMerge(
+                      'block rounded-l-md transition-all duration-200 text-sm',
+                      showLabels ? 'px-2 py-2 pl-6' : 'px-1 py-3 text-center',
+                      isDisabled(sub.path)
+                        ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-60'
+                        : isActive
+                          ? color === 'cosmic'
+                            ? 'bg-cyan-100 text-cyan-600 font-semibold dark:bg-cyan-900 dark:text-cyan-300'
+                            : 'bg-orange-100 text-orange-600 font-semibold dark:bg-orange-900 dark:text-orange-300'
+                          : color === 'cosmic'
+                            ? 'text-cyan-200 hover:bg-cyan-50 hover:text-cyan-600 dark:bg-gray-800 hover:dark:bg-cyan-900/20'
+                            : 'text-gray-600 dark:text-gray-300 hover:bg-orange-50 hover:text-orange-600 dark:bg-gray-800'
+                    )}
+                    aria-disabled={isDisabled(sub.path)}
+                    tabIndex={isDisabled(sub.path) ? -1 : undefined}
+                    aria-label={!showLabels ? (sub.title || 'Menu Item') : undefined}
+                  >
+                    {showLabels ? sub.title : (
+                      <div className="flex flex-col items-center gap-1">
+                        <Tooltip
+                          content={sub.title || 'Menu Item'}
+                          position="right"
+                          delay={400}
+                          showArrow={true}
+                        >
+                          {sub.icon ? (
+                            <sub.icon className={twMerge(
+                              'w-4 h-4 transition-colors duration-200',
+                              isDisabled(sub.path)
+                                ? 'text-gray-400 dark:text-gray-500'
+                                : color === 'cosmic'
+                                  ? 'text-gray-500 dark:text-gray-400 hover:text-cyan-500'
+                                  : 'text-gray-500 dark:text-gray-400 hover:text-orange-500'
+                            )} />
+                          ) : (
+                            <span className="w-4 h-4 bg-gray-400 rounded-full flex items-center justify-center text-xs font-medium">
+                              +
+                            </span>
+                          )}
+                        </Tooltip>
+                      </div>
+                    )}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </motion.div>)}
       </div>
     );
   }

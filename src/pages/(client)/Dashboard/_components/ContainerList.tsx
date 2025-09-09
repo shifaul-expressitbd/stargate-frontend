@@ -101,8 +101,8 @@ const ContainerList = ({ onAddClick }: ContainerListProps) => {
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h3 className="font-semibold text-lg text-white font-asimovian animate-hologram">Server Side Google Tag Manager</h3>
-                    <p className="text-cyan-200 text-sm font-orbitron">View your recent GTM Containers here</p>
+                    <h3 className="font-semibold text-lg text-white font-orbitron animate-hologram">Server Side Google Tag Manager</h3>
+                    <p className="text-cyan-200 text-sm font-poppins">View your recent GTM Containers here</p>
                 </div>
                 <div className="relative z-10">
                     <AddBtn
@@ -127,13 +127,13 @@ const ContainerList = ({ onAddClick }: ContainerListProps) => {
                                 {/* Container Info */}
                                 <div className="flex-1 space-y-1">
                                     <div>
-                                        <span className="text-cyan-300 hover:text-white font-orbitron text-sm hover:underline transition-colors">
+                                        <span className="text-cyan-300 hover:text-white font-poppins text-sm hover:underline transition-colors">
                                             {container.name}
                                         </span>
                                     </div>
-                                    <p className="text-xs text-cyan-400 font-orbitron">{container.subdomain}</p>
+                                    <p className="text-xs text-cyan-400 font-poppins">{container.subdomain}</p>
                                     <div className="flex items-center gap-2">
-                                        <span className={`px-2 py-0.5 text-xs font-orbitron bg-black/40 border rounded-md uppercase tracking-wider ${container.status === 'RUNNING' ? 'border-green-500 text-green-400' :
+                                        <span className={`px-2 py-0.5 text-xs font-poppins bg-black/40 border rounded-md uppercase tracking-wider ${container.status === 'RUNNING' ? 'border-green-500 text-green-400' :
                                             container.status === 'PENDING' ? 'border-yellow-500 text-yellow-400' :
                                                 container.status === 'STOPPED' ? 'border-orange-500 text-orange-400' :
                                                     container.status === 'ERROR' ? 'border-red-500 text-red-400' :
@@ -142,7 +142,7 @@ const ContainerList = ({ onAddClick }: ContainerListProps) => {
                                             {container.status}
                                         </span>
                                         {container.region && (
-                                            <span className="px-2 py-0.5 text-xs font-orbitron bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 rounded-md">
+                                            <span className="px-2 py-0.5 text-xs font-poppins bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 rounded-md">
                                                 {container.region}
                                             </span>
                                         )}
@@ -152,7 +152,7 @@ const ContainerList = ({ onAddClick }: ContainerListProps) => {
                                 {/* Usage */}
                                 <div className="flex items-center justify-center">
                                     <div className="text-center">
-                                        <span className="text-xs text-cyan-300 font-orbitron">
+                                        <span className="text-xs text-cyan-300 font-poppins">
                                             {/* Mock usage data - replace with real data when available */}
                                             {Math.floor(Math.random() * 80) + 1}% {/* Random percentage */}
                                         </span>

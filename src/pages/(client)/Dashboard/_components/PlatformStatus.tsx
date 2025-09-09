@@ -17,10 +17,10 @@ const PlatformStatus = ({ lastCheck }: PlatformStatusProps) => {
                     </div>
                     <div className='w-full'>
                         <div className="w-full flex items-center justify-between gap-2">
-                            <h3 className="font-semibold text-lg text-white font-asimovian animate-hologram">Stargate Status</h3>
-                            <span className="text-xs font-orbitron text-green-400">Online</span>
+                            <h3 className="font-semibold text-lg text-white font-orbitron animate-hologram">Stargate Status</h3>
+                            <span className="text-xs font-poppins text-green-400">Online</span>
                         </div>
-                        <p className="text-blue-200 text-sm font-orbitron">Current multidimensional health</p>
+                        <p className="text-blue-200 text-sm font-poppins">Current multidimensional health</p>
                     </div>
                 </div>
 
@@ -29,12 +29,12 @@ const PlatformStatus = ({ lastCheck }: PlatformStatusProps) => {
             {/* Status Details */}
             <div className="space-y-3 mb-6">
                 <div className="flex items-center justify-between text-sm">
-                    <span className="font-orbitron text-blue-300">Uptime:</span>
-                    <span className="font-orbitron text-green-400">99.9%</span>
+                    <span className="font-poppins text-blue-300">Uptime:</span>
+                    <span className="font-poppins text-green-400">99.9%</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                    <span className="font-orbitron text-blue-300">Last Check:</span>
-                    <span className="font-orbitron text-cyan-400">{lastCheck.toLocaleTimeString()}</span>
+                    <span className="font-poppins text-blue-300">Last Check:</span>
+                    <span className="font-poppins text-cyan-400">{lastCheck.toLocaleTimeString()}</span>
                 </div>
             </div>
 
@@ -51,7 +51,7 @@ const PlatformStatus = ({ lastCheck }: PlatformStatusProps) => {
                 href="https://stargate.io/status"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 w-full justify-center bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/30 rounded-md transition-all text-cyan-300 font-orbitron text-sm font-medium hover:text-white cursor-pointer"
+                className="inline-flex items-center gap-2 px-4 py-2 w-full justify-center bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/30 rounded-md transition-all text-cyan-300 font-poppins text-sm font-medium hover:text-white cursor-pointer"
             >
                 View Full Status Page
                 <FaExternalLinkAlt className="h-3 w-3" />

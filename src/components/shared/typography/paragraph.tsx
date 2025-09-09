@@ -17,7 +17,7 @@ export const Paragraph = ({
     default: 'text-foreground',
     subtle: 'text-muted-foreground',
     muted: 'text-muted-foreground/80',
-    cosmic: 'text-cyan-200/90 font-orbitron text-shadow-cyan-glow',
+    cosmic: 'text-cyan-200/90 font-poppins text-shadow-cyan-glow',
   }
 
   const sizeStyles = {

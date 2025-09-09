@@ -12,6 +12,9 @@ import ResetPassword from '@/pages/(auth)/ResetPassword/ResetPassword'
 import VerifyNewUser from '@/pages/(auth)/VerifyNewUser/VerifyNewUser'
 import ClientDashboard from '@/pages/(client)/Dashboard/ClientDashboard'
 import ContainerDetails from '@/pages/(client)/sGTMContainer/ContainerDetails'
+import CreateSupportTicket from '@/pages/(client)/Support/CreateSupportTicket'
+import SingleSupportTicket from '@/pages/(client)/Support/SingleSupportTicket'
+import SupportTickets from '@/pages/(client)/Support/SupportTickets'
 import NotFoundPage from '@/pages/NotFoundPage'
 import ProfilePage from '@/pages/Profile'
 import UnauthorizedPage from '@/pages/UnauthorizedPage'
@@ -94,6 +97,30 @@ const AppRouter: React.FC = () => {
             element={
               <ProtectedRoute roles={['user', 'developer']}>
                 <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/support/tickets"
+            element={
+              <ProtectedRoute roles={['user', 'developer']}>
+                <SupportTickets />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/support/create-ticket"
+            element={
+              <ProtectedRoute roles={['user', 'developer']}>
+                <CreateSupportTicket />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/support/ticket/:id"
+            element={
+              <ProtectedRoute roles={['user', 'developer']}>
+                <SingleSupportTicket />
               </ProtectedRoute>
             }
           />

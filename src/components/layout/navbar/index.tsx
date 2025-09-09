@@ -23,7 +23,7 @@ export const Navbar = ({ className }: NavbarProps) => {
         {/* <Breadcrumb /> */}
         <Breadcrumb
           homeLabel="Stargate Command Center"
-          itemClassName="text-sm text-cyan-400 font-orbitron tracking-wide font-semibold"
+          itemClassName="text-sm text-cyan-400 font-poppins tracking-wide font-semibold"
           iconClassName="text-cyan-200"
         />
 

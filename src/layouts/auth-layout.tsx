@@ -59,10 +59,10 @@ export const AuthLayout = () => {
             <div className='mb-8 flex justify-center'>
               <AppLogo />
             </div>
-            <h1 className='text-4xl md:text-5xl font-bold text-white animate-hologram font-asimovian text-shadow-white-strong mb-6 tracking-[0.1em] uppercase'>
+            <h1 className='text-4xl md:text-5xl font-bold text-white animate-hologram font-orbitron text-shadow-white-strong mb-6 tracking-[0.1em] uppercase'>
               {getTitle()}
             </h1>
-            <p className='text-xl text-blue-100 max-w-2xl leading-relaxed font-orbitron text-shadow-blue-glow'>
+            <p className='text-xl text-blue-100 max-w-2xl leading-relaxed font-poppins text-shadow-blue-glow'>
               {getSubtitle()}
             </p>
           </div>

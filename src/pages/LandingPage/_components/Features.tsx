@@ -39,13 +39,13 @@ const Features = () => {
                     <Heading
                         as="h2"
                         variant="h2"
-                        className="mb-4 text-white animate-hologram font-asimovian text-shadow-white-strong tracking-[0.15em] uppercase"
+                        className="mb-4 text-white animate-hologram font-orbitron text-shadow-white-strong tracking-[0.15em] uppercase"
                     >
                         Why Journey Through Stargate?
                     </Heading>
                     <Paragraph
                         size="lg"
-                        className="max-w-2xl mx-auto text-purple-200 font-orbitron text-shadow-purple-glow"
+                        className="max-w-2xl mx-auto text-purple-200 font-poppins text-shadow-purple-glow"
                     >
                         Discover the features that make our platform the preferred choice for teams worldwide.
                     </Paragraph>

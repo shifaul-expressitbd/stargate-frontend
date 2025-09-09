@@ -14,7 +14,7 @@ const QuickTips = () => {
             content: (
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium tracking-wide uppercase text-cyan-400 font-orbitron text-shadow-cyan-glow">Setup</span>
+                        <span className="text-xs font-medium tracking-wide uppercase text-cyan-400 font-poppins text-shadow-cyan-glow">Setup</span>
 
                         <div className="flex items-center gap-1 text-xs">
                             <button
@@ -35,8 +35,8 @@ const QuickTips = () => {
                         </div>
                     </div>
 
-                    <h4 className="mb-2 font-medium text-white font-asimovian animate-hologram">Calibrate Your Gateway</h4>
-                    <p className="text-cyan-200 text-sm leading-relaxed font-orbitron">
+                    <h4 className="mb-2 font-medium text-white font-orbitron animate-hologram">Calibrate Your Gateway</h4>
+                    <p className="text-cyan-200 text-sm leading-relaxed font-poppins">
                         Set up a custom gateway like 'stargate.yourdomain.com' to improve data transmission speed and bypass quantum interference.
                     </p>
                 </div>
@@ -49,7 +49,7 @@ const QuickTips = () => {
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
 
-                        <span className="text-xs font-medium tracking-wide uppercase text-purple-400 font-orbitron text-shadow-purple-strong-glow">Analytics</span>
+                        <span className="text-xs font-medium tracking-wide uppercase text-purple-400 font-poppins text-shadow-purple-strong-glow">Analytics</span>
 
                         <div className="flex items-center gap-1 text-xs">
                             <button
@@ -70,8 +70,8 @@ const QuickTips = () => {
                         </div>
                     </div>
 
-                    <h4 className="mb-2 font-medium text-white font-asimovian animate-hologram">Track Dimension Behavior</h4>
-                    <p className="text-purple-200 text-sm leading-relaxed font-orbitron">
+                    <h4 className="mb-2 font-medium text-white font-orbitron animate-hologram">Track Dimension Behavior</h4>
+                    <p className="text-purple-200 text-sm leading-relaxed font-poppins">
                         Use event tracking to understand how interdimensional entities interact with your portal and optimize stability.
                     </p>
                 </div>
@@ -84,7 +84,7 @@ const QuickTips = () => {
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
 
-                        <span className="text-xs font-medium tracking-wide uppercase text-red-400 font-orbitron text-shadow-purple-glow">Security</span>
+                        <span className="text-xs font-medium tracking-wide uppercase text-red-400 font-poppins text-shadow-purple-glow">Security</span>
 
                         <div className="flex items-center gap-1 text-xs">
                             <button
@@ -105,8 +105,8 @@ const QuickTips = () => {
                         </div>
                     </div>
 
-                    <h4 className="mb-2 font-medium text-white font-asimovian animate-hologram">Monitor Wormhole Compliance</h4>
-                    <p className="text-red-200 text-sm leading-relaxed font-orbitron">
+                    <h4 className="mb-2 font-medium text-white font-orbitron animate-hologram">Monitor Wormhole Compliance</h4>
+                    <p className="text-red-200 text-sm leading-relaxed font-poppins">
                         Regularly review your tracking setup to ensure compliance with multidimensional privacy regulations and quantum security standards.
                     </p>
                 </div>
@@ -119,7 +119,7 @@ const QuickTips = () => {
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
 
-                        <span className="text-xs font-medium tracking-wide uppercase text-blue-400 font-orbitron text-shadow-blue-glow-strong">Performance</span>
+                        <span className="text-xs font-medium tracking-wide uppercase text-blue-400 font-poppins text-shadow-blue-glow-strong">Performance</span>
 
                         <div className="flex items-center gap-1 text-xs">
                             <button
@@ -140,8 +140,8 @@ const QuickTips = () => {
                         </div>
                     </div>
 
-                    <h4 className="mb-2 font-medium text-white font-asimovian animate-hologram">Optimize Portal Load Times</h4>
-                    <p className="text-blue-200 text-sm leading-relaxed font-orbitron">
+                    <h4 className="mb-2 font-medium text-white font-orbitron animate-hologram">Optimize Portal Load Times</h4>
+                    <p className="text-blue-200 text-sm leading-relaxed font-poppins">
                         Monitor your tracking scripts performance and optimize loading to improve interdimensional connectivity without sacrificing analysis quality.
                     </p>
                 </div>
@@ -157,8 +157,8 @@ const QuickTips = () => {
                     <MdOutlineTipsAndUpdates className="h-5 w-5 text-purple-400 " />
                 </div>
                 <div>
-                    <h3 className="font-semibold text-lg text-white font-asimovian animate-hologram">Portal Operation Tips</h3>
-                    <p className="text-purple-200 text-sm font-orbitron">Interdimensional best practices</p>
+                    <h3 className="font-semibold text-lg text-white font-orbitron animate-hologram">Portal Operation Tips</h3>
+                    <p className="text-purple-200 text-sm font-poppins">Interdimensional best practices</p>
                 </div>
             </div>
 

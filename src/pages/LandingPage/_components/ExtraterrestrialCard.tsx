@@ -23,32 +23,32 @@ const ExtraterrestrialCard = ({
                 return {
                     base: 'relative group min-h-[400px] flex flex-col',
                     content: 'p-6 text-center flex flex-col flex-1',
-                    titleClass: 'text-xl font-bold mb-4 text-cyan-300 flex-shrink-0 font-asimovian',
-                    descClass: 'text-purple-200 leading-relaxed flex-1 font-orbitron',
+                    titleClass: 'text-xl font-bold mb-4 text-cyan-300 flex-shrink-0 font-orbitron',
+                    descClass: 'text-purple-200 leading-relaxed flex-1 font-poppins',
                     containerExtra: 'flex flex-col'
                 };
             case 'testimonial':
                 return {
                     base: 'relative group min-h-[320px] flex flex-col',
                     content: 'p-6 flex flex-col flex-1',
-                    titleClass: 'text-lg font-semibold mb-3 text-cyan-300 flex-shrink-0 font-asimovian',
-                    descClass: 'text-purple-200 italic flex-1 font-orbitron',
+                    titleClass: 'text-lg font-semibold mb-3 text-cyan-300 flex-shrink-0 font-orbitron',
+                    descClass: 'text-purple-200 italic flex-1 font-poppins',
                     containerExtra: 'flex flex-col'
                 };
             case 'process':
                 return {
                     base: 'relative group min-h-[280px] flex flex-col text-center',
                     content: 'p-6 flex flex-col flex-1',
-                    titleClass: 'text-xl font-bold mb-3 text-cyan-300 font-asimovian',
-                    descClass: 'text-purple-200 flex-1 font-orbitron',
+                    titleClass: 'text-xl font-bold mb-3 text-cyan-300 font-orbitron',
+                    descClass: 'text-purple-200 flex-1 font-poppins',
                     containerExtra: 'flex flex-col'
                 };
             default:
                 return {
                     base: 'relative group min-h-[400px] flex flex-col',
                     content: 'p-6 text-center flex flex-col flex-1',
-                    titleClass: 'text-xl font-bold mb-4 text-cyan-300 flex-shrink-0 font-asimovian',
-                    descClass: 'text-purple-200 leading-relaxed flex-1 font-orbitron',
+                    titleClass: 'text-xl font-bold mb-4 text-cyan-300 flex-shrink-0 font-orbitron',
+                    descClass: 'text-purple-200 leading-relaxed flex-1 font-poppins',
                     containerExtra: 'flex flex-col'
                 };
         }

@@ -83,7 +83,7 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(({
     if (items.length === 0) return null;
 
     return (
-        <div className={`relative ${className}`}>
+        <div className={`relative group ${className}`}>
             {/* Content */}
             <div className="relative overflow-hidden rounded-lg border p-4 min-h-[200px]">
                 <AnimatePresence initial={false} custom={direction}>
@@ -126,14 +126,14 @@ export const Carousel = forwardRef<CarouselRef, CarouselProps>(({
                 <>
                     <button
                         onClick={prevSlide}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 hover:bg-white shadow-md transition-colors"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 hover:bg-white shadow-md transition-all opacity-0 group-hover:opacity-100"
                         aria-label="Previous slide"
                     >
                         <FaChevronLeft className="w-3 h-3 text-gray-200" />
                     </button>
                     <button
                         onClick={nextSlide}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 hover:bg-white shadow-md transition-colors"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 hover:bg-white shadow-md transition-all opacity-0 group-hover:opacity-100"
                         aria-label="Next slide"
                     >
                         <FaChevronRight className="w-3 h-3 text-gray-200" />

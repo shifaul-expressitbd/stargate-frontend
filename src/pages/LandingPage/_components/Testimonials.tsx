@@ -41,13 +41,13 @@ const Testimonials = () => {
                     <Heading
                         as="h2"
                         variant="h2"
-                        className="mb-4 text-white animate-hologram font-asimovian text-shadow-white-strong tracking-[0.15em] uppercase"
+                        className="mb-4 text-white animate-hologram font-orbitron text-shadow-white-strong tracking-[0.15em] uppercase"
                     >
                         What Our Users Say
                     </Heading>
                     <Paragraph
                         size="lg"
-                        className="max-w-2xl mx-auto text-purple-200 font-orbitron text-shadow-purple-glow"
+                        className="max-w-2xl mx-auto text-purple-200 font-poppins text-shadow-purple-glow"
                     >
                         Don't just take our word for it. Here's what dimension explorers think about Stargate.
                     </Paragraph>
@@ -67,13 +67,13 @@ const Testimonials = () => {
                                     className="w-12 h-12 rounded-full mr-4 border-2 border-cyan-400/50 shadow-lg shadow-cyan-400/30"
                                 />
                                 <div>
-                                    <div className="font-semibold text-cyan-300 text-sm font-orbitron">{testimonial.name}</div>
+                                    <div className="font-semibold text-cyan-300 text-sm font-poppins">{testimonial.name}</div>
                                     <div className="text-xs text-purple-200/80">{testimonial.role}</div>
                                 </div>
                             </div>
                             <div className="relative">
                                 <FaQuoteLeft className="absolute top-0 left-0 text-cyan-400/60 text-sm" style={{ filter: 'drop-shadow(0 0 3px currentColor)' }} />
-                                <p className="text-purple-200 leading-relaxed pl-6 italic font-orbitron">
+                                <p className="text-purple-200 leading-relaxed pl-6 italic font-poppins">
                                     "{testimonial.testimonial}"
                                 </p>
                             </div>

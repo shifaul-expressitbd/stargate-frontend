@@ -128,10 +128,10 @@ const VerifyNewUser = () => {
       >
         <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-cyan-400/30 relative overflow-hidden">
           <div className="text-center space-y-4">
-            <h1 className="text-3xl font-bold text-white animate-hologram font-asimovian text-shadow-white-strong tracking-[0.1em] uppercase">
+            <h1 className="text-3xl font-bold text-white animate-hologram font-orbitron text-shadow-white-strong tracking-[0.1em] uppercase">
               Check Your Email
             </h1>
-            <p className="mt-2 text-lg text-blue-100 font-orbitron text-shadow-blue-glow">
+            <p className="mt-2 text-lg text-blue-100 font-poppins text-shadow-blue-glow">
               We've sent a verification link to your email address.
             </p>
             <p className="text-blue-100 text-sm">
@@ -173,14 +173,14 @@ const VerifyNewUser = () => {
         <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-cyan-400/30 relative overflow-hidden">
           <div className="text-center space-y-4">
             <ImSpinner10 className="animate-spin h-12 w-12 mx-auto text-cyan-400" />
-            <h1 className="text-2xl font-bold text-white font-orbitron">
+            <h1 className="text-2xl font-bold text-white font-poppins">
               Verifying Email...
             </h1>
             <p className="text-blue-100">Please wait while we confirm your identity</p>
             <Link
               to={{ pathname: '/verify-email', search: 'message=true' }}
               state={{ email: location.state?.email || localStorage.getItem('verificationEmail') }}
-              className='text-cyan-300 hover:text-blue-300 font-orbitron text-shadow-cyan-glow hover:underline font-bold transition-all duration-200'
+              className='text-cyan-300 hover:text-blue-300 font-poppins text-shadow-cyan-glow hover:underline font-bold transition-all duration-200'
             >
               Didn't receive the email? Click here to resend
             </Link>
@@ -207,7 +207,7 @@ const VerifyNewUser = () => {
         <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-green-400/30 relative overflow-hidden">
           <div className="text-center space-y-4">
             <FaCheckCircle className="h-12 w-12 mx-auto text-green-400" />
-            <h1 className="text-2xl font-bold text-white font-orbitron">
+            <h1 className="text-2xl font-bold text-white font-poppins">
               Email Verified Successfully!
             </h1>
             <p className="text-blue-100">Redirecting to login page...</p>
@@ -240,7 +240,7 @@ const VerifyNewUser = () => {
         <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-red-400/30 relative overflow-hidden">
           <div className="text-center space-y-4">
             <FaTimesCircle className="h-12 w-12 mx-auto text-red-400" />
-            <h1 className="text-2xl font-bold text-white font-orbitron">
+            <h1 className="text-2xl font-bold text-white font-poppins">
               Verification Failed
             </h1>
             <p className="text-blue-100">{errorMessage}</p>

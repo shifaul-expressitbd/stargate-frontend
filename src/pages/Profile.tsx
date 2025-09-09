@@ -252,21 +252,21 @@ export const ProfilePage = () => {
         >
             {/* Page Header */}
             <div className="mb-8 z-10">
-                <h1 className="text-4xl font-bold mb-4 text-white font-asimovian text-shadow-white-strong tracking-[0.15em] uppercase">
+                <h1 className="text-4xl font-bold mb-4 text-white font-orbitron text-shadow-white-strong tracking-[0.15em] uppercase">
                     Profile
                 </h1>
-                <p className="text-cyan-200 font-orbitron text-shadow-cyan-glow">
+                <p className="text-cyan-200 font-poppins text-shadow-cyan-glow">
                     Manage your cosmic identity and account configuration
                 </p>
             </div>
 
             <Tabs defaultValue="general" variant="cosmic" className="w-full">
                 <TabsList className="mb-6">
-                    <TabsTrigger value="general" className="font-orbitron">
+                    <TabsTrigger value="general" className="font-poppins">
                         <FaEdit className="w-4 h-4 mr-2" />
                         General
                     </TabsTrigger>
-                    <TabsTrigger value="security" className="font-orbitron">
+                    <TabsTrigger value="security" className="font-poppins">
                         <FaShieldAlt className="w-4 h-4 mr-2" />
                         Security
                     </TabsTrigger>
@@ -349,10 +349,10 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                 </div>
 
                 <div className="flex-1 text-center sm:text-left">
-                    <h2 className="text-2xl font-bold text-white font-asimovian mb-2">
+                    <h2 className="text-2xl font-bold text-white font-orbitron mb-2">
                         {formData.name || 'Unknown User'}
                     </h2>
-                    <p className="text-cyan-200 font-orbitron">
+                    <p className="text-cyan-200 font-poppins">
                         {formData.email || 'No email set'}
                     </p>
                 </div>
@@ -362,7 +362,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                     disabled={isSubmitting}
                     variant={isEditing ? 'cosmic-outline' : 'cosmic-primary'}
                     title={isEditing ? 'Cancel Edit' : 'Edit Profile'}
-                    className="font-orbitron flex items-center justify-center"
+                    className="font-poppins flex items-center justify-center"
                 >
                     <FaEdit className="w-4 h-4 mr-2" />
                     {isEditing ? 'Cancel' : 'Edit'}
@@ -463,7 +463,7 @@ const ActivityLog: React.FC<ActivityLogProps> = ({ activities }) => {
             animate={{ opacity: 1 }}
             className="bg-black/40 backdrop-blur-md rounded-lg border border-yellow-400/50 p-6"
         >
-            <h2 className="text-2xl font-bold text-white font-asimovian mb-6">
+            <h2 className="text-2xl font-bold text-white font-orbitron mb-6">
                 Activity Log
             </h2>
 
@@ -476,19 +476,19 @@ const ActivityLog: React.FC<ActivityLogProps> = ({ activities }) => {
                         <div className="flex-1 mb-2 sm:mb-0">
                             <div className="flex items-center gap-3 mb-2">
                                 <FaShieldAlt className="w-5 h-5 text-yellow-400" />
-                                <span className="font-semibold text-white font-orbitron">
+                                <span className="font-semibold text-white font-poppins">
                                     {activity.action}
                                 </span>
                             </div>
-                            <div className="text-sm text-cyan-200 font-orbitron">
+                            <div className="text-sm text-cyan-200 font-poppins">
                                 {activity.device} • IP: {activity.ipAddress}
                             </div>
-                            <div className="text-sm text-purple-200 font-orbitron">
+                            <div className="text-sm text-purple-200 font-poppins">
                                 {activity.location}
                             </div>
                         </div>
                         <div className="text-right">
-                            <div className="text-sm text-green-400 font-orbitron">
+                            <div className="text-sm text-green-400 font-poppins">
                                 {activity.timestamp}
                             </div>
                         </div>

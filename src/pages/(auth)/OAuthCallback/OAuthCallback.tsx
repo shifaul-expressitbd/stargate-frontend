@@ -99,17 +99,14 @@ const OAuthCallback = () => {
                     duration: 200000
                 });
 
-                // Determine redirect destination based on roles and business status (same as JWT login logic)
+                // Determine redirect destination based on roles (same as JWT login logic)
                 setTimeout(() => {
                     const destination = '/dashboard';
-                    const hasBusiness = user?.provider === 'GOOGLE' || user?.provider === 'GITHUB' ? false : false; // OAuth users typically need business setup
 
                     if (jwtPayload.roles?.includes('developer') || jwtPayload.roles?.includes('admin')) {
-                        navigate(destination, { replace: true });
+                        navigate('/admin/dashboard', { replace: true });
                     } else if (jwtPayload.roles?.includes('user')) {
-                        navigate(hasBusiness ? destination : '/onboarding', {
-                            replace: true,
-                        });
+                        navigate(destination, { replace: true });
                     } else {
                         // Default to dashboard if roles are unclear
                         navigate(destination, { replace: true });
@@ -158,10 +155,10 @@ const OAuthCallback = () => {
                     >
                         <ImSpinner10 size={48} className="text-cyan-400 mb-4" />
                     </motion.div>
-                    <h2 className="text-2xl font-bold text-white animate-hologram font-asimovian mb-2">
+                    <h2 className="text-2xl font-bold text-white animate-hologram font-orbitron mb-2">
                         Entering Quantum Gateway
                     </h2>
-                    <p className="text-blue-100 font-orbitron">
+                    <p className="text-blue-100 font-poppins">
                         Validating credentials...
                     </p>
                     <div className="mt-4 space-y-2">
@@ -189,10 +186,10 @@ const OAuthCallback = () => {
                         <div className="w-16 h-16 bg-red-500 rounded-full mx-auto mb-4 flex items-center justify-center">
                             <span className="text-2xl">⚠️</span>
                         </div>
-                        <h2 className="text-2xl font-bold text-white animate-hologram font-asimovian mb-2">
+                        <h2 className="text-2xl font-bold text-white animate-hologram font-orbitron mb-2">
                             Gateway Access Denied
                         </h2>
-                        <p className="text-red-200 font-orbitron mb-4">
+                        <p className="text-red-200 font-poppins mb-4">
                             Authentication Failed
                         </p>
                         <p className="text-gray-300 text-sm">
@@ -201,7 +198,7 @@ const OAuthCallback = () => {
                     </div>
                     <button
                         onClick={() => navigate('/login')}
-                        className="px-6 py-2 bg-cyan-600 hover:bg-cyan-700 rounded-lg text-white font-orbitron transition-all duration-200"
+                        className="px-6 py-2 bg-cyan-600 hover:bg-cyan-700 rounded-lg text-white font-poppins transition-all duration-200"
                     >
                         Return to Login
                     </button>
@@ -223,16 +220,16 @@ const OAuthCallback = () => {
                     <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center">
                         <span className="text-2xl">✅</span>
                     </div>
-                    <h2 className="text-2xl font-bold text-white animate-hologram font-asimovian mb-2">
+                    <h2 className="text-2xl font-bold text-white animate-hologram font-orbitron mb-2">
                         Quantum Access Granted
                     </h2>
-                    <p className="text-green-200 font-orbitron">
+                    <p className="text-green-200 font-poppins">
                         Authentication successful!
                     </p>
                 </div>
                 <div className="flex items-center justify-center space-x-2">
                     <ImSpinner10 className="animate-spin text-green-400" size={20} />
-                    <span className="text-gray-300 font-orbitron">Redirecting to dashboard...</span>
+                    <span className="text-gray-300 font-poppins">Redirecting to dashboard...</span>
                 </div>
             </motion.div>
         </div>

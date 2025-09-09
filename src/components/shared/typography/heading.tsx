@@ -25,7 +25,7 @@ export const Heading = ({
     h4: 'text-xl font-semibold tracking-tight',
     h5: 'text-lg font-semibold',
     h6: 'text-base font-semibold',
-    cosmic: 'text-cyan-200 font-bold tracking-tight font-orbitron text-shadow-cyan-glow',
+    cosmic: 'text-cyan-200 font-bold tracking-tight font-poppins text-shadow-cyan-glow',
   }
 
   const sizeStyles = {

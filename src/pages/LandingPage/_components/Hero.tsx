@@ -30,14 +30,14 @@ const Hero = () => {
                     <Heading
                         as="h1"
                         variant="h1"
-                        className="text-5xl md:text-7xl font-bold text-white animate-fade-in animate-hologram font-asimovian text-shadow-hologram bg-gradient-to-br from-white via-slate-200 to-white bg-clip-text text-transparent tracking-[0.1em] uppercase"
+                        className="text-5xl md:text-7xl font-bold text-white animate-fade-in animate-hologram font-orbitron text-shadow-hologram bg-gradient-to-br from-white via-slate-200 to-white bg-clip-text text-transparent tracking-[0.1em] uppercase"
                     >
                         Journey Through the Stargate
                     </Heading>
 
                     <Paragraph
                         size="lg"
-                        className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed animate-fade-in-up delay-200 font-orbitron text-shadow-blue-glow "
+                        className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed animate-fade-in-up delay-200 font-poppins text-shadow-blue-glow "
                     >
                         Seamlessly connect across dimensions with our cutting-edge portal technology.
                         Experience instant navigation, infinite possibilities, and pathways to endless opportunities.

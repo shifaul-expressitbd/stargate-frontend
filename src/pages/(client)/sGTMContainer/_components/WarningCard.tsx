@@ -18,7 +18,7 @@ export const WarningCard = ({ containerStatus }: WarningCardProps) => {
                     <FaExclamationTriangle className="w-6 h-6 text-orange-400" />
                 </div>
                 <div className="flex-grow">
-                    <h3 className="font-asimovian text-lg text-orange-300 mb-1">Warning</h3>
+                    <h3 className="font-orbitron text-lg text-orange-300 mb-1">Warning</h3>
                     <p className="text-orange-200 text-sm">
                         Your container was disabled because it did not receive requests for more than two weeks.
                         Contact support if you have any questions.

@@ -72,14 +72,14 @@ export const Collapsible: React.FC<CollapsibleProps> = ({
             <button
                 type="button"
                 onClick={toggleOpen}
-                className={twMerge("flex w-full items-center justify-between rounded-t-lg rounded-b-lg hover:bg-black/40 dark:bg-black/60 dark:hover:bg-black/40 hover:shadow-lg hover:shadow-purple-400/20 transition-all duration-300 text-white font-orbitron text-left border border-white/10 backdrop-blur-sm animate-hologram p-4",
+                className={twMerge("flex w-full items-center justify-between rounded-t-lg rounded-b-lg hover:bg-black/40 dark:bg-black/60 dark:hover:bg-black/40 hover:shadow-lg hover:shadow-purple-400/20 transition-all duration-300 text-white font-poppins text-left border border-white/10 backdrop-blur-sm animate-hologram p-4",
                     isOpen && 'rounded-b-none'
                 )}
                 aria-expanded={isOpen}
             >
                 <div className="flex items-center justify-between flex-1">
                     <h4 className="font-medium">{title}</h4>
-                    {date && <span className="text-cyan-300 text-xs font-orbitron">{date}</span>}
+                    {date && <span className="text-cyan-300 text-xs font-poppins">{date}</span>}
                 </div>
                 <motion.div
                     animate={{ rotate: isOpen ? 90 : 0 }}

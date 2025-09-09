@@ -115,10 +115,10 @@ const ForgotPassword = () => {
       <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-cyan-400/30 relative overflow-hidden">
         <div className="space-y-6">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-white animate-hologram font-asimovian text-shadow-white-strong tracking-[0.1em] uppercase">
+            <h1 className="text-3xl font-bold text-white animate-hologram font-orbitron text-shadow-white-strong tracking-[0.1em] uppercase">
               Portal Lockout
             </h1>
-            <p className="mt-2 text-lg text-blue-100 font-orbitron text-shadow-blue-glow">
+            <p className="mt-2 text-lg text-blue-100 font-poppins text-shadow-blue-glow">
               Initiate access recovery protocol
             </p>
           </div>
@@ -159,12 +159,12 @@ const ForgotPassword = () => {
           </form>
 
           <div className="text-center space-y-2">
-            <p className="text-purple-200 font-orbitron text-shadow-purple-glow">
+            <p className="text-purple-200 font-poppins text-shadow-purple-glow">
               Recall your access codes?
             </p>
             <Link
               to="/login"
-              className="text-cyan-300 hover:text-blue-300 font-orbitron text-shadow-cyan-glow hover:underline font-bold transition-all duration-200"
+              className="text-cyan-300 hover:text-blue-300 font-poppins text-shadow-cyan-glow hover:underline font-bold transition-all duration-200"
               style={{
                 textShadow: '0 0 5px rgba(34, 211, 238, 0.5)'
               }}
