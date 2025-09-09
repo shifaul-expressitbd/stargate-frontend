@@ -217,6 +217,8 @@ export const baseApi = createApi({
     "sgtmContainers",
     "sgtmRegions",
     "profile",
+    "2fa",
+    "providers",
   ],
   endpoints: () => ({}),
 });

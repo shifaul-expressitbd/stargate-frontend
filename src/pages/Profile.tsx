@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/shared/na
 import { useGetProfileQuery, useUpdateProfileMutation } from '@/lib/features/profile/profileApi';
 import TError from '@/types/TError.type';
 import { mapValidationErrors, Validators } from '@/utils/validationUtils';
+import SecuritySettings from './Profile/_components/SecuritySettings';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = [
@@ -27,15 +28,6 @@ type FormData = {
     address: string;
 };
 
-type ActivityLogItem = {
-    id: string;
-    action: string;
-    ipAddress: string;
-    device: string;
-    location: string;
-    timestamp: string;
-};
-
 interface ProfileFormProps {
     formData: FormData;
     isEditing: boolean;
@@ -48,10 +40,6 @@ interface ProfileFormProps {
     onSubmit: (e: React.FormEvent) => void;
     errors: Record<string, string>;
     warnings: Record<string, string>;
-}
-
-interface ActivityLogProps {
-    activities: ActivityLogItem[];
 }
 
 export const ProfilePage = () => {
@@ -74,25 +62,6 @@ export const ProfilePage = () => {
         address: ''
     });
 
-    // Sample activity log data
-    const activities: ActivityLogItem[] = [
-        {
-            id: '1',
-            action: 'Login',
-            ipAddress: '192.168.1.1',
-            device: 'Chrome on Windows',
-            location: 'New York, US',
-            timestamp: new Date().toLocaleString()
-        },
-        {
-            id: '2',
-            action: 'Password Changed',
-            ipAddress: '192.168.1.1',
-            device: 'Chrome on Windows',
-            location: 'New York, US',
-            timestamp: new Date(Date.now() - 86400000).toLocaleString()
-        }
-    ];
 
     useEffect(() => {
         if (profileData) {
@@ -289,7 +258,7 @@ export const ProfilePage = () => {
                 </TabsContent>
 
                 <TabsContent value="security">
-                    <ActivityLog activities={activities} />
+                    <SecuritySettings />
                 </TabsContent>
             </Tabs>
         </motion.div>
@@ -455,49 +424,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     );
 };
 
-// Activity Log Component
-const ActivityLog: React.FC<ActivityLogProps> = ({ activities }) => {
-    return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="bg-black/40 backdrop-blur-md rounded-lg border border-yellow-400/50 p-6"
-        >
-            <h2 className="text-2xl font-bold text-white font-orbitron mb-6">
-                Activity Log
-            </h2>
-
-            <div className="space-y-4">
-                {activities.map((activity) => (
-                    <div
-                        key={activity.id}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-900/60 rounded-lg border border-yellow-400/30 hover:border-yellow-400/50 transition-colors"
-                    >
-                        <div className="flex-1 mb-2 sm:mb-0">
-                            <div className="flex items-center gap-3 mb-2">
-                                <FaShieldAlt className="w-5 h-5 text-yellow-400" />
-                                <span className="font-semibold text-white font-poppins">
-                                    {activity.action}
-                                </span>
-                            </div>
-                            <div className="text-sm text-cyan-200 font-poppins">
-                                {activity.device} • IP: {activity.ipAddress}
-                            </div>
-                            <div className="text-sm text-purple-200 font-poppins">
-                                {activity.location}
-                            </div>
-                        </div>
-                        <div className="text-right">
-                            <div className="text-sm text-green-400 font-poppins">
-                                {activity.timestamp}
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </motion.div>
-    );
-};
 
 
 

@@ -81,6 +81,62 @@ export const authApi = baseApi.injectEndpoints({
         },
       }),
     }),
+    // Two-factor authentication endpoints
+    generateTwoFactorSecret: builder.query({
+      query: () => ({
+        url: "/auth/2fa/generate",
+        method: "GET",
+      }),
+      providesTags: ["2fa"],
+    }),
+    verifyTwoFactor: builder.mutation({
+      query: ({ code }) => ({
+        url: "/auth/2fa/verify",
+        method: "POST",
+        body: { code },
+      }),
+    }),
+    enableTwoFactor: builder.mutation({
+      query: (data) => ({
+        url: "/auth/2fa/enable",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["2fa", "profile"],
+    }),
+    disableTwoFactor: builder.mutation({
+      query: (data) => ({
+        url: "/auth/2fa/disable",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["2fa", "profile"],
+    }),
+    getTwoFactorStatus: builder.query({
+      query: () => "/auth/2fa/status",
+      providesTags: ["2fa"],
+    }),
+    // Provider management endpoints
+    getUserProviders: builder.query({
+      query: () => "/auth/providers",
+      providesTags: ["providers"],
+    }),
+    unlinkProvider: builder.mutation({
+      query: (provider) => ({
+        url: "/auth/providers/unlink",
+        method: "POST",
+        body: { provider },
+      }),
+      invalidatesTags: ["providers"],
+    }),
+    setPrimaryProvider: builder.mutation({
+      query: (provider) => ({
+        url: "/auth/providers/set-primary",
+        method: "POST",
+        body: { provider },
+      }),
+      invalidatesTags: ["providers", "profile"],
+    }),
   }),
 });
 
@@ -96,4 +152,12 @@ export const {
   useRefreshTokenQuery,
   useForgotPasswordMutation,
   useResetPasswordMutation,
+  useGenerateTwoFactorSecretQuery,
+  useVerifyTwoFactorMutation,
+  useEnableTwoFactorMutation,
+  useDisableTwoFactorMutation,
+  useGetTwoFactorStatusQuery,
+  useGetUserProvidersQuery,
+  useUnlinkProviderMutation,
+  useSetPrimaryProviderMutation,
 } = authApi;

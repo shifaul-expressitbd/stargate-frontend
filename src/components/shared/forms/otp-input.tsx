@@ -3,12 +3,13 @@ import React, { useEffect, useRef, useState } from "react";
 interface OTPInputProps {
   length?: number;
   onChange: (otp: string) => void;
+  onComplete?: (otp: string) => void;
   error?: string;
   success?: boolean;
   className?: string;
 }
 
-const OTPInput = ({ length = 6, onChange, success, error, className }: OTPInputProps) => {
+const OTPInput = ({ length = 6, onChange, onComplete, success, error, className }: OTPInputProps) => {
   const [otp, setOtp] = useState<string[]>(Array(length).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -22,6 +23,12 @@ const OTPInput = ({ length = 6, onChange, success, error, className }: OTPInputP
 
     // Trigger onChange callback
     onChange(newOtp.join(""));
+
+    // Check if all digits are filled
+    const isComplete = newOtp.every(digit => digit !== '');
+    if (isComplete && onComplete) {
+      onComplete(newOtp.join(""));
+    }
 
     // Auto-focus to the next input
     if (value && index < length - 1) {
