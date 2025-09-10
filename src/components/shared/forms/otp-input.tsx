@@ -16,6 +16,7 @@ interface OTPInputProps {
 const OTPInput = ({ length = 6, onChange, onComplete, success, error, className, variant = 'default' }: OTPInputProps) => {
   const [otp, setOtp] = useState<string[]>(Array(length).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [hasCompleted, setHasCompleted] = useState(false);
 
   // Handle OTP change
   const handleChange = (index: number, value: string) => {
@@ -26,12 +27,19 @@ const OTPInput = ({ length = 6, onChange, onComplete, success, error, className,
     setOtp(newOtp);
 
     // Trigger onChange callback
-    onChange(newOtp.join(""));
-
-    // Check if all digits are filled (only call onComplete if we have exactly 'length' digits)
     const otpString = newOtp.join("");
-    if (otpString.length === length && /^\d{6}$/.test(otpString) && onComplete) {
+    onChange(otpString);
+
+    // Check if OTP just became complete (transition from incomplete to complete)
+    const isComplete = otpString.length === length && /^\d{6}$/.test(otpString);
+    const wasComplete = hasCompleted;
+
+    if (isComplete && !wasComplete && onComplete) {
+      setHasCompleted(true);
       onComplete(otpString);
+    } else if (!isComplete && wasComplete) {
+      // Reset completion state if OTP becomes incomplete
+      setHasCompleted(false);
     }
 
     // Auto-focus to the next input
@@ -44,6 +52,9 @@ const OTPInput = ({ length = 6, onChange, onComplete, success, error, className,
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
+    } else if (e.key === "Backspace" && otp[index] && hasCompleted) {
+      // Reset completion state when user starts deleting completed OTP
+      setHasCompleted(false);
     }
   };
 
@@ -63,11 +74,21 @@ const OTPInput = ({ length = 6, onChange, onComplete, success, error, className,
     const otpString = newOtp.join("");
     onChange(otpString);
 
-    // Only call onComplete if we have exactly 'length' digits
-    if (otpString.length === length && /^\d{6}$/.test(otpString) && onComplete) {
+    // Check if OTP just became complete after paste
+    const isComplete = otpString.length === length && /^\d{6}$/.test(otpString);
+    if (isComplete && !hasCompleted && onComplete) {
+      setHasCompleted(true);
       onComplete(otpString);
     }
   };
+
+  // Reset completion state when OTP becomes empty
+  useEffect(() => {
+    const otpString = otp.join("");
+    if (otpString.length === 0 && hasCompleted) {
+      setHasCompleted(false);
+    }
+  }, [otp, hasCompleted]);
 
   // Focus the first input on mount
   useEffect(() => {

@@ -89,17 +89,13 @@ const TwoFactorVerification = ({ email, tempToken, rememberMe }: TwoFactorVerifi
     const handleCodeComplete = (otp: string) => {
         setCode(otp)
 
+        // Clear errors when completing the code
+        setErrors({})
+        setWarnings({})
+
+        // Validate the code but don't auto-submit
         if (otp.length === 6) {
-            if (validateTOTPForm()) {
-                // Rate limiting
-                const now = Date.now()
-                if (now - lastAttemptRef.current < 1000) {
-                    return
-                }
-                lastAttemptRef.current = now
-                setLoading(true)
-                performTOTPSubmission(otp)
-            }
+            validateTOTPForm()
         }
     }
 

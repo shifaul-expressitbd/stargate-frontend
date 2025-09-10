@@ -148,10 +148,10 @@ const Modal: React.FC<ModalProps> = ({
   }
 
   // Prepare classes based on variant
-  const overlayClasses = variant === 'glass' ? 'backdrop-blur-md bg-black/40 dark:bg-black/40' : 'bg-black/80 dark:bg-black/60'
-  const modalBgClasses = variant === 'cosmic' ? 'bg-base dark:bg-primary-dark' : variant === 'glass' ? 'backdrop-blur-xl bg-white/70 dark:bg-primary-dark/70 border border-gray-300/50 dark:border-gray-600/50' : 'bg-white dark:bg-primary-dark'
-  const headerClasses = variant === 'glass' ? 'bg-base/60 rounded-t-lg' : 'bg-primary rounded-t-lg'
-  const footerClasses = variant === 'cosmic' ? 'bg-main dark:bg-primary-dark' : variant === 'glass' ? 'bg-base/80 dark:bg-primary-dark/90' : 'bg-gray-50 dark:bg-primary-dark'
+  const overlayClasses = variant === 'glass' ? 'backdrop-blur-md bg-black/40 dark:bg-black/40' : variant === 'cosmic' ? 'bg-slate-900/95 backdrop-blur-sm' : 'bg-black/80 dark:bg-black/60'
+  const modalBgClasses = variant === 'cosmic' ? 'bg-slate-800 shadow-2xl ring-1 ring-cyan-500/20 border border-slate-700' : variant === 'glass' ? 'backdrop-blur-xl bg-white/70 dark:bg-primary-dark/70 border border-gray-300/50 dark:border-gray-600/50' : 'bg-white dark:bg-primary-dark'
+  const headerClasses = variant === 'cosmic' ? 'bg-slate-700/90 border-b border-indigo-500/30 shadow-lg' : variant === 'glass' ? 'bg-base/60 rounded-t-lg' : 'bg-primary rounded-t-lg'
+  const footerClasses = variant === 'cosmic' ? 'bg-slate-700/90 border-t border-indigo-500/30' : variant === 'glass' ? 'bg-base/80 dark:bg-primary-dark/90' : 'bg-gray-50 dark:bg-primary-dark'
 
   if (!portalElement) return null
 
@@ -186,7 +186,7 @@ const Modal: React.FC<ModalProps> = ({
               <div className={twMerge("flex items-center justify-between p-4", headerClasses)}>
                 <h2
                   id="modal-title"
-                  className="text-xl font-semibold text-white"
+                  className={variant === 'cosmic' ? "text-xl font-semibold text-white/90 text-shadow-cyan-glow" : "text-xl font-semibold text-white"}
                 >
                   {title}
                 </h2>
@@ -194,7 +194,7 @@ const Modal: React.FC<ModalProps> = ({
                   title="Close"
                   aria-label="Close modal"
                   onClick={onClose}
-                  className="text-white hover:bg-primary/80"
+                  className={variant === 'cosmic' ? "text-white/90 hover:bg-slate-600/50 hover:text-white" : "text-white hover:bg-primary/80"}
                   disabled={isConfirming}
                 >
                   <FiX size={24} />
@@ -209,14 +209,18 @@ const Modal: React.FC<ModalProps> = ({
 
             {/* Footer */}
             {showFooter && (
-              <div className={twMerge("flex justify-end gap-3 p-2 text-black dark:text-primary rounded-b-lg " + footerClasses)}>
+              <div className={twMerge(
+                "flex justify-end gap-3 p-2 rounded-b-lg",
+                variant === 'cosmic' ? "text-white/90" : "text-black dark:text-primary",
+                footerClasses
+              )}>
                 <Button
                   title="Cancel"
                   variant="outline"
                   size="md"
                   onClick={onClose}
                   disabled={isConfirming}
-                  className="dark:bg-black"
+                  className={variant === 'cosmic' ? "border-slate-500 text-white/90 hover:bg-slate-600/50" : "dark:bg-black"}
                 >
                   Cancel
                 </Button>
@@ -226,6 +230,7 @@ const Modal: React.FC<ModalProps> = ({
                     size="md"
                     onClick={handleConfirm}
                     disabled={isConfirming}
+                    className={variant === 'cosmic' ? "bg-blue-600 hover:bg-blue-500 text-white shadow-blue-500/25 shadow-lg" : "bg-primary hover:bg-secondary text-white"}
                   >
                     {isConfirming ? 'Processing...' : confirmText}
                   </Button>

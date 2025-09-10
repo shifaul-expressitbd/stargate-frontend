@@ -4,9 +4,11 @@ import { Link } from 'react-router-dom';
 import AppLogo from '../../../components/app/AppLogo';
 import { Button } from '../../../components/shared/buttons/button';
 import { Icon } from '../../../components/shared/icons/icon';
+import { useAuth } from '../../../hooks/useAuth';
 
 const LandingNavbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { isLoggedIn } = useAuth();
 
     const navigation = [
         { name: 'Features', href: '#features' },
@@ -56,26 +58,41 @@ const LandingNavbar = () => {
 
                     {/* Desktop Right Section */}
                     <div className="hidden md:flex items-center space-x-4">
-                        <Button
-                            variant="alien-outline"
-                            size="sm"
-                            title="Login"
-                            onClick={closeMenu}
-                        >
-                            <Link to="/login" className="block w-full h-full text-center no-underline">
-                                Login
-                            </Link>
-                        </Button>
-                        <Button
-                            variant="alien-primary"
-                            size="sm"
-                            title="Get Started"
-                            onClick={closeMenu}
-                        >
-                            <Link to="/register" className="block w-full h-full text-center no-underline text-nowrap">
-                                Get Started
-                            </Link>
-                        </Button>
+                        {isLoggedIn ? (
+                            <Button
+                                variant="alien-primary"
+                                size="sm"
+                                title="Dashboard"
+                                onClick={closeMenu}
+                            >
+                                <Link to="/dashboard" className="block w-full h-full text-center no-underline">
+                                    Dashboard
+                                </Link>
+                            </Button>
+                        ) : (
+                            <>
+                                <Button
+                                    variant="alien-outline"
+                                    size="sm"
+                                    title="Login"
+                                    onClick={closeMenu}
+                                >
+                                    <Link to="/login" className="block w-full h-full text-center no-underline">
+                                        Login
+                                    </Link>
+                                </Button>
+                                <Button
+                                    variant="alien-primary"
+                                    size="sm"
+                                    title="Get Started"
+                                    onClick={closeMenu}
+                                >
+                                    <Link to="/register" className="block w-full h-full text-center no-underline text-nowrap">
+                                        Get Started
+                                    </Link>
+                                </Button>
+                            </>
+                        )}
                     </div>
 
                     {/* Mobile menu button */}
@@ -109,28 +126,44 @@ const LandingNavbar = () => {
                         ))}
 
                         <div className="pt-4 space-y-2">
-                            <Button
-                                variant="alien-outline"
-                                size="sm"
-                                title="Login"
-                                className="w-full"
-                                onClick={closeMenu}
-                            >
-                                <Link to="/login" className="block w-full h-full text-center no-underline">
-                                    Login
-                                </Link>
-                            </Button>
-                            <Button
-                                variant="alien-primary"
-                                size="sm"
-                                title="Get Started"
-                                className="w-full"
-                                onClick={closeMenu}
-                            >
-                                <Link to="/register" className="block w-full h-full text-center no-underline">
-                                    Get Started
-                                </Link>
-                            </Button>
+                            {isLoggedIn ? (
+                                <Button
+                                    variant="alien-primary"
+                                    size="sm"
+                                    title="Dashboard"
+                                    className="w-full"
+                                    onClick={closeMenu}
+                                >
+                                    <Link to="/dashboard" className="block w-full h-full text-center no-underline">
+                                        Dashboard
+                                    </Link>
+                                </Button>
+                            ) : (
+                                <>
+                                    <Button
+                                        variant="alien-outline"
+                                        size="sm"
+                                        title="Login"
+                                        className="w-full"
+                                        onClick={closeMenu}
+                                    >
+                                        <Link to="/login" className="block w-full h-full text-center no-underline">
+                                            Login
+                                        </Link>
+                                    </Button>
+                                    <Button
+                                        variant="alien-primary"
+                                        size="sm"
+                                        title="Get Started"
+                                        className="w-full"
+                                        onClick={closeMenu}
+                                    >
+                                        <Link to="/register" className="block w-full h-full text-center no-underline">
+                                            Get Started
+                                        </Link>
+                                    </Button>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

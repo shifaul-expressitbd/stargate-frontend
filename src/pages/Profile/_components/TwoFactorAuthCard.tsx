@@ -70,6 +70,10 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
 
         setIsLoading(true);
         try {
+            // First verify the TOTP code
+            await onVerify({ code: codeToUse }).unwrap();
+
+            // Then enable 2FA
             const result = await onEnable({ code: codeToUse }).unwrap();
 
             // Store backup data to show afterwards
@@ -89,24 +93,7 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
         } finally {
             setIsLoading(false);
         }
-    }, [verificationCode, onEnable, handleError]);
-
-    const handleVerifyTOTP = useCallback(async () => {
-        if (!verificationCode || verificationCode.length !== 6) {
-            toast.error('Please enter a valid 6-digit code');
-            return;
-        }
-
-        setIsLoading(true);
-        try {
-            await onVerify({ code: verificationCode }).unwrap();
-            await handleEnable2FA(verificationCode);
-        } catch (error) {
-            handleError(error, 'Invalid TOTP code. Please try again.');
-        } finally {
-            setIsLoading(false);
-        }
-    }, [verificationCode, onVerify, handleEnable2FA, handleError]);
+    }, [verificationCode, onVerify, onEnable, handleError]);
 
     const handleBackupCodesModalClose = useCallback(() => {
         // Close modal and complete setup
@@ -271,8 +258,9 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
                     size="2xl"
                     onConfirm={handleBackupCodesModalClose}
                     confirmText="I Understand - Continue"
-                    showFooter={true}
+                    showFooter={false}
                     disableClickOutside={false}
+
                     aria-label="Save your two-factor authentication backup codes"
                     className="max-h-[90vh] overflow-hidden"
                 >
@@ -300,15 +288,15 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
                                 title={showBackupCodes ? "Hide Backup Codes" : "Show Backup Codes"}
                             >
                                 {showBackupCodes ? (
-                                    <>
+                                    <span className="flex items-center justify-center gap-1">
                                         <FaEyeSlash className="w-4 h-4 mr-2" />
                                         Hide Codes
-                                    </>
+                                    </span>
                                 ) : (
-                                    <>
+                                    <span className="flex items-center justify-center gap-1">
                                         <FaEye className="w-4 h-4 mr-2" />
                                         Show Codes
-                                    </>
+                                    </span>
                                 )}
                             </Button>
                         </div>
@@ -356,18 +344,18 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
                                 onClick={copyAllCodes}
                                 variant="cosmic-primary"
                                 size="sm"
-                                className="font-poppins"
+                                className="font-poppins flex items-center justify-center gap-1"
                                 title="Copy all backup codes to clipboard"
                             >
                                 <FaCopy className="w-4 h-4 mr-2" />
-                                Copy All Codes
+                                Copy All
                             </Button>
 
                             <Button
                                 onClick={downloadCodes}
                                 variant="cosmic-outline"
                                 size="sm"
-                                className="font-poppins"
+                                className="font-poppins flex items-center justify-center gap-1"
                                 title="Download backup codes as text file"
                             >
                                 <FaDownload className="w-4 h-4 mr-2" />
@@ -378,7 +366,7 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
                                 onClick={handleBackupCodesModalClose}
                                 variant="cosmic-primary"
                                 size="sm"
-                                className="font-poppins"
+                                className="font-poppins flex items-center justify-center gap-1"
                                 title="Continue with 2FA setup"
                             >
                                 I Understand - Continue
@@ -397,7 +385,7 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
                     variant="cosmic"
                     size="lg"
                     confirmText={currentStep === 2 ? SECURITY_TEXT.TWO_FA.VERIFY_BUTTON : "Next"}
-                    onConfirm={currentStep === 2 ? handleVerifyTOTP : () => setCurrentStep(2)}
+                    onConfirm={currentStep === 2 ? handleEnable2FA : () => setCurrentStep(2)}
                     showFooter={false}
                     disableClickOutside={isLoading}
                     aria-label="Set up two-factor authentication to secure your account"
@@ -430,7 +418,7 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
                                         <motion.div
                                             initial={{ scale: 0.8, opacity: 0 }}
                                             animate={{ scale: 1, opacity: 1 }}
-                                            className="bg-white p-4 rounded-lg block mb-4 mx-auto"
+                                            className="bg-white w-fit p-4 rounded-lg flex items-center justify-center self-center place-self-center"
                                         >
                                             <img
                                                 src={secret.data.qrCodeUrl}
@@ -456,12 +444,12 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
                                     </p>
                                 </div>
 
-                                <div className="flex gap-4 justify-center mt-6">
-                                    <Button onClick={() => setCurrentStep(2)} variant="cosmic-primary" title="Next">
-                                        Next
-                                    </Button>
+                                <div className="flex gap-4 items-center justify-end mt-6">
                                     <Button onClick={() => { setShowEnableModal(false); setCurrentStep(1); setVerificationCode(''); }} disabled={isLoading} variant="cosmic-outline" title={SECURITY_TEXT.TWO_FA.CANCEL_BUTTON}>
                                         {SECURITY_TEXT.TWO_FA.CANCEL_BUTTON}
+                                    </Button>
+                                    <Button onClick={() => setCurrentStep(2)} variant="cosmic-primary" title="Next">
+                                        Next
                                     </Button>
                                 </div>
                             </motion.div>
@@ -488,21 +476,21 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
                                     >
                                         <OTPInput
                                             onChange={setVerificationCode}
-                                            onComplete={() => handleVerifyTOTP()}
                                             className="mb-4"
+                                            variant='cosmic'
                                         />
                                     </motion.div>
                                     <motion.div
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.4 }}
-                                        className="flex gap-4 justify-center"
+                                        className="flex gap-4 items-center justify-end"
                                     >
-                                        <Button onClick={handleVerifyTOTP} variant="cosmic-primary" disabled={!verificationCode || verificationCode.length !== 6} title={SECURITY_TEXT.TWO_FA.VERIFY_BUTTON}>
-                                            {SECURITY_TEXT.TWO_FA.VERIFY_BUTTON} (or auto-submits when complete)
-                                        </Button>
                                         <Button onClick={() => { setShowEnableModal(false); setCurrentStep(1); setVerificationCode(''); }} disabled={isLoading} variant="cosmic-outline" title={SECURITY_TEXT.TWO_FA.CANCEL_BUTTON}>
                                             {SECURITY_TEXT.TWO_FA.CANCEL_BUTTON}
+                                        </Button>
+                                        <Button onClick={() => handleEnable2FA()} variant="cosmic-primary" disabled={!verificationCode || verificationCode.length !== 6} title={SECURITY_TEXT.TWO_FA.VERIFY_BUTTON}>
+                                            {SECURITY_TEXT.TWO_FA.VERIFY_BUTTON}
                                         </Button>
                                     </motion.div>
                                 </div>
@@ -516,16 +504,13 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
             {showDisableModal && (
                 <Modal
                     isModalOpen={showDisableModal}
-                    onClose={() => setShowDisableModal(false)}
+                    onClose={() => { setShowDisableModal(false); setDisableCode(''); }}
                     title={SECURITY_TEXT.DISABLE_MODAL.TITLE}
                     variant="cosmic"
                     size="md"
-                    onConfirm={handleDisable2FA}
-                    confirmText={isLoading ? SECURITY_TEXT.TWO_FA.PROCESSING_TEXT : SECURITY_TEXT.TWO_FA.CONFIRM_DISABLE}
-                    isConfirming={isLoading}
                     disableClickOutside={isLoading}
                     aria-label={SECURITY_TEXT.DISABLE_MODAL.DESC}
-                    showFooter={true}
+                    showFooter={false}
                 >
                     <div className="space-y-6">
                         {/* Warning */}
@@ -539,12 +524,25 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
                         </div>
 
                         {/* TOTP Code Input */}
-                        <div className="flex justify-center">
-                            <OTPInput
-                                onChange={setDisableCode}
-                                onComplete={() => handleDisable2FA()}
-                                className="mb-4"
-                            />
+                        <div className="space-y-6">
+                            <div className="text-cyan-200 font-poppins text-center">
+                                {SECURITY_TEXT.DISABLE_MODAL.DESC}
+                            </div>
+                            <div className="flex justify-center">
+                                <OTPInput
+                                    onChange={setDisableCode}
+                                    className="mb-4"
+                                    variant='cosmic'
+                                />
+                            </div>
+                            <div className="flex gap-4 items-center justify-end">
+                                <Button onClick={() => { setShowDisableModal(false); setDisableCode(''); }} variant="cosmic-outline" disabled={isLoading} title="Cancel">
+                                    {SECURITY_TEXT.TWO_FA.CANCEL_BUTTON}
+                                </Button>
+                                <Button onClick={handleDisable2FA} variant="cosmic-primary" disabled={!disableCode || disableCode.length !== 6 || isLoading} title={SECURITY_TEXT.TWO_FA.CONFIRM_DISABLE}>
+                                    {isLoading ? SECURITY_TEXT.TWO_FA.PROCESSING_TEXT : SECURITY_TEXT.TWO_FA.CONFIRM_DISABLE}
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </Modal>
