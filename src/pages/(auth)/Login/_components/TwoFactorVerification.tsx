@@ -8,8 +8,8 @@ import { useAppDispatch } from '@/lib/hooks'
 import { Validators } from '@/utils/validationUtils'
 import { jwtDecode } from 'jwt-decode'
 import { motion } from 'motion/react'
-import { useRef, useState } from 'react'
-import { FaExclamationTriangle, FaKey, FaShieldAlt } from 'react-icons/fa'
+import { useEffect, useRef, useState } from 'react'
+import { FaClock, FaExclamationTriangle, FaKey, FaShieldAlt, FaSync } from 'react-icons/fa'
 import { ImSpinner10 } from 'react-icons/im'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -31,8 +31,67 @@ const TwoFactorVerification = ({ email, tempToken, rememberMe }: TwoFactorVerifi
     const [warnings, setWarnings] = useState<Record<string, string>>({})
     const lastAttemptRef = useRef(0)
 
+    // Server time sync state
+    const [serverTimeInfo, setServerTimeInfo] = useState<{
+        serverTime: string
+        serverTimestamp: number
+        timezone: string
+        utcOffset: number
+        timeDifferenceSeconds: number
+        isTimeSyncWarning: boolean
+    } | null>(null)
+    const [checkingTime, setCheckingTime] = useState(false)
+
     const [loginWithTwoFactor] = useLoginWithTwoFactorMutation()
     const [loginWithBackupCode] = useLoginWithBackupCodeMutation()
+
+    // Check server time synchronization
+    const checkServerTimeSync = async () => {
+        setCheckingTime(true)
+
+        try {
+            const clientTimestamp = Date.now()
+
+            // Fetch server time information
+            const response = await fetch('/api/auth/server-time')
+            if (!response.ok) {
+                throw new Error('Failed to fetch server time')
+            }
+
+            const serverData = await response.json()
+            const serverTimestamp = serverData.data.serverTimestamp * 1000 // Convert to milliseconds
+
+            // Calculate time difference
+            const timeDifference = Math.abs(clientTimestamp - serverTimestamp)
+            const timeDifferenceSeconds = Math.round(timeDifference / 1000)
+            const isTimeSyncWarning = timeDifferenceSeconds > 30 // Warning if > 30 seconds difference
+
+            setServerTimeInfo({
+                serverTime: serverData.data.serverTime,
+                serverTimestamp: serverData.data.serverTimestamp,
+                timezone: serverData.data.timezone,
+                utcOffset: serverData.data.utcOffset,
+                timeDifferenceSeconds,
+                isTimeSyncWarning
+            })
+
+            if (isTimeSyncWarning) {
+                toast.warning(`⏰ Time difference detected: ${timeDifferenceSeconds}s`)
+            } else {
+                toast.success('✅ Time synchronized with server')
+            }
+        } catch (error) {
+            console.error('Failed to check server time:', error)
+            toast.error('Failed to check server time synchronization')
+        } finally {
+            setCheckingTime(false)
+        }
+    }
+
+    // Auto-check time sync on component mount
+    useEffect(() => {
+        checkServerTimeSync()
+    }, [])
 
     const performTOTPSubmission = async (submitCode: string) => {
         const toastId = toast.loading('Verifying code...', {
@@ -41,11 +100,19 @@ const TwoFactorVerification = ({ email, tempToken, rememberMe }: TwoFactorVerifi
         })
 
         try {
-            const res = await loginWithTwoFactor({
+            // Include client timestamp for better debugging in case of time sync issues
+            const requestData: any = {
                 code: submitCode.trim(),
                 tempToken,
                 rememberMe
-            }).unwrap()
+            }
+
+            // Add client timestamp if available
+            if (Date.now) {
+                requestData.clientTimestamp = Date.now()
+            }
+
+            const res = await loginWithTwoFactor(requestData).unwrap()
 
             toast.dismiss(toastId)
             completeLogin(res)
@@ -54,7 +121,11 @@ const TwoFactorVerification = ({ email, tempToken, rememberMe }: TwoFactorVerifi
             console.error('2FA verification error:', error)
 
             if (error?.data?.message?.includes('Invalid 2FA code')) {
-                setErrors({ code: 'Invalid verification code' })
+                // If there's a time sync issue, suggest checking server time
+                const suggestion = serverTimeInfo?.isTimeSyncWarning
+                    ? ' Check your device time synchronization.'
+                    : ''
+                setErrors({ code: 'Invalid verification code.' + suggestion })
                 setCode('')
             } else if (error?.data?.message?.includes('Code must be 6 digits')) {
                 setErrors({ code: 'Code must be 6 digits' })
@@ -304,6 +375,49 @@ const TwoFactorVerification = ({ email, tempToken, rememberMe }: TwoFactorVerifi
                                     onComplete={handleCodeComplete}
                                     error={errors.code}
                                 />
+
+                                {/* Server Time Sync Section */}
+                                {serverTimeInfo && (
+                                    <div className="space-y-3">
+                                        <div className={`text-xs px-3 py-2 rounded-lg border ${serverTimeInfo.isTimeSyncWarning
+                                            ? 'bg-red-900/20 border-red-500/50 text-red-300'
+                                            : 'bg-green-900/20 border-green-500/50 text-green-300'
+                                            }`}>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <FaClock size={12} />
+                                                    <span className="font-medium">
+                                                        {serverTimeInfo.isTimeSyncWarning ? '⚠️ Time Sync Issue' : '✅ Time Synced'}
+                                                    </span>
+                                                </div>
+                                                <button
+                                                    onClick={checkServerTimeSync}
+                                                    disabled={checkingTime}
+                                                    className="flex items-center gap-1 text-xs hover:underline disabled:opacity-50"
+                                                    title="Re-check server time synchronization"
+                                                >
+                                                    <FaSync size={10} className={checkingTime ? 'animate-spin' : ''} />
+                                                    Refresh
+                                                </button>
+                                            </div>
+                                            <div className="mt-2 text-xs opacity-80">
+                                                <div>Server: {new Date(serverTimeInfo.serverTime).toLocaleTimeString()}</div>
+                                                {serverTimeInfo.timeDifferenceSeconds > 5 && (
+                                                    <div>Difference: ±{serverTimeInfo.timeDifferenceSeconds}s</div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {serverTimeInfo.isTimeSyncWarning && (
+                                            <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg px-3 py-2">
+                                                <div className="flex items-center gap-2 text-yellow-300 text-xs">
+                                                    <FaExclamationTriangle size={12} />
+                                                    <span>Larger time difference detected. Check your device NTP settings and authenticator app sync.</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             <Button

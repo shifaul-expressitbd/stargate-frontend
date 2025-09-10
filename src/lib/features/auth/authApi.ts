@@ -23,10 +23,10 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
     loginWithTwoFactor: builder.mutation({
-      query: ({ code, tempToken, rememberMe }) => ({
+      query: (requestData) => ({
         url: "/auth/2fa/login/totp",
         method: "POST",
-        body: { code, tempToken, rememberMe },
+        body: requestData,
       }),
     }),
     loginWithBackupCode: builder.mutation({
