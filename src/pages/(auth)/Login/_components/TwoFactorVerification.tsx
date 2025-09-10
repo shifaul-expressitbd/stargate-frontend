@@ -34,6 +34,41 @@ const TwoFactorVerification = ({ email, tempToken, rememberMe }: TwoFactorVerifi
     const [loginWithTwoFactor] = useLoginWithTwoFactorMutation()
     const [loginWithBackupCode] = useLoginWithBackupCodeMutation()
 
+    const performTOTPSubmission = async (submitCode: string) => {
+        const toastId = toast.loading('Verifying code...', {
+            id: '2fa-totp',
+            duration: 2000,
+        })
+
+        try {
+            const res = await loginWithTwoFactor({
+                code: submitCode.trim(),
+                tempToken,
+                rememberMe
+            }).unwrap()
+
+            toast.dismiss(toastId)
+            completeLogin(res)
+        } catch (error: any) {
+            toast.dismiss(toastId)
+            console.error('2FA verification error:', error)
+
+            if (error?.data?.message?.includes('Invalid 2FA code')) {
+                setErrors({ code: 'Invalid verification code' })
+                setCode('')
+            } else if (error?.data?.message?.includes('Code must be 6 digits')) {
+                setErrors({ code: 'Code must be 6 digits' })
+                setCode('')
+            } else {
+                toast.error(error?.data?.message || 'Verification failed. Please try again.', {
+                    duration: 3000,
+                })
+            }
+        } finally {
+            setLoading(false)
+        }
+    }
+
     // Clear errors when switching verification method
     const handleMethodSwitch = (method: 'totp' | 'backup') => {
         setVerificationMethod(method)
@@ -52,8 +87,20 @@ const TwoFactorVerification = ({ email, tempToken, rememberMe }: TwoFactorVerifi
     }
 
     const handleCodeComplete = (otp: string) => {
-        // Code is complete but we don't auto-submit to avoid the "Code must be 6 digits" error
-        // User will manually submit using the button
+        setCode(otp)
+
+        if (otp.length === 6) {
+            if (validateTOTPForm()) {
+                // Rate limiting
+                const now = Date.now()
+                if (now - lastAttemptRef.current < 1000) {
+                    return
+                }
+                lastAttemptRef.current = now
+                setLoading(true)
+                performTOTPSubmission(otp)
+            }
+        }
     }
 
     const handleBackupCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,35 +205,7 @@ const TwoFactorVerification = ({ email, tempToken, rememberMe }: TwoFactorVerifi
         if (!validateTOTPForm()) return
 
         setLoading(true)
-        const toastId = toast.loading('Verifying code...', {
-            id: '2fa-totp',
-            duration: 2000,
-        })
-
-        try {
-            const res = await loginWithTwoFactor({
-                code: code,
-                tempToken,
-                rememberMe
-            }).unwrap()
-
-            toast.dismiss(toastId)
-            completeLogin(res)
-        } catch (error: any) {
-            toast.dismiss(toastId)
-            console.error('2FA verification error:', error)
-
-            if (error?.data?.message?.includes('Invalid 2FA code')) {
-                setErrors({ code: 'Invalid verification code' })
-                setCode('')
-            } else {
-                toast.error(error?.data?.message || 'Verification failed. Please try again.', {
-                    duration: 3000,
-                })
-            }
-        } finally {
-            setLoading(false)
-        }
+        await performTOTPSubmission(code)
     }
 
     const handleBackupCodeSubmit = async (e: React.FormEvent) => {

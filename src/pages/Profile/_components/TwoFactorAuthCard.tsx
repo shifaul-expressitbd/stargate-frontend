@@ -1,6 +1,7 @@
 import { Button } from '@/components/shared/buttons/button';
 import OTPInput from '@/components/shared/forms/otp-input';
 import { ToggleSwitch } from '@/components/shared/forms/toggle-switch';
+import Modal from '@/components/shared/modals/modal';
 import type {
     TDisableTwoFactorRequest,
     TEnableTwoFactorRequest,
@@ -9,22 +10,10 @@ import type {
 } from '@/types/TAuth.type';
 import { motion } from 'motion/react';
 import React, { useCallback, useState } from 'react';
-import { FaCheckCircle, FaUnlock } from 'react-icons/fa';
+import { FaCheck, FaCheckCircle, FaCopy, FaDownload, FaEye, FaEyeSlash, FaUnlock } from 'react-icons/fa';
 import { toast } from 'sonner';
-import BackupCodesDisplay from './BackupCodesDisplay';
 import { SECURITY_TEXT } from './constants';
 
-/**
- * TwoFactorAuthCard Component
- *
- * Comprehensive two-factor authentication management component featuring:
- * - QR code generation and setup flow
- * - Code verification and enable/disable 2FA
- * - Backup codes display and management
- * - Improved error handling and user feedback
- * - Accessibility features and responsive design
- * - Smooth step transitions and loading states
- */
 interface TwoFactorAuthCardProps {
     status?: TTwoFactorStatusResponse;
     secret?: TTwoFactorSecretResponse;
@@ -49,6 +38,9 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
     const [showDisableModal, setShowDisableModal] = useState(false);
     const [showEnableModal, setShowEnableModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    // Backup codes modal state
+    const [showBackupCodes, setShowBackupCodes] = useState(false);
+    const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
     const handleError = useCallback((error: any, defaultMessage: string) => {
         console.error(error);
@@ -83,6 +75,8 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
             // Store backup data to show afterwards
             if (result && result.data && result.data.backupCodes) {
                 setBackupData(result);
+                setShowBackupCodes(true); // Show backup codes modal
+                setShowEnableModal(false);
             } else {
                 // If no backup codes in response, complete the setup
                 toast.success('Two-factor authentication enabled successfully');
@@ -116,9 +110,9 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
 
     const handleBackupCodesModalClose = useCallback(() => {
         // Close modal and complete setup
+        setShowBackupCodes(false);
         setBackupData(null);
         toast.success('Two-factor authentication enabled successfully');
-        setShowEnableModal(false);
         setCurrentStep(1);
         setVerificationCode('');
     }, []);
@@ -141,6 +135,46 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
             setIsLoading(false);
         }
     }, [disableCode, onDisable, handleError]);
+
+    // Backup codes functions
+    const copyToClipboard = useCallback(async (code: string, index: number) => {
+        try {
+            await navigator.clipboard.writeText(code);
+            setCopiedIndex(index);
+            setTimeout(() => setCopiedIndex(null), 2000);
+        } catch (err) {
+            console.error('Failed to copy code:', err);
+        }
+    }, []);
+
+    const downloadCodes = useCallback(() => {
+        if (!backupData?.data.backupCodes) return;
+
+        const codesText = `___________2FA_BACKUP_CODES____________\n\n${backupData.data.backupCodes.map((code, index) => `${index + 1}. ${code}`).join('\n')}\n\n__________________________________________________\nGenerated: ${new Date().toLocaleString()}\nIMPORTANT: Store these codes securely!\nUse them only when you cannot access your authenticator app.`;
+
+        const blob = new Blob([codesText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '2fa-backup-codes.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }, [backupData]);
+
+    const copyAllCodes = useCallback(async () => {
+        if (!backupData?.data.backupCodes) return;
+
+        const codesText = backupData.data.backupCodes.join('\n');
+        try {
+            await navigator.clipboard.writeText(codesText);
+            setCopiedIndex(-1); // -1 indicates all codes copied
+            setTimeout(() => setCopiedIndex(null), 2000);
+        } catch (err) {
+            console.error('Failed to copy all codes:', err);
+        }
+    }, [backupData]);
 
 
     const handleToggleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -228,224 +262,292 @@ const TwoFactorAuthCard: React.FC<TwoFactorAuthCardProps> = ({
 
 
             {/* Backup Codes Modal */}
-            {backupData && (
-                <BackupCodesDisplay
-                    backupData={backupData}
+            {showBackupCodes && backupData && (
+                <Modal
+                    isModalOpen={showBackupCodes}
                     onClose={handleBackupCodesModalClose}
-                />
+                    title="Backup Codes Generated!"
+                    variant="cosmic"
+                    size="2xl"
+                    onConfirm={handleBackupCodesModalClose}
+                    confirmText="I Understand - Continue"
+                    showFooter={true}
+                    disableClickOutside={false}
+                    aria-label="Save your two-factor authentication backup codes"
+                    className="max-h-[90vh] overflow-hidden"
+                >
+                    <div className="space-y-6">
+                        {/* Warning */}
+                        <div className="bg-red-900/20 border border-red-500/50 rounded-lg p-4">
+                            <h3 className="text-lg font-semibold text-red-400 font-poppins mb-2">
+                                ⚠️ Important Security Notice
+                            </h3>
+                            <ul className="text-red-200 font-poppins text-sm space-y-1">
+                                <li>• Each backup code can only be used once</li>
+                                <li>• Store these codes in a secure location</li>
+                                <li>• Do not share these codes with anyone</li>
+                                <li>• If you lose access to your authenticator app, these codes are your only recovery method</li>
+                            </ul>
+                        </div>
+
+                        {/* Codes Toggle */}
+                        <div className="flex justify-center">
+                            <Button
+                                onClick={() => setShowBackupCodes(!showBackupCodes)}
+                                variant="cosmic-outline"
+                                size="sm"
+                                className="font-poppins"
+                                title={showBackupCodes ? "Hide Backup Codes" : "Show Backup Codes"}
+                            >
+                                {showBackupCodes ? (
+                                    <>
+                                        <FaEyeSlash className="w-4 h-4 mr-2" />
+                                        Hide Codes
+                                    </>
+                                ) : (
+                                    <>
+                                        <FaEye className="w-4 h-4 mr-2" />
+                                        Show Codes
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+
+                        {/* Backup Codes */}
+                        <div className="bg-gray-900/60 rounded-lg border border-gray-600 p-4 max-h-64 overflow-y-auto">
+                            <div className="grid grid-cols-2 gap-3">
+                                {backupData.data.backupCodes.map((code, index) => (
+                                    <div
+                                        key={index}
+                                        className="flex items-center justify-between bg-black/40 rounded border border-gray-700 px-3 py-2"
+                                    >
+                                        <span className="font-mono text-cyan-300 text-sm">
+                                            {code}
+                                        </span>
+                                        <Button
+                                            onClick={() => copyToClipboard(code, index)}
+                                            variant="ghost"
+                                            size="sm"
+                                            className="ml-2 p-1 hover:bg-cyan-600/20"
+                                            title={`Copy ${code} to clipboard`}
+                                        >
+                                            {copiedIndex === index ? (
+                                                <FaCheck className="w-4 h-4 text-green-400" />
+                                            ) : (
+                                                <FaCopy className="w-4 h-4" />
+                                            )}
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {copiedIndex === -1 && (
+                                <div className="text-center mt-3">
+                                    <span className="text-green-400 font-poppins text-sm">
+                                        All codes copied to clipboard!
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex flex-wrap gap-3 justify-center">
+                            <Button
+                                onClick={copyAllCodes}
+                                variant="cosmic-primary"
+                                size="sm"
+                                className="font-poppins"
+                                title="Copy all backup codes to clipboard"
+                            >
+                                <FaCopy className="w-4 h-4 mr-2" />
+                                Copy All Codes
+                            </Button>
+
+                            <Button
+                                onClick={downloadCodes}
+                                variant="cosmic-outline"
+                                size="sm"
+                                className="font-poppins"
+                                title="Download backup codes as text file"
+                            >
+                                <FaDownload className="w-4 h-4 mr-2" />
+                                Download
+                            </Button>
+
+                            <Button
+                                onClick={handleBackupCodesModalClose}
+                                variant="cosmic-primary"
+                                size="sm"
+                                className="font-poppins"
+                                title="Continue with 2FA setup"
+                            >
+                                I Understand - Continue
+                            </Button>
+                        </div>
+                    </div>
+                </Modal>
             )}
 
             {/* Enable 2FA Setup Modal */}
             {showEnableModal && (
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                    role="dialog"
-                    aria-modal="true"
-                    aria-labelledby="enable-2fa-modal-title"
-                    aria-describedby="enable-2fa-modal-desc"
+                <Modal
+                    isModalOpen={showEnableModal}
+                    onClose={() => { setShowEnableModal(false); setCurrentStep(1); setVerificationCode(''); }}
+                    title={SECURITY_TEXT.TWO_FA.TITLE}
+                    variant="cosmic"
+                    size="lg"
+                    confirmText={currentStep === 2 ? SECURITY_TEXT.TWO_FA.VERIFY_BUTTON : "Next"}
+                    onConfirm={currentStep === 2 ? handleVerifyTOTP : () => setCurrentStep(2)}
+                    showFooter={false}
+                    disableClickOutside={isLoading}
+                    aria-label="Set up two-factor authentication to secure your account"
                 >
-                    <motion.div
-                        initial={{ y: 20 }}
-                        animate={{ y: 0 }}
-                        className="bg-black/40 backdrop-blur-md rounded-lg border border-cyan-400/50 p-6 max-w-lg w-full"
-                    >
-                        <div className="space-y-6">
-                            {/* Header */}
-                            <div className="text-center">
-                                <h2 id="enable-2fa-modal-title" className="text-2xl font-bold text-white font-orbitron mb-2">
-                                    {SECURITY_TEXT.TWO_FA.TITLE}
-                                </h2>
-                                <p id="enable-2fa-modal-desc" className="text-cyan-200 font-poppins text-sm">
-                                    Set up two-factor authentication to secure your account
-                                </p>
-                            </div>
-
-                            {/* Step Indicator */}
-                            <div className="flex justify-center mb-4">
-                                <div className="flex space-x-4">
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${currentStep >= 1 ? 'bg-green-500 text-white' : 'bg-gray-600 text-gray-400'}`}>
-                                        1
-                                    </div>
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${currentStep >= 2 ? 'bg-green-500 text-white' : 'bg-gray-600 text-gray-400'}`}>
-                                        2
-                                    </div>
+                    <div className="space-y-6">
+                        {/* Step Indicator */}
+                        <div className="flex justify-center mb-4">
+                            <div className="flex space-x-4">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${currentStep >= 1 ? 'bg-green-500 text-white' : 'bg-gray-600 text-gray-400'}`}>
+                                    1
+                                </div>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${currentStep >= 2 ? 'bg-green-500 text-white' : 'bg-gray-600 text-gray-400'}`}>
+                                    2
                                 </div>
                             </div>
+                        </div>
 
-                            {currentStep === 1 && (
-                                <motion.div
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: 20 }}
-                                    className="space-y-6"
-                                >
-                                    <div>
-                                        <h4 className="text-lg font-semibold text-white font-poppins mb-4">
-                                            {SECURITY_TEXT.TWO_FA.SETUP_STEP_ONE}
-                                        </h4>
-                                        {secret?.data ? (
-                                            <motion.div
-                                                initial={{ scale: 0.8, opacity: 0 }}
-                                                animate={{ scale: 1, opacity: 1 }}
-                                                className="bg-white p-4 rounded-lg block mb-4 mx-auto"
-                                            >
-                                                <img
-                                                    src={secret.data.qrCodeUrl}
-                                                    alt="2FA QR Code for authenticator app setup"
-                                                    className="w-48 h-48"
-                                                />
-                                            </motion.div>
-                                        ) : (
-                                            <div className="text-cyan-200 font-poppins mb-4 text-center">
-                                                {SECURITY_TEXT.TWO_FA.GENERATING_QR}
-                                            </div>
-                                        )}
-                                    </div>
+                        {currentStep === 1 && (
+                            <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 20 }}
+                                className="space-y-6"
+                            >
+                                <div>
+                                    <h4 className="text-lg font-semibold text-white font-poppins mb-4">
+                                        {SECURITY_TEXT.TWO_FA.SETUP_STEP_ONE}
+                                    </h4>
+                                    {secret?.data ? (
+                                        <motion.div
+                                            initial={{ scale: 0.8, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            className="bg-white p-4 rounded-lg block mb-4 mx-auto"
+                                        >
+                                            <img
+                                                src={secret.data.qrCodeUrl}
+                                                alt="2FA QR Code for authenticator app setup"
+                                                className="w-48 h-48"
+                                            />
+                                        </motion.div>
+                                    ) : (
+                                        <div className="text-cyan-200 font-poppins mb-4 text-center">
+                                            {SECURITY_TEXT.TWO_FA.GENERATING_QR}
+                                        </div>
+                                    )}
+                                </div>
 
-                                    <div>
-                                        <h4 className="text-lg font-semibold text-white font-poppins mb-4">
-                                            {SECURITY_TEXT.TWO_FA.MANUAL_ENTRY_TITLE}
-                                        </h4>
-                                        <p className="text-cyan-200 font-poppins mb-2 text-center">
-                                            {SECURITY_TEXT.TWO_FA.MANUAL_ENTRY_DESC} <code className="bg-gray-800 px-2 py-1 rounded text-sm text-center">
-                                                {secret?.data?.manualEntryKey || SECURITY_TEXT.TWO_FA.GENERATING_KEY}
-                                            </code>
-                                        </p>
-                                    </div>
+                                <div>
+                                    <h4 className="text-lg font-semibold text-white font-poppins mb-4">
+                                        {SECURITY_TEXT.TWO_FA.MANUAL_ENTRY_TITLE}
+                                    </h4>
+                                    <p className="text-cyan-200 font-poppins mb-2 text-center">
+                                        {SECURITY_TEXT.TWO_FA.MANUAL_ENTRY_DESC} <code className="bg-gray-800 px-2 py-1 rounded text-sm text-center">
+                                            {secret?.data?.manualEntryKey || SECURITY_TEXT.TWO_FA.GENERATING_KEY}
+                                        </code>
+                                    </p>
+                                </div>
 
-                                    <div className="flex gap-4 justify-center">
-                                        <Button onClick={() => setCurrentStep(2)} variant="cosmic-primary" title="Next">
-                                            Next
+                                <div className="flex gap-4 justify-center mt-6">
+                                    <Button onClick={() => setCurrentStep(2)} variant="cosmic-primary" title="Next">
+                                        Next
+                                    </Button>
+                                    <Button onClick={() => { setShowEnableModal(false); setCurrentStep(1); setVerificationCode(''); }} disabled={isLoading} variant="cosmic-outline" title={SECURITY_TEXT.TWO_FA.CANCEL_BUTTON}>
+                                        {SECURITY_TEXT.TWO_FA.CANCEL_BUTTON}
+                                    </Button>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {currentStep === 2 && (
+                            <motion.div
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="space-y-6"
+                            >
+                                <div>
+                                    <h4 className="text-lg font-semibold text-white font-poppins mb-4">
+                                        {SECURITY_TEXT.TWO_FA.SETUP_STEP_TWO}
+                                    </h4>
+                                    <p className="text-cyan-200 font-poppins mb-4 text-center">
+                                        {SECURITY_TEXT.TWO_FA.VERIFY_PROMPT}
+                                    </p>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.2 }}
+                                        className="flex justify-center"
+                                    >
+                                        <OTPInput
+                                            onChange={setVerificationCode}
+                                            onComplete={() => handleVerifyTOTP()}
+                                            className="mb-4"
+                                        />
+                                    </motion.div>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.4 }}
+                                        className="flex gap-4 justify-center"
+                                    >
+                                        <Button onClick={handleVerifyTOTP} variant="cosmic-primary" disabled={!verificationCode || verificationCode.length !== 6} title={SECURITY_TEXT.TWO_FA.VERIFY_BUTTON}>
+                                            {SECURITY_TEXT.TWO_FA.VERIFY_BUTTON} (or auto-submits when complete)
                                         </Button>
                                         <Button onClick={() => { setShowEnableModal(false); setCurrentStep(1); setVerificationCode(''); }} disabled={isLoading} variant="cosmic-outline" title={SECURITY_TEXT.TWO_FA.CANCEL_BUTTON}>
                                             {SECURITY_TEXT.TWO_FA.CANCEL_BUTTON}
                                         </Button>
-                                    </div>
-                                </motion.div>
-                            )}
-
-                            {currentStep === 2 && (
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    className="space-y-6"
-                                >
-                                    <div>
-                                        <h4 className="text-lg font-semibold text-white font-poppins mb-4">
-                                            {SECURITY_TEXT.TWO_FA.SETUP_STEP_TWO}
-                                        </h4>
-                                        <p className="text-cyan-200 font-poppins mb-4 text-center">
-                                            {SECURITY_TEXT.TWO_FA.VERIFY_PROMPT}
-                                        </p>
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: 0.2 }}
-                                            className="flex justify-center"
-                                        >
-                                            <OTPInput
-                                                onChange={setVerificationCode}
-                                                onComplete={() => handleVerifyTOTP()}
-                                                className="mb-4"
-                                            />
-                                        </motion.div>
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: 0.4 }}
-                                            className="flex gap-4 justify-center"
-                                        >
-                                            <Button onClick={handleVerifyTOTP} variant="cosmic-primary" disabled={!verificationCode || verificationCode.length !== 6} title={SECURITY_TEXT.TWO_FA.VERIFY_BUTTON}>
-                                                {SECURITY_TEXT.TWO_FA.VERIFY_BUTTON} (or auto-submits when complete)
-                                            </Button>
-                                            <Button onClick={() => { setShowEnableModal(false); setCurrentStep(1); setVerificationCode(''); }} disabled={isLoading} variant="cosmic-outline" title={SECURITY_TEXT.TWO_FA.CANCEL_BUTTON}>
-                                                {SECURITY_TEXT.TWO_FA.CANCEL_BUTTON}
-                                            </Button>
-                                        </motion.div>
-                                    </div>
-                                </motion.div>
-                            )}
-
-                        </div>
-                    </motion.div>
-                </motion.div>
+                                    </motion.div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </div>
+                </Modal>
             )}
 
             {/* Disable 2FA Verification Modal */}
             {showDisableModal && (
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                    role="dialog"
-                    aria-modal="true"
-                    aria-labelledby="disable-2fa-modal-title"
-                    aria-describedby="disable-2fa-modal-desc"
+                <Modal
+                    isModalOpen={showDisableModal}
+                    onClose={() => setShowDisableModal(false)}
+                    title={SECURITY_TEXT.DISABLE_MODAL.TITLE}
+                    variant="cosmic"
+                    size="md"
+                    onConfirm={handleDisable2FA}
+                    confirmText={isLoading ? SECURITY_TEXT.TWO_FA.PROCESSING_TEXT : SECURITY_TEXT.TWO_FA.CONFIRM_DISABLE}
+                    isConfirming={isLoading}
+                    disableClickOutside={isLoading}
+                    aria-label={SECURITY_TEXT.DISABLE_MODAL.DESC}
+                    showFooter={true}
                 >
-                    <motion.div
-                        initial={{ y: 20 }}
-                        animate={{ y: 0 }}
-                        className="bg-black/40 backdrop-blur-md rounded-lg border border-cyan-400/50 p-6 max-w-md w-full"
-                    >
-                        <div className="space-y-6">
-                            {/* Header */}
-                            <div className="text-center">
-                                <h2 id="disable-2fa-modal-title" className="text-2xl font-bold text-white font-orbitron mb-2">
-                                    {SECURITY_TEXT.DISABLE_MODAL.TITLE}
-                                </h2>
-                                <p id="disable-2fa-modal-desc" className="text-cyan-200 font-poppins text-sm">
-                                    {SECURITY_TEXT.DISABLE_MODAL.DESC}
-                                </p>
-                            </div>
-
-                            {/* Warning */}
-                            <div className="bg-red-900/20 border border-red-500/50 rounded-lg p-4">
-                                <h3 className="text-lg font-semibold text-red-400 font-poppins mb-2">
-                                    {SECURITY_TEXT.DISABLE_MODAL.WARNING_TITLE}
-                                </h3>
-                                <p className="text-red-200 font-poppins text-sm">
-                                    {SECURITY_TEXT.DISABLE_MODAL.WARNING_DESC}
-                                </p>
-                            </div>
-
-                            {/* TOTP Code Input */}
-                            <div>
-                                <OTPInput
-                                    onChange={setDisableCode}
-                                    onComplete={() => handleDisable2FA()}
-                                    className="mb-4"
-                                />
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex flex-wrap gap-3 justify-center">
-                                <Button
-                                    onClick={handleDisable2FA}
-                                    variant="cosmic-primary"
-                                    size="sm"
-                                    disabled={isLoading || !disableCode || disableCode.length !== 6}
-                                    className="font-poppins"
-                                    title="Confirm disable 2FA"
-                                >
-                                    {isLoading ? SECURITY_TEXT.TWO_FA.PROCESSING_TEXT : SECURITY_TEXT.TWO_FA.CONFIRM_DISABLE}
-                                </Button>
-
-                                <Button
-                                    onClick={() => setShowDisableModal(false)}
-                                    variant="cosmic-outline"
-                                    size="sm"
-                                    disabled={isLoading}
-                                    className="font-poppins disabled:bg-gray-600 disabled:text-gray-400 disabled:border-gray-500 disabled:cursor-not-allowed"
-                                    title="Cancel disable action"
-                                >
-                                    {SECURITY_TEXT.TWO_FA.CANCEL_BUTTON}
-                                </Button>
-                            </div>
+                    <div className="space-y-6">
+                        {/* Warning */}
+                        <div className="bg-red-900/20 border border-red-500/50 rounded-lg p-4">
+                            <h3 className="text-lg font-semibold text-red-400 font-poppins mb-2">
+                                {SECURITY_TEXT.DISABLE_MODAL.WARNING_TITLE}
+                            </h3>
+                            <p className="text-red-200 font-poppins text-sm">
+                                {SECURITY_TEXT.DISABLE_MODAL.WARNING_DESC}
+                            </p>
                         </div>
-                    </motion.div>
-                </motion.div>
+
+                        {/* TOTP Code Input */}
+                        <div className="flex justify-center">
+                            <OTPInput
+                                onChange={setDisableCode}
+                                onComplete={() => handleDisable2FA()}
+                                className="mb-4"
+                            />
+                        </div>
+                    </div>
+                </Modal>
             )}
         </motion.div>
     );
