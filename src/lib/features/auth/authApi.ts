@@ -22,6 +22,20 @@ export const authApi = baseApi.injectEndpoints({
         body: credentials,
       }),
     }),
+    loginWithTwoFactor: builder.mutation({
+      query: ({ code, tempToken, rememberMe }) => ({
+        url: "/auth/2fa/login/totp",
+        method: "POST",
+        body: { code, tempToken, rememberMe },
+      }),
+    }),
+    loginWithBackupCode: builder.mutation({
+      query: ({ email, backupCode, tempToken }) => ({
+        url: "/auth/2fa/login/backup-code",
+        method: "POST",
+        body: { email, backupCode, tempToken },
+      }),
+    }),
     logout: builder.mutation({
       query: () => ({
         url: "/auth/logout",
@@ -147,6 +161,8 @@ export const {
   useVerifyForgotPasswordOtpMutation,
   useVerifyEmailQuery,
   useLoginMutation,
+  useLoginWithTwoFactorMutation,
+  useLoginWithBackupCodeMutation,
   useLogoutMutation,
   useChangePasswordMutation,
   useRefreshTokenQuery,

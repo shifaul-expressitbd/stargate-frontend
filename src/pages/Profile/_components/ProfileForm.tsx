@@ -1,16 +1,13 @@
-import { motion } from 'motion/react';
-import React, { useEffect, useState } from 'react';
-import { FaCamera, FaEdit, FaShieldAlt } from 'react-icons/fa';
-import { toast } from 'sonner';
-
 import { Skeleton } from '@/components/layout/skeleton';
 import { Button } from '@/components/shared/buttons/button';
 import { InputField } from '@/components/shared/forms/input-field';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/shared/navigation/tabs';
 import { useGetProfileQuery, useUpdateProfileMutation } from '@/lib/features/profile/profileApi';
 import TError from '@/types/TError.type';
 import { mapValidationErrors, Validators } from '@/utils/validationUtils';
-import SecuritySettings from './Profile/_components/SecuritySettings';
+import { motion } from 'motion/react';
+import React, { useEffect, useState } from 'react';
+import { FaCamera, FaEdit } from 'react-icons/fa';
+import { toast } from 'sonner';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = [
@@ -20,7 +17,7 @@ const ALLOWED_FILE_TYPES = [
     'image/webp'
 ];
 
-type FormData = {
+export type ProfileFormData = {
     name: string;
     userName: string;
     email: string;
@@ -28,40 +25,24 @@ type FormData = {
     address: string;
 };
 
-interface ProfileFormProps {
-    formData: FormData;
-    isEditing: boolean;
-    isSubmitting: boolean;
-    imagePreview: string | null;
-    imageExisting: string | null;
-    onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onEditToggle: () => void;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onSubmit: (e: React.FormEvent) => void;
-    errors: Record<string, string>;
-    warnings: Record<string, string>;
-}
-
-export const ProfilePage = () => {
+const ProfileForm = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [imageExisting, setImageExisting] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [warnings, setWarnings] = useState<Record<string, string>>({});
 
     const { data: profileData, isLoading: isProfileLoading } = useGetProfileQuery();
     const [updateProfile] = useUpdateProfileMutation();
 
-    const [formData, setFormData] = useState<FormData>({
+    const [formData, setFormData] = useState<ProfileFormData>({
         name: '',
         userName: '',
         email: '',
         phoneNumber: '',
         address: ''
     });
-
 
     useEffect(() => {
         if (profileData) {
@@ -108,7 +89,7 @@ export const ProfilePage = () => {
 
     const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
-        setFormData((prev: FormData) => ({
+        setFormData((prev: ProfileFormData) => ({
             ...prev,
             [id]: value.replace(/</g, '<').replace(/>/g, '>')
         }));
@@ -119,8 +100,8 @@ export const ProfilePage = () => {
     };
 
     const validateForm = (): boolean => {
-        const requiredFields: Array<keyof FormData> = ['name', 'phoneNumber', 'address'];
-        const validationMapping: Record<keyof FormData, keyof typeof Validators> = {
+        const requiredFields: Array<keyof ProfileFormData> = ['name', 'phoneNumber', 'address'];
+        const validationMapping: Record<keyof ProfileFormData, keyof typeof Validators> = {
             name: 'name',
             email: 'businessEmail',
             phoneNumber: 'phone',
@@ -129,7 +110,6 @@ export const ProfilePage = () => {
         };
 
         const newErrors: Record<string, string> = {};
-        const newWarnings: Record<string, string> = {};
 
         requiredFields.forEach(field => {
             const validator = validationMapping[field];
@@ -138,13 +118,9 @@ export const ProfilePage = () => {
             if (validationResult?.error) {
                 newErrors[field] = validationResult.error;
             }
-            if (validationResult?.warning) {
-                newWarnings[field] = validationResult.warning;
-            }
         });
 
         setErrors(newErrors);
-        setWarnings(newWarnings);
         return Object.keys(newErrors).length === 0;
     };
 
@@ -192,94 +168,23 @@ export const ProfilePage = () => {
 
     if (isProfileLoading) {
         return (
-            <div className="w-full p-6">
-                <div className="bg-black rounded-lg border border-cyan-400/50 p-6">
-                    <Skeleton variant="cosmic" className="h-10 w-48 mb-6" />
-                    <div className="flex gap-2 mb-6">
-                        <Skeleton variant="cosmic" className="h-10 w-28 rounded-md" />
-                        <Skeleton variant="cosmic" className="h-10 w-32 rounded-md" />
-                        <Skeleton variant="cosmic" className="h-10 w-28 rounded-md" />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Skeleton variant="cosmic" className="h-32 w-full" />
-                        <Skeleton variant="cosmic" className="h-32 w-full" />
-                        <Skeleton variant="cosmic" className="h-32 w-full" />
-                        <Skeleton variant="cosmic" className="h-32 w-full" />
-                    </div>
+            <div className="backdrop-blur-md rounded-lg border border-cyan-400/50 p-6">
+                <Skeleton variant="cosmic" className="h-10 w-48 mb-6" />
+                <div className="flex gap-2 mb-6">
+                    <Skeleton variant="cosmic" className="h-10 w-28 rounded-md" />
+                    <Skeleton variant="cosmic" className="h-10 w-32 rounded-md" />
+                    <Skeleton variant="cosmic" className="h-10 w-28 rounded-md" />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Skeleton variant="cosmic" className="h-32 w-full" />
+                    <Skeleton variant="cosmic" className="h-32 w-full" />
+                    <Skeleton variant="cosmic" className="h-32 w-full" />
+                    <Skeleton variant="cosmic" className="h-32 w-full" />
                 </div>
             </div>
         );
     }
 
-    return (
-
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="w-full h-full relative custom-scroll overflow-y-scroll p-6 pb-8"
-        >
-            {/* Page Header */}
-            <div className="mb-8 z-10">
-                <h1 className="text-4xl font-bold mb-4 text-white font-orbitron text-shadow-white-strong tracking-[0.15em] uppercase">
-                    Profile
-                </h1>
-                <p className="text-cyan-200 font-poppins text-shadow-cyan-glow">
-                    Manage your cosmic identity and account configuration
-                </p>
-            </div>
-
-            <Tabs defaultValue="general" variant="cosmic" className="w-full">
-                <TabsList className="mb-6">
-                    <TabsTrigger value="general" className="font-poppins">
-                        <FaEdit className="w-4 h-4 mr-2" />
-                        General
-                    </TabsTrigger>
-                    <TabsTrigger value="security" className="font-poppins">
-                        <FaShieldAlt className="w-4 h-4 mr-2" />
-                        Security
-                    </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="general">
-                    <ProfileForm
-                        formData={formData}
-                        isEditing={isEditing}
-                        isSubmitting={isSubmitting}
-                        imagePreview={imagePreview}
-                        imageExisting={imageExisting}
-                        onImageChange={handleImageChange}
-                        onEditToggle={() => setIsEditing(!isEditing)}
-                        onChange={handleFormChange}
-                        onSubmit={handleSubmit}
-                        errors={errors}
-                        warnings={warnings}
-                    />
-                </TabsContent>
-
-                <TabsContent value="security">
-                    <SecuritySettings />
-                </TabsContent>
-            </Tabs>
-        </motion.div>
-
-    );
-};
-
-// Profile Form Component
-const ProfileForm: React.FC<ProfileFormProps> = ({
-    formData,
-    isEditing,
-    isSubmitting,
-    imagePreview,
-    imageExisting,
-    onImageChange,
-    onEditToggle,
-    onChange,
-    onSubmit,
-    errors,
-
-}) => {
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -310,7 +215,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                                 id="image-upload"
                                 type="file"
                                 accept="image/*"
-                                onChange={onImageChange}
+                                onChange={handleImageChange}
                                 className="hidden"
                             />
                         </label>
@@ -327,7 +232,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                 </div>
 
                 <Button
-                    onClick={onEditToggle}
+                    onClick={() => setIsEditing(!isEditing)}
                     disabled={isSubmitting}
                     variant={isEditing ? 'cosmic-outline' : 'cosmic-primary'}
                     title={isEditing ? 'Cancel Edit' : 'Edit Profile'}
@@ -339,13 +244,13 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
             </div>
 
             {/* Form */}
-            <form onSubmit={onSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <InputField
                         id="name"
                         label="Full Name"
                         value={formData.name}
-                        onChange={onChange}
+                        onChange={handleFormChange}
                         disabled={!isEditing}
                         variant="cosmic"
                         error={errors.name}
@@ -355,7 +260,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                         id="userName"
                         label="Username"
                         value={formData.userName}
-                        onChange={onChange}
+                        onChange={handleFormChange}
                         disabled={!isEditing}
                         variant="cosmic"
                         error={errors.userName}
@@ -366,7 +271,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                         label="Email Address"
                         type="email"
                         value={formData.email}
-                        onChange={onChange}
+                        onChange={handleFormChange}
                         disabled={!isEditing}
                         variant="cosmic"
                         error={errors.email}
@@ -376,7 +281,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                         id="phoneNumber"
                         label="Phone Number"
                         value={formData.phoneNumber}
-                        onChange={onChange}
+                        onChange={handleFormChange}
                         disabled={!isEditing}
                         variant="cosmic"
                         error={errors.phoneNumber}
@@ -386,7 +291,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                         id="address"
                         label="Address"
                         value={formData.address}
-                        onChange={onChange}
+                        onChange={handleFormChange}
                         disabled={!isEditing}
                         variant="cosmic"
                         error={errors.address}
@@ -402,14 +307,14 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                     >
                         <Button
                             type="button"
-                            onClick={onEditToggle}
+                            onClick={() => setIsEditing(false)}
                             variant="cosmic-outline"
                             title="Cancel"
                         >
                             Cancel
                         </Button>
                         <Button
-                            onClick={onSubmit}
+                            onClick={handleSubmit}
                             disabled={isSubmitting}
                             variant="cosmic-primary"
                             title="Save Changes"
@@ -424,7 +329,4 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     );
 };
 
-
-
-
-export default ProfilePage;
+export default ProfileForm;

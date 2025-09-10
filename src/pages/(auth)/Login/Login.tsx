@@ -17,11 +17,17 @@ import {
 } from 'react-router-dom'
 import { toast } from 'sonner'
 import { SocialLogin } from './_components/SocialLogin'
+import TwoFactorVerification from './_components/TwoFactorVerification'
 
 interface FormData {
   email: string
   password: string
   rememberMe: boolean
+}
+
+interface TwoFactorData {
+  tempToken: string
+  requiresTwoFactor: boolean
 }
 
 const Login = () => {
@@ -39,6 +45,10 @@ const Login = () => {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [warnings, setWarnings] = useState<Record<string, string>>({})
   const lastAttemptRef = useRef(0)
+
+  // 2FA state
+  const [twoFactorData, setTwoFactorData] = useState<TwoFactorData | null>(null)
+  const [showTwoFactor, setShowTwoFactor] = useState(false)
 
   const [login] = useLoginMutation()
 
@@ -66,6 +76,13 @@ const Login = () => {
   }
 
   const handlePasswordToggle = () => setShowPassword(!showPassword)
+
+  const handleBackToLogin = () => {
+    setShowTwoFactor(false)
+    setTwoFactorData(null)
+    setErrors({})
+    setWarnings({})
+  }
 
   const validateForm = (): boolean => {
     const requiredFields: Array<keyof FormData> = ['email', 'password']
@@ -109,6 +126,18 @@ const Login = () => {
     try {
       const res = await login(formData).unwrap()
       console.log('Login response:', res)
+
+      // Check if 2FA is required
+      if (res.data?.requiresTwoFactor) {
+        setTwoFactorData({
+          tempToken: res.data.tempToken,
+          requiresTwoFactor: res.data.requiresTwoFactor
+        })
+        setShowTwoFactor(true)
+        setLoading(false)
+        toast.dismiss(toastId)
+        return
+      }
 
       // Validate response data
       if (!res.data?.accessToken || !res.data?.refreshToken || !res.data?.user) {
@@ -250,6 +279,17 @@ const Login = () => {
     }
   }
 
+  // Render 2FA verification if required
+  if (showTwoFactor && twoFactorData) {
+    return (
+      <TwoFactorVerification
+        email={formData.email}
+        tempToken={twoFactorData.tempToken}
+        rememberMe={formData.rememberMe}
+      />
+    )
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -259,12 +299,26 @@ const Login = () => {
     >
       <div className="bg-black/60 backdrop-blur-md shadow-2xl rounded-2xl p-8 border border-cyan-400/30 relative overflow-hidden">
         <div className="space-y-6">
+          {showTwoFactor && (
+            <div className="flex justify-start">
+              <button
+                onClick={handleBackToLogin}
+                className="text-cyan-300 hover:text-blue-300 font-poppins text-shadow-cyan-glow hover:underline text-sm transition-all duration-200"
+                style={{
+                  textShadow: '0 0 5px rgba(34, 211, 238, 0.5)'
+                }}
+              >
+                ← Back to Login
+              </button>
+            </div>
+          )}
+
           <div className="text-center">
             <h1 className="text-3xl font-bold text-white animate-hologram font-orbitron text-shadow-white-strong tracking-[0.1em] uppercase">
-              Sign In
+              {showTwoFactor ? 'Two-Factor Authentication' : 'Sign In'}
             </h1>
             <p className="mt-2 text-lg text-blue-100 font-poppins text-shadow-blue-glow">
-              Access your account to continue
+              {showTwoFactor ? 'Enter your verification code to continue' : 'Access your account to continue'}
             </p>
           </div>
 

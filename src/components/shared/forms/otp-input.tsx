@@ -1,4 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
+import { twMerge } from "tailwind-merge";
+
+export type OTPInputVariant = 'default' | 'cosmic';
 
 interface OTPInputProps {
   length?: number;
@@ -7,9 +10,10 @@ interface OTPInputProps {
   error?: string;
   success?: boolean;
   className?: string;
+  variant?: OTPInputVariant;
 }
 
-const OTPInput = ({ length = 6, onChange, onComplete, success, error, className }: OTPInputProps) => {
+const OTPInput = ({ length = 6, onChange, onComplete, success, error, className, variant = 'default' }: OTPInputProps) => {
   const [otp, setOtp] = useState<string[]>(Array(length).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -24,10 +28,10 @@ const OTPInput = ({ length = 6, onChange, onComplete, success, error, className 
     // Trigger onChange callback
     onChange(newOtp.join(""));
 
-    // Check if all digits are filled
-    const isComplete = newOtp.every(digit => digit !== '');
-    if (isComplete && onComplete) {
-      onComplete(newOtp.join(""));
+    // Check if all digits are filled (only call onComplete if we have exactly 'length' digits)
+    const otpString = newOtp.join("");
+    if (otpString.length === length && /^\d{6}$/.test(otpString) && onComplete) {
+      onComplete(otpString);
     }
 
     // Auto-focus to the next input
@@ -56,7 +60,13 @@ const OTPInput = ({ length = 6, onChange, onComplete, success, error, className 
     });
 
     setOtp(newOtp);
-    onChange(newOtp.join(""));
+    const otpString = newOtp.join("");
+    onChange(otpString);
+
+    // Only call onComplete if we have exactly 'length' digits
+    if (otpString.length === length && /^\d{6}$/.test(otpString) && onComplete) {
+      onComplete(otpString);
+    }
   };
 
   // Focus the first input on mount
@@ -81,8 +91,24 @@ const OTPInput = ({ length = 6, onChange, onComplete, success, error, className 
               inputRefs.current[index] = el;
             }}
             aria-label={`OTP digit ${index + 1}`}
-            className={`size-1 w-12 min-w-4 h-12 min-h-4 rounded-lg border focus:outline-none focus:ring-2 focus:ring-orange-200 dark:focus:ring-primary text-center ${error ? "border-red-500" : success ? "border-green-500" : "border-gray-300 dark:border-gray-600"
-              } bg-white dark:bg-primary-dark    text-gray-900 dark:text-gray-100`}
+            className={twMerge(
+              'size-1 w-12 min-w-4 h-12 min-h-4 rounded-lg border text-center',
+              'focus:outline-none focus:ring-2 focus:border-transparent',
+              error
+                ? 'border-red-500 focus:ring-red-200 dark:focus:ring-red-500/30'
+                : success
+                  ? variant === 'cosmic'
+                    ? 'border-cyan-400/70 focus:ring-cyan-200/50 dark:focus:ring-cyan-300/30'
+                    : 'border-green-500 focus:ring-green-200 dark:focus:ring-green-500/30'
+                  : variant === 'cosmic'
+                    ? 'bg-gray-900/80 border-cyan-400/50 hover:border-cyan-300 dark:hover:border-cyan-200 dark:bg-slate-900 dark:border-cyan-500/50'
+                    + ' focus:ring-cyan-200/50 dark:focus:ring-cyan-300/30'
+                    + ' placeholder-cyan-300/50 dark:placeholder-cyan-400/70'
+                    : 'bg-white dark:bg-black border-gray-300 dark:border-gray-600 focus:ring-orange-200 dark:focus:ring-primary',
+              variant === 'cosmic'
+                ? 'text-cyan-100 dark:text-cyan-100'
+                : 'text-gray-900 dark:text-gray-100'
+            )}
           />
         ))}
       </div>
