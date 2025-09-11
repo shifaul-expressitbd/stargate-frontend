@@ -41,6 +41,8 @@ const TwoFactorVerification = ({ email, tempToken, rememberMe }: TwoFactorVerifi
         isTimeSyncWarning: boolean
     } | null>(null)
     const [checkingTime, setCheckingTime] = useState(false)
+    const [showTimeSyncHelp, setShowTimeSyncHelp] = useState(false)
+    const [timeCorrectionSteps, setTimeCorrectionSteps] = useState<string[]>([])
 
     const [loginWithTwoFactor] = useLoginWithTwoFactorMutation()
     const [loginWithBackupCode] = useLoginWithBackupCodeMutation()
@@ -48,23 +50,104 @@ const TwoFactorVerification = ({ email, tempToken, rememberMe }: TwoFactorVerifi
     // Check server time synchronization
     const checkServerTimeSync = async () => {
         setCheckingTime(true)
+        console.log('🎯 Starting comprehensive server time sync check...')
 
         try {
             const clientTimestamp = Date.now()
+            const clientTimeString = new Date(clientTimestamp).toISOString()
+            console.log(`📱 Client time: ${clientTimeString} (${clientTimestamp})`)
 
-            // Fetch server time information
-            const response = await fetch('/api/auth/server-time')
+            // Try using the current window location for proper absolute URL
+            const baseUrl = window.location.origin
+            const serverTimeUrl = '/api/auth/server-time'
+            console.log(`🌐 Fetching from: ${baseUrl}${serverTimeUrl}`)
+
+            const startFetchTime = Date.now()
+            const response = await fetch(serverTimeUrl, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                cache: 'no-cache'
+            })
+            const endFetchTime = Date.now()
+
+            console.log(`📡 Fetch took ${endFetchTime - startFetchTime}ms`)
+
             if (!response.ok) {
-                throw new Error('Failed to fetch server time')
+                throw new Error(`Server time request failed: ${response.status} ${response.statusText}`)
             }
 
             const serverData = await response.json()
-            const serverTimestamp = serverData.data.serverTimestamp * 1000 // Convert to milliseconds
+            console.log('📊 Raw server response:', serverData)
 
-            // Calculate time difference
-            const timeDifference = Math.abs(clientTimestamp - serverTimestamp)
-            const timeDifferenceSeconds = Math.round(timeDifference / 1000)
-            const isTimeSyncWarning = timeDifferenceSeconds > 30 // Warning if > 30 seconds difference
+            if (!serverData?.data) {
+                throw new Error('Invalid server response format')
+            }
+
+            const serverTimestamp = serverData.data.serverTimestamp * 1000 // Convert to milliseconds
+            const serverTimeString = new Date(serverTimestamp).toISOString()
+
+            // Calculate multiple time difference metrics
+            const timeDifference = clientTimestamp - serverTimestamp
+            const absTimeDifference = Math.abs(timeDifference)
+            const timeDifferenceSeconds = Math.round(absTimeDifference / 1000)
+
+            // Check timezone info
+            const currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+            const clientOffset = new Date().getTimezoneOffset() * 60000 // Convert to milliseconds
+            const isDifferentTimezone = currentTimezone !== 'UTC'
+
+            console.log(`⏱️  TIME ANALYSIS:`)
+            console.log(`   Client: ${clientTimeString}`)
+            console.log(`   Server: ${serverTimeString}`)
+            console.log(`   Difference: ${timeDifference > 0 ? '+' : ''}${Math.round(timeDifference / 1000)}s`)
+            console.log(`   Client TZ: ${currentTimezone} (offset: ${-clientOffset / 60000}h)`)
+            console.log(`   Server TZ: ${serverData.data.timezone} (offset: ${serverData.data.utcOffset}h)`)
+
+            // Enhanced warning thresholds
+            const isMinorWarning = timeDifferenceSeconds > 5
+            const isMajorWarning = timeDifferenceSeconds > 30
+            const gapSize = isMajorWarning ? 'major' : isMinorWarning ? 'minor' : 'none'
+
+            // Generate time correction steps based on difference
+            const correctionSteps: string[] = []
+
+            if (gapSize === 'major') {
+                correctionSteps.push('🔧 LARGE TIME DIFFERENCE DETECTED! Fix this to login:')
+            } else if (gapSize === 'minor') {
+                correctionSteps.push('⚠️ Small time difference detected.')
+            }
+
+            // Add OS-specific time correction
+            const userAgent = navigator.userAgent.toLowerCase()
+            if (userAgent.includes('windows')) {
+                if (gapSize === 'major') {
+                    correctionSteps.push('1. Right-click system clock > Adjust date/time')
+                    correctionSteps.push('2. Turn OFF "Set time automatically" and "Set time zone automatically"')
+                    correctionSteps.push('3. Click "Sync now" or manually set accurate time')
+                    correctionSteps.push('4. Turn back ON automatic time settings')
+                    correctionSteps.push('5. Return to login and try again')
+                } else {
+                    correctionSteps.push('• Right-click system clock > Adjust date/time > "Sync now"')
+                }
+            } else if (userAgent.includes('mac')) {
+                if (gapSize === 'major') {
+                    correctionSteps.push('1. Apple Menu > System Preferences > Date & Time')
+                    correctionSteps.push('2. Unlock with lock icon, check "Set date and time automatically"')
+                    correctionSteps.push('3. Select closest time server: time.apple.com')
+                    correctionSteps.push('4. Return to login and try again')
+                } else {
+                    correctionSteps.push('• Apple Menu > System Preferences > Date & Time > Sync now')
+                }
+            } else {
+                // Mobile/Other
+                correctionSteps.push('• Enable automatic time in Settings')
+                correctionSteps.push('• Enable automatic timezone in Settings')
+                correctionSteps.push('• Connect to network and try again')
+            }
+
+            setTimeCorrectionSteps(correctionSteps)
 
             setServerTimeInfo({
                 serverTime: serverData.data.serverTime,
@@ -72,17 +155,48 @@ const TwoFactorVerification = ({ email, tempToken, rememberMe }: TwoFactorVerifi
                 timezone: serverData.data.timezone,
                 utcOffset: serverData.data.utcOffset,
                 timeDifferenceSeconds,
-                isTimeSyncWarning
+                isTimeSyncWarning: isMajorWarning
             })
 
-            if (isTimeSyncWarning) {
-                toast.warning(`⏰ Time difference detected: ${timeDifferenceSeconds}s`)
+            console.log('✅ Server time info updated:', {
+                serverTimeString,
+                timeDifferenceSeconds,
+                isMinorWarning,
+                isMajorWarning,
+                isDifferentTimezone
+            })
+
+            if (isMajorWarning) {
+                toast.warning(`⏰ Large time difference: ${timeDifferenceSeconds}s`, {
+                    duration: 5000,
+                    description: 'Please sync your device time with NTP servers'
+                })
+            } else if (isMinorWarning) {
+                toast.info(`⏱️ Minor time difference: ${timeDifferenceSeconds}s`)
             } else {
-                toast.success('✅ Time synchronized with server')
+                toast.success('✅ Time perfectly synchronized!')
             }
+
+            // Additional timezone guidance
+            if (isDifferentTimezone && absTimeDifference < 30000) { // Less than 30s
+                toast.info(`🌍 Client in ${currentTimezone}, Server in UTC`)
+            }
+
         } catch (error) {
-            console.error('Failed to check server time:', error)
-            toast.error('Failed to check server time synchronization')
+            console.error('❌ Failed to check server time:', error)
+            toast.error(`Failed to check server time: ${error instanceof Error ? error.message : 'Unknown error'}`)
+
+            // Enhanced fallback with current time info
+            setServerTimeInfo({
+                serverTime: new Date().toISOString(),
+                serverTimestamp: Math.floor(Date.now() / 1000),
+                timezone: 'CLIENT_TIME',
+                utcOffset: 0,
+                timeDifferenceSeconds: 0,
+                isTimeSyncWarning: true
+            })
+
+            toast.info('Using current device time as reference')
         } finally {
             setCheckingTime(false)
         }
@@ -409,12 +523,51 @@ const TwoFactorVerification = ({ email, tempToken, rememberMe }: TwoFactorVerifi
                                         </div>
 
                                         {serverTimeInfo.isTimeSyncWarning && (
-                                            <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg px-3 py-2">
-                                                <div className="flex items-center gap-2 text-yellow-300 text-xs">
-                                                    <FaExclamationTriangle size={12} />
-                                                    <span>Larger time difference detected. Check your device NTP settings and authenticator app sync.</span>
+                                            <>
+                                                <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg px-3 py-2">
+                                                    <div className="flex items-center gap-2 text-yellow-300 text-xs">
+                                                        <FaExclamationTriangle size={12} />
+                                                        <span>Larger time difference detected. {serverTimeInfo.timeDifferenceSeconds > 30 ? 'Follow the steps below to fix this!' : 'Consider syncing your device time.'}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
+
+                                                {timeCorrectionSteps.length > 0 && (
+                                                    <div className={`bg-blue-900/20 border border-blue-500/30 rounded-lg px-3 py-3 transition-all duration-500 ${showTimeSyncHelp ? 'opacity-100 max-h-96' : 'opacity-70 max-h-24 overflow-hidden'
+                                                        }`}>
+                                                        <div className="text-blue-300 text-xs space-y-1 mb-2">
+                                                            {timeCorrectionSteps.slice(0, 2).map((step, index) => (
+                                                                <div key={index} className="font-medium">{step}</div>
+                                                            ))}
+                                                            {timeCorrectionSteps.slice(2, 6).map((step, index) => (
+                                                                <div key={index + 2} className="ml-2 opacity-90">{step}</div>
+                                                            ))}
+                                                        </div>
+
+                                                        {timeCorrectionSteps.length > 6 && (
+                                                            <button
+                                                                onClick={() => setShowTimeSyncHelp(!showTimeSyncHelp)}
+                                                                className="text-blue-400 hover:text-blue-300 text-xs underline"
+                                                            >
+                                                                {showTimeSyncHelp ? 'Show less' : `Show ${timeCorrectionSteps.length - 6} more steps...`}
+                                                            </button>
+                                                        )}
+
+                                                        <div className="mt-2 pt-2 border-t border-blue-500/20">
+                                                            <button
+                                                                onClick={() => {
+                                                                    checkServerTimeSync()
+                                                                    toast.info('Re-checking time synchronization...')
+                                                                }}
+                                                                disabled={checkingTime}
+                                                                className="text-blue-400 hover:text-blue-300 text-xs underline flex items-center gap-1 disabled:opacity-50"
+                                                            >
+                                                                <FaSync size={10} className={checkingTime ? 'animate-spin' : ''} />
+                                                                Re-check after syncing
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                 )}
